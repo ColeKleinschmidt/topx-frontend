@@ -136,3 +136,38 @@ body
     color:#4CB95F;
     font-size: 2vh;
 }
+
+/* Highlight the active icon link with an arrow */
+.icon-link.active::before 
+{
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid #3C3C3C;
+    pointer-events: none;
+}
+
+/* Highlights active icon */
+.icon-link
+{
+    position: relative;
+    transform-origin: center;
+}
+
+/* Only scale icon when hovered, not selection arrow */
+.icon-link:hover .icon 
+{
+    transform: scale(1.1);
+    transition: transform 0.2s ease;
+}
+
+.icon-link:hover 
+{
+    transform: none;
+}
