@@ -3,14 +3,16 @@
     <head>
         <title>TopX</title>
         <link rel="icon" type="image/png" href="assets/images/TopXLogo.png">
-        <link rel="stylesheet" href="assets/css/top-icon-styles.css">
+        <link rel="stylesheet" href="assets/css/top-icon-bar.css">
+        <link rel="stylesheet" href="assets/css/index.css">
+        <link rel="stylesheet" href="assets/css/bottom-bar.css">
+        <link rel="stylesheet" href="assets/css/welcome-card.css">
         <script src ="assets/js/spa.js"></script>
         <style>
             body
             {
-                background-color: #CAEFD1;
+                background-color: #E8FAEC;
             }
-
             #content /* Where spa.js injected content goes */
             {
                 text-align: center;
@@ -18,16 +20,43 @@
             }
         </style>
     </head>
-    <body>
+    <body class="main-page">
         <div id="top-icon-bar-container"></div>
         <script src ="assets/js/top-icon-bar.js"></script>
         <script>
             loadTopIconBar('top-icon-bar-container', './top-icon-bar.html');
         </script>
 
+        <div id="bottom-bar-container"></div>
+        <script src ="assets/js/bottom-bar.js"></script>
+        <script>
+            loadBottomBar('bottom-bar-container', './bottom-bar.html');
+        </script>
+
         <div id ="content">
-            <h1>Welcome to TopX</h1>
-            <p>Top X here</p>
+            <!-- Welcome Card -->
+            <div class="welcome-card">
+                <img src="assets/images/TopXLogo.png" alt="TopX Logo" class="welcome-logo">
+                <h1>Welcome to TopX</h1>
+                <p class="welcome-subtext">Let's hear your favorites</p>
+                <form class="welcome-form">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" id="email" placeholder="Enter your email" class="form-input">
+                    
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" id="password" placeholder="Create a password" class="form-input">
+                    
+                    <button type="submit" class="form-button">Continue</button>
+
+                    <div class="form-divider">
+                        <span>OR</span>
+                    </div>
+
+                    <p class="login-prompt">
+                        Already a member? <a href="#" class="login-link">Log In</a>
+                    </p>
+                </form>
+            </div>
         </div>
     </body>
 </html>

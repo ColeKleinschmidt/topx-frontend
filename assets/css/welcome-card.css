@@ -1,0 +1,129 @@
+/* Welcome Card */
+.welcome-card 
+{
+    background-color: #DFF5E0;
+    width: 400px;
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: calc((60vh - (5vh + 4vh)) / 2);
+    left: calc(50% + 30vh);
+    font-family: Arial, sans-serif;
+}
+
+/* Logo Styling */
+.welcome-logo 
+{
+    width: 40px;
+    height: auto;
+    margin-bottom: 10px;
+    border-radius: 50%;
+    background-color: #4CB95F; /* Optional: Green background for the logo */
+    display: inline-block;
+}
+
+/* Main Heading */
+.welcome-card h1 
+{
+    font-size: 32px;
+    color: #333; /* Darker text for contrast */
+    margin: 10px;
+}
+
+/* Subtext */
+.welcome-subtext 
+{
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 20px;
+    margin-top: -2px;
+}
+
+/* Form Styling */
+.welcome-form 
+{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+
+/* Input Fields */
+.form-input 
+{
+    padding: 12px;
+    border: 2px solid #ccc;
+    border-radius: 15px;
+    font-size: 16px;
+    outline: none;
+    width: 100%;
+    max-width: 250px;
+    box-sizing: border-box;
+}
+
+/* Button */
+.form-button 
+{
+    padding: 12px;
+    background-color: #4CB95F;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    font-size: 16px;
+    width: 100%;
+    max-width: 250px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.form-button:hover 
+{
+    background-color: #42a954; /* Darker green on hover */
+}
+
+/* Form Labels */
+.form-label 
+{
+    font-size: 14px; /* Slightly smaller size for subtlety */
+    color: #777; /* Softer grey color */
+    display: block;
+    margin-bottom: -5px; /* Minimal spacing between label and input field */
+    padding-right: 100px; /* Adds a slight padding for spacing */
+    width: 100%;
+    max-width: 240px;
+    text-align: left;
+    box-sizing: border-box;
+}
+
+/* Divider Section */
+.form-divider 
+{
+    text-align: center;
+    margin: 00px 0px; /* Spacing above and below the divider */
+    font-size: 14px;
+    color: #777; /* Softer grey color */
+}
+
+/* Log In Prompt Section */
+.login-prompt 
+{
+    text-align: center; /* Center-aligns the text */
+    font-size: 14px;
+    color: #555; /* Slightly darker grey for better visibility */
+    margin-top: 0px;
+}
+
+/* Log In Link */
+.login-link 
+{
+    color: #4CB95F; /* Green color for the link */
+    text-decoration: none; /* Remove underline from the link */
+    font-weight: bold;
+}
+
+.login-link:hover 
+{
+    text-decoration: underline; /* Underline link on hover */
+}

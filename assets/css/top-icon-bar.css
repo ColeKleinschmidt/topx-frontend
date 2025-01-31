@@ -157,17 +157,35 @@ body
 .auth-link
 {
     text-decoration: none;
-    color: #3C3C3C;
     font-size: 1.5vh;
     font-weight: bold;
-    transition: color 0.2s ease;
+    padding: 8px 16px;
+    border-radius: 20px;
+    display: inline-block;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.auth-link:hover
+.auth-link[href="signup.html"]
 {
-    color: #4CB95F;
+    background-color: #E9E9E9;
+    color: black;
 }
 
+.auth-link#login
+{
+    background-color: #4CB95F;
+    color: white;
+}
+
+.auth-link[href="signup.html"]:hover
+{
+    background-color: #D9D9D9;
+}
+
+.auth-link#login:hover
+{
+    background-color: #42a954;
+}
 .auth-divider
 {
     user-select: none;
@@ -209,4 +227,47 @@ body
 .icon-link:hover 
 {
     transform: none;
+}
+
+/*Search Bar*/
+.search-bar 
+{
+    display: flex;
+    align-items: center;
+    background-color: #E9E9E9;
+    border-radius: 20px;
+    padding: 5px 15px;
+    width: 180px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    left: calc(3vh + 5vh);
+}
+
+.search-icon 
+{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+}
+
+.search-icon img{
+    width: 3vh;
+    height: auto;
+    opacity: .5;
+}
+
+.search-input 
+{
+    border: none;
+    outline: none;
+    background-color: transparent;
+    font-size: 14px;
+    color: #3C3C3C;
+    width: 100%;
+}
+
+.search-input::placeholder 
+{
+    color: #888;
 }
