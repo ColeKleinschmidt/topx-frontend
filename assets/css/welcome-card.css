@@ -1,16 +1,18 @@
 /* Welcome Card */
 .welcome-card 
 {
-    background-color: #DFF5E0;
+    background-color: #CAEFD1;
     width: 400px;
     border-radius: 20px;
     padding: 30px;
     text-align: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     position: fixed;
-    top: calc((60vh - (5vh + 4vh)) / 2);
+    top: calc((50vh - (5vh + 4vh)) / 2);
     left: calc(50% + 30vh);
     font-family: Arial, sans-serif;
+    overflow: hidden;
+    justify-content: space-between;
 }
 
 /* Logo Styling */
@@ -20,19 +22,19 @@
     height: auto;
     margin-bottom: 10px;
     border-radius: 50%;
-    background-color: #4CB95F; /* Optional: Green background for the logo */
+    background-color: #4CB95F;
     display: inline-block;
 }
 
-/* Main Heading */
+/* Welcome to TopX Main Heading */
 .welcome-card h1 
 {
     font-size: 32px;
-    color: #333; /* Darker text for contrast */
+    color: #333;
     margin: 10px;
 }
 
-/* Subtext */
+/* Let's hear your favorites Subtext */
 .welcome-subtext 
 {
     font-size: 16px;
@@ -63,7 +65,7 @@
     box-sizing: border-box;
 }
 
-/* Button */
+/* Continue Button */
 .form-button 
 {
     padding: 12px;
@@ -78,19 +80,20 @@
     transition: background-color 0.3s ease;
 }
 
+/* Darken Continue Button on Hover */
 .form-button:hover 
 {
-    background-color: #42a954; /* Darker green on hover */
+    background-color: #42a954;
 }
 
-/* Form Labels */
+/* Form Input Field Labels */
 .form-label 
 {
-    font-size: 14px; /* Slightly smaller size for subtlety */
-    color: #777; /* Softer grey color */
+    font-size: 14px;
+    color: #777;
     display: block;
-    margin-bottom: -5px; /* Minimal spacing between label and input field */
-    padding-right: 100px; /* Adds a slight padding for spacing */
+    margin-bottom: -5px;
+    padding-right: 100px;
     width: 100%;
     max-width: 240px;
     text-align: left;
@@ -101,9 +104,9 @@
 .form-divider 
 {
     text-align: center;
-    margin: 00px 0px; /* Spacing above and below the divider */
+    margin: 00px 0px;
     font-size: 14px;
-    color: #777; /* Softer grey color */
+    color: #777;
 }
 
 /* Log In Prompt Section */
@@ -123,7 +126,71 @@
     font-weight: bold;
 }
 
+ /* Underline link on hover */
 .login-link:hover 
 {
-    text-decoration: underline; /* Underline link on hover */
+    text-decoration: underline;
+}
+
+/* Google OAuth Button */
+.google-button 
+{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff;
+    color: #555;
+    border: 1px solid #ccc;
+    border-radius: 30px;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    width: 100%;
+    max-width: 250px;
+    background-image: url('../images/Google Logo.png');
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: 15px center;
+    text-align: center;
+    padding-left: 50px;
+    margin-bottom: 40px;
+}
+
+/* Hover Effect */
+.google-button:hover 
+{
+    background-color: #f7f7f7;
+}
+
+/* Welcome Card Footer */
+.welcome-card-footer 
+{
+    background-color: #06402B;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: #ffffff;
+    bottom: 0;
+    padding-bottom: 0px;
+    left: 0;
+    width: 100%;
+    margin: 0;
+    position: absolute;
+}
+
+.welcome-card-footer .login-link 
+{
+    margin-left: 5px;
+    color: #4CB95F;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.welcome-card-footer .login-link:hover 
+{
+    text-decoration: underline;
 }

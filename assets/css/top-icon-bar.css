@@ -271,3 +271,15 @@ body
 {
     color: #888;
 }
+
+.icon-link.disabled 
+{
+    pointer-events: none;
+    opacity: 0;
+    cursor: not-allowed;
+}
+
+.icon-link.disabled .tooltip 
+{
+    display: none;
+}

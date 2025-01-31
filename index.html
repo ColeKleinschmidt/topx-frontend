@@ -11,7 +11,7 @@
         <style>
             body
             {
-                background-color: #E8FAEC;
+
             }
             #content /* Where spa.js injected content goes */
             {
@@ -40,22 +40,30 @@
                 <h1>Welcome to TopX</h1>
                 <p class="welcome-subtext">Let's hear your favorites</p>
                 <form class="welcome-form">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" id="username" placeholder="Enter your username" class="form-input">
+
                     <label for="email" class="form-label">Email</label>
                     <input type="email" id="email" placeholder="Enter your email" class="form-input">
                     
                     <label for="password" class="form-label">Password</label>
                     <input type="password" id="password" placeholder="Create a password" class="form-input">
                     
-                    <button type="submit" class="form-button">Continue</button>
+                    <button type="submit" class="form-button">
+                        Continue
+                    </button>
 
                     <div class="form-divider">
                         <span>OR</span>
                     </div>
 
-                    <p class="login-prompt">
-                        Already a member? <a href="#" class="login-link">Log In</a>
-                    </p>
+                    <button class="google-button">
+                        Continue with Google
+                    </button>
                 </form>
+                <div class="welcome-card-footer">
+                    Already a member? <a href="#" class="login-link">Log In</a>
+                </div>
             </div>
         </div>
     </body>
