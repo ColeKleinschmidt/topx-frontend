@@ -194,20 +194,33 @@ body
     font-size: 2vh;
 }
 
-/* Highlight the active icon link with an arrow */
-.icon-link.active::before 
+.icon-link.disabled 
 {
+    pointer-events: none;
+    opacity: 0;
+    cursor: not-allowed;
+}
+
+.icon-link.icon-link.active::before
+{
+    pointer-events: auto;
+    opacity: 1;
+}
+
+/* Highlight the active icon link with an arrow */
+.icon-link.active::before {
     content: '';
     position: absolute;
-    top: -10px;
+    top: -10px; /* Adjust the arrow's position */
     left: 50%;
     transform: translateX(-50%);
     width: 0;
     height: 0;
     border-left: 6px solid transparent;
     border-right: 6px solid transparent;
-    border-top: 6px solid #3C3C3C;
-    pointer-events: none;
+    border-bottom: 6px solid #000; /* Black arrow */
+    z-index: 2; /* Ensure it is above other elements */
+    pointer-events: none; /* Prevent blocking interactions */
 }
 
 /* Highlights active icon */
@@ -270,13 +283,6 @@ body
 .search-input::placeholder 
 {
     color: #888;
-}
-
-.icon-link.disabled 
-{
-    pointer-events: none;
-    opacity: 0;
-    cursor: not-allowed;
 }
 
 .icon-link.disabled .tooltip 
