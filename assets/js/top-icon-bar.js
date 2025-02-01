@@ -25,7 +25,6 @@ function loadTopIconBar(containerId, url)
             {
                 container.innerHTML = html;
 
-                // Handle SPA navigation
                 const links = container.querySelectorAll('.icon-link');
                 links.forEach(link => 
                 {
@@ -52,7 +51,7 @@ function loadTopIconBar(containerId, url)
                 const userActions = document.querySelector('.user-actions');
                 const centerIcons = document.querySelectorAll('.icon-link[data-requires-login]');
 
-                centerIcons.forEach(icon =>
+                centerIcons.forEach(icon => 
                 {
                     icon.classList.add('disabled');
                     icon.style.visibility = 'hidden';
@@ -112,20 +111,52 @@ function loadTopIconBar(containerId, url)
                 }
 
                 const userIcon = document.querySelector('.user-icon');
-                const dropdownMenu = document.querySelector('.dropdown-menu');
+                const accountDropdown = document.querySelector('.account-dropdown-menu');
+                const sharedButton = document.querySelector('.shared-icon img');
+                const sharedDropdown = document.querySelector('.shared-dropdown-menu');
+                const notificationsButton = document.querySelector('.notification-icon img');
+                const notificationsDropdown = document.querySelector('.notifications-dropdown-menu');
+                const displayButton = document.querySelector('.display-button');
+                const displayDropdown = document.querySelector('.display-dropdown-menu');
 
-                if (userIcon && dropdownMenu) 
+                // Function to close all menus except the specified one
+                function closeAllMenus(exceptMenu) 
+                {
+                    const menus = [accountDropdown, sharedDropdown, notificationsDropdown];
+                    menus.forEach(menu => 
+                    {
+                        if (menu !== exceptMenu && menu && menu.classList.contains('visible')) 
+                        {
+                            menu.classList.remove('visible');
+                        }
+                    });
+
+                    // Close Display menu unless explicitly excluded
+                    if (exceptMenu !== displayDropdown && displayDropdown && displayDropdown.classList.contains('visible')) 
+                    {
+                        displayDropdown.classList.remove('visible');
+                    }
+                }
+
+                // Account dropdown logic
+                if (userIcon && accountDropdown) 
                 {
                     userIcon.addEventListener('click', () => 
                     {
-                        dropdownMenu.classList.toggle('visible');
+                        closeAllMenus(accountDropdown);
+                        accountDropdown.classList.toggle('visible');
                     });
 
                     document.addEventListener('click', (event) => 
                     {
-                        if (!userIcon.contains(event.target) && !dropdownMenu.contains(event.target)) 
+                        if (
+                            !userIcon.contains(event.target) &&
+                            !accountDropdown.contains(event.target) &&
+                            !displayDropdown.contains(event.target)
+                        ) 
                         {
-                            dropdownMenu.classList.remove('visible');
+                            accountDropdown.classList.remove('visible');
+                            displayDropdown.classList.remove('visible');
                         }
                     });
 
@@ -137,64 +168,109 @@ function loadTopIconBar(containerId, url)
                             window.location.href = '/';
                         });
                     }
+                }
 
-                    const displayButton = document.querySelector('.display-button');
-                    const displayDropdown = document.querySelector('.display-dropdown');
-
-                    if (displayButton && displayDropdown) 
+                // Display dropdown logic
+                if (displayButton && displayDropdown) 
+                {
+                    displayButton.addEventListener('click', (event) => 
                     {
-                        displayButton.addEventListener('click', (event) => 
-                        {
-                            event.stopPropagation();
-                            displayDropdown.classList.toggle('visible');
+                        event.stopPropagation();
+                        displayDropdown.classList.toggle('visible');
+                        displayDropdown.style.display = displayDropdown.classList.contains('visible') ? 'block' : 'none';
+                    });
 
-                            if (displayDropdown.classList.contains('visible')) 
+                    document.addEventListener('click', (event) => 
+                    {
+                        if (
+                            !displayButton.contains(event.target) &&
+                            !displayDropdown.contains(event.target) &&
+                            !accountDropdown.contains(event.target)
+                        ) 
+                        {
+                            displayDropdown.style.display = 'none';
+                            displayDropdown.classList.remove('visible');
+                        }
+                    });
+
+                    const radioButtons = displayDropdown.querySelectorAll('input[name="display"]');
+                    const darkModeClass = 'dark-mode';
+
+                    radioButtons.forEach(radio => 
+                    {
+                        radio.addEventListener('change', (event) => 
+                        {
+                            if (event.target.value === 'on') 
                             {
-                                displayDropdown.style.display = 'block';
+                                document.body.classList.add(darkModeClass);
                             } 
                             else 
                             {
-                                displayDropdown.style.display = 'none';
+                                document.body.classList.remove(darkModeClass);
                             }
                         });
-
-                        document.addEventListener('click', (event) => 
-                        {
-                            if (!displayButton.contains(event.target) && !displayDropdown.contains(event.target)) 
-                            {
-                                displayDropdown.style.display = 'none';
-                            }
-                        });
-
-                        const radioButtons = displayDropdown.querySelectorAll('input[name="display"]');
-                        const darkModeClass = 'dark-mode';
-
-                        radioButtons.forEach((radio) => 
-                        {
-                            radio.addEventListener('change', (event) => 
-                            {
-                                if (event.target.value === 'on') 
-                                {
-                                    enableDarkMode();
-                                } 
-                                else 
-                                {
-                                    disableDarkMode();
-                                }
-                            });
-                        });
-
-                        function enableDarkMode() 
-                        {
-                            document.body.classList.add(darkModeClass);
-                        }
-
-                        function disableDarkMode() 
-                        {
-                            document.body.classList.remove(darkModeClass);
-                        }
-                    }
+                    });
                 }
+
+                // Shared dropdown logic
+                if (sharedButton && sharedDropdown) 
+                {
+                    sharedButton.addEventListener('click', () => 
+                    {
+                        closeAllMenus(sharedDropdown);
+                        sharedDropdown.classList.toggle('visible');
+                    });
+
+                    document.addEventListener('click', (event) => 
+                    {
+                        if (
+                            !sharedButton.contains(event.target) &&
+                            !sharedDropdown.contains(event.target)
+                        ) 
+                        {
+                            sharedDropdown.classList.remove('visible');
+                        }
+                    });
+                }
+
+                // Notifications dropdown logic
+                if (notificationsButton && notificationsDropdown) 
+                {
+                    notificationsButton.addEventListener('click', () => 
+                    {
+                        closeAllMenus(notificationsDropdown);
+                        notificationsDropdown.classList.toggle('visible');
+                    });
+
+                    document.addEventListener('click', (event) => 
+                    {
+                        if (
+                            !notificationsButton.contains(event.target) &&
+                            !notificationsDropdown.contains(event.target)
+                        ) 
+                        {
+                            notificationsDropdown.classList.remove('visible');
+                        }
+                    });
+                }
+
+                // Global click handler to close all menus
+                document.addEventListener('click', (event) => 
+                {
+                    if (
+                        !accountDropdown.contains(event.target) &&
+                        !sharedDropdown.contains(event.target) &&
+                        !notificationsDropdown.contains(event.target) &&
+                        !userIcon.contains(event.target) &&
+                        !sharedButton.contains(event.target) &&
+                        !notificationsButton.contains(event.target) &&
+                        !displayDropdown.contains(event.target) &&
+                        !displayButton.contains(event.target)
+                    ) 
+                    {
+                        closeAllMenus(null);
+                    }
+                });
             })
             .catch(error => 
             {

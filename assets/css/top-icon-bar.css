@@ -315,8 +315,8 @@ body
     display: none;
 }
 
-/* Dropdown Menu */
-.dropdown-menu 
+/* Account Dropdown Menu */
+.account-dropdown-menu 
 {
     position: absolute;
     top: 50px;
@@ -332,12 +332,12 @@ body
     padding: 10px;
 }
 
-.dropdown-menu.visible 
+.account-dropdown-menu.visible 
 {
     display: flex;
 }
 
-.dropdown-menu button 
+.account-dropdown-menu button 
 {
     background: none;
     border: none;
@@ -355,7 +355,7 @@ body
     gap: 10px;
 }
 
-.dropdown-icon 
+.account-dropdown-icon 
 {
     width: 4vh;
     max-width: 20px;
@@ -364,7 +364,7 @@ body
 }
 
 
-.dropdown-menu button:hover 
+.account-dropdown-menu button:hover 
 {
     background-color: #f0f0f0; /* Subtle background change on hover */
     border: 2px solid transparent;
@@ -408,13 +408,13 @@ body
     transition: transform 0.2s ease;
 }
 
-.dropdown-icon 
+.account-dropdown-icon 
 {
     width: 18px;
     height: auto;
 }
 
-.display-dropdown 
+.display-dropdown-menu
 {
     font-size: 14px;
     display: none;
@@ -430,7 +430,7 @@ body
     align-items: center;
 }
 
-.display-dropdown label 
+.display-dropdown-menu label 
 {
     display: block;
     padding: 5px 10px;
@@ -445,4 +445,115 @@ body
     max-width: 12px;
     height: auto;
     transition: transform 0.2s ease;
+}
+
+.account-dropdown-menu, .account-dropdown-menu *
+{
+    transform: none !important;
+}
+
+/* Shared dropdown container */
+.shared-container 
+{
+    position: relative;
+}
+
+/* Shared dropdown menu (hidden by default) */
+.shared-dropdown-menu 
+{
+    display: none;
+    position: absolute;
+    top: 170%; /* Appears below the button */
+    left: -143px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    width: 200px;
+    z-index: 10;
+}
+
+/* Show the dropdown menu when visible */
+.shared-dropdown-menu.visible 
+{
+    display: block;
+}
+
+/* Header for the shared dropdown */
+.shared-dropdown-header 
+{
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+/* Divider styling */
+.shared-dropdown-divider 
+{
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 8px 0;
+}
+
+/* Message styling */
+.shared-dropdown-message 
+{
+    color: #666;
+    text-align: center;
+    font-size: 14px;
+}
+
+/* Notifications dropdown container */
+.notifications-container 
+{
+    position: relative;
+}
+
+/* Notifications dropdown menu (hidden by default) */
+.notifications-dropdown-menu 
+{
+    display: none;
+    position: absolute;
+    top: 170%; /* Appears below the button */
+    left: -94px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    width: 200px;
+    z-index: 10;
+}
+
+/* Show the dropdown menu when visible */
+.notifications-dropdown-menu.visible 
+{
+    display: block;
+}
+
+/* Header for the shared dropdown */
+.notifications-dropdown-header 
+{
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+/* Divider styling */
+.notifications-dropdown-divider 
+{
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 8px 0;
+}
+
+/* Message styling */
+.notifications-dropdown-message 
+{
+    color: #666;
+    text-align: center;
+    font-size: 14px;
 }

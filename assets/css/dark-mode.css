@@ -1,14 +1,17 @@
 body.dark-mode 
 {
     background-color: #3C3C3C !important;
+    color: #888;
 }
 
 body.dark-mode .top-icon-bar, 
 body.dark-mode .bottom-bar, 
-body.dark-mode .dropdown-menu,
-body.dark-mode .display-dropdown 
+body.dark-mode .account-dropdown-menu,
+body.dark-mode .display-dropdown-menu,
+body.dark-mode .shared-dropdown-menu,
+body.dark-mode .notifications-dropdown-menu
 {
-    background-color: #2C2C2C !important;
+    background-color: #2C2C2C;
 }
 
 body.dark-mode .bottom-bar 
@@ -18,10 +21,11 @@ body.dark-mode .bottom-bar
 
 body.dark-mode .search-bar 
 {
-    background-color: #3C3C3C !important;
+    background-color: #3C3C3C;
 }
 
-body.dark-mode .search-input 
+body.dark-mode .search-input,
+body.dark-mode .account-dropdown-menu button:not(.logout-button)
 {
     color: #888;
 }
@@ -29,4 +33,12 @@ body.dark-mode .search-input
 body.dark-mode .search-icon img 
 {
     filter: brightness(40%);
+}
+
+body.dark-mode .icon-link .tooltip,
+body.dark-mode .user-icon .tooltip,
+body.dark-mode .notification-icon .tooltip,
+body.dark-mode .shared-icon .tooltip
+{
+    background-color: #2C2C2C;
 }
