@@ -46,13 +46,30 @@ body
 }
 
 /* Tooltip flavor text */
-.icon-link .tooltip,
-.user-icon .tooltip,
-.notification-icon .tooltip,
-.message-icon .tooltip
+.icon-link .tooltip
 {
     position: absolute;
     bottom: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #3C3C3C;
+    color: white;
+    font-size: 1.5vh;
+    padding: 5px 10px;
+    border-radius: 5px;
+    opacity: 0;
+    visibility: hidden;
+    white-space: nowrap;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    transition-delay: 0.2s;
+}
+
+.user-icon .tooltip,
+.notification-icon .tooltip,
+.shared-icon .tooltip
+{
+    position: absolute;
+    bottom: -50px;
     left: 50%;
     transform: translateX(-50%);
     background-color: #3C3C3C;
@@ -72,10 +89,11 @@ body
 .icon-link:hover .tooltip,
 .user-icon:hover .tooltip,
 .notification-icon:hover .tooltip,
-.message-icon:hover .tooltip
+.shared-icon:hover .tooltip
 {
     opacity: 1;
     visibility: visible;
+    z-index: 2000;
 }
 
 /* Draw line when hovering over icon */
@@ -121,7 +139,7 @@ body
     height: 100%
 }
 
-.user-icon, .notification-icon, .message-icon
+.user-icon, .notification-icon, .shared-icon
 {
     position: relative;
     width: auto;
@@ -133,16 +151,23 @@ body
     transition: transform 0.2s ease;
 }
 
-.user-icon img, .notification-icon img, .message-icon img 
+.user-icon img, .notification-icon img, .shared-icon img 
 {
     width: 100%;
     height: 100%;
     object-fit: contain;
 }
 
-.user-icon:hover, .notification-icon:hover, .message-icon:hover 
+.user-icon:hover img,
+.notification-icon:hover img,
+.shared-icon:hover img
 {
     transform: scale(1.1);
+    transition: transform 0.2s ease;
+}
+.user-icon:hover, .notification-icon:hover, .shared-icon:hover 
+{
+    transform: none;
 }
 
 .auth-links
@@ -288,4 +313,136 @@ body
 .icon-link.disabled .tooltip 
 {
     display: none;
+}
+
+/* Dropdown Menu */
+.dropdown-menu 
+{
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 200px;
+    display: none;
+    z-index: 1000;
+    flex-direction: column;
+    padding: 10px;
+}
+
+.dropdown-menu.visible 
+{
+    display: flex;
+}
+
+.dropdown-menu button 
+{
+    background: none;
+    border: none;
+    text-align: left;
+    width: 100%;
+    max-width: 400px;
+    padding: 10px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border 0.2s ease;
+    border-radius: 10px;
+    border: 2px solid transparent;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dropdown-icon 
+{
+    width: 4vh;
+    max-width: 20px;
+    height: auto;
+    left: 20px;
+}
+
+
+.dropdown-menu button:hover 
+{
+    background-color: #f0f0f0; /* Subtle background change on hover */
+    border: 2px solid transparent;
+}
+
+.logout-button 
+{
+    color: #d9534f;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    transition: background-color 0.2s ease, border 0.2s ease;
+    font-weight: bold;
+}
+
+.logout-button:hover 
+{
+    background-color: #ffecec;
+    border-radius: 10px;
+}
+
+.display-button 
+{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+}
+
+.icon-group 
+{
+    display: flex;
+    gap: 8px;
+    margin-left: -26px;
+}
+
+.chevron-icon 
+{
+    width: 4vh;
+    max-width: 20px;
+    height: auto;
+    transition: transform 0.2s ease;
+}
+
+.dropdown-icon 
+{
+    width: 18px;
+    height: auto;
+}
+
+.display-dropdown 
+{
+    font-size: 14px;
+    display: none;
+    position: absolute;
+    right: 101%;
+    top: 37%;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    width: 100px;
+    align-items: center;
+}
+
+.display-dropdown label 
+{
+    display: block;
+    padding: 5px 10px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.dark-mode-icon 
+{
+    margin-left: -5px;
+    width: 3vh;
+    max-width: 12px;
+    height: auto;
+    transition: transform 0.2s ease;
 }

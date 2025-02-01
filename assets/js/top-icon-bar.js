@@ -35,7 +35,6 @@ function loadTopIconBar(containerId, url)
                         const route = link.getAttribute('href');
                         if (route) 
                         {
-                            // Use the SPA routing system to load the route
                             if (typeof loadPage === 'function') 
                             {
                                 loadPage(route);
@@ -53,7 +52,6 @@ function loadTopIconBar(containerId, url)
                 const userActions = document.querySelector('.user-actions');
                 const centerIcons = document.querySelectorAll('.icon-link[data-requires-login]');
 
-                // Fully hide center icons initially
                 centerIcons.forEach(icon =>
                 {
                     icon.classList.add('disabled');
@@ -62,21 +60,19 @@ function loadTopIconBar(containerId, url)
 
                 if (loginLink && authLinks && userActions) 
                 {
-                    loginLink.addEventListener('click', (event) => {
+                    loginLink.addEventListener('click', (event) => 
+                    {
                         event.preventDefault();
 
-                        // Hide "Sign Up | Log In" and show user account actions
                         authLinks.style.display = 'none';
                         userActions.style.display = 'flex';
 
-                        // Enable and fully show center icons
                         centerIcons.forEach(icon => 
                         {
                             icon.classList.remove('disabled');
                             icon.style.visibility = 'visible';
                         });
 
-                        // Redirect to feed
                         if (typeof loadPage === 'function') 
                         {
                             loadPage('/feed');
@@ -88,7 +84,6 @@ function loadTopIconBar(containerId, url)
                     });
                 }
 
-                // Handle "Log In" on welcome card
                 const welcomeLoginLink = document.querySelector('.welcome-card-footer .login-link');
                 if (welcomeLoginLink) 
                 {
@@ -96,17 +91,15 @@ function loadTopIconBar(containerId, url)
                     {
                         event.preventDefault();
 
-                        // Hide "Sign Up | Log In" and show user account actions
                         authLinks.style.display = 'none';
                         userActions.style.display = 'flex';
 
-                        // Enable and fully show center icons
-                        centerIcons.forEach(icon => {
+                        centerIcons.forEach(icon => 
+                        {
                             icon.classList.remove('disabled');
                             icon.style.visibility = 'visible';
                         });
 
-                        // Redirect to feed
                         if (typeof loadPage === 'function') 
                         {
                             loadPage('/feed');
@@ -116,6 +109,91 @@ function loadTopIconBar(containerId, url)
                             console.error(`Route '/feed' is not defined.`);
                         }
                     });
+                }
+
+                const userIcon = document.querySelector('.user-icon');
+                const dropdownMenu = document.querySelector('.dropdown-menu');
+
+                if (userIcon && dropdownMenu) 
+                {
+                    userIcon.addEventListener('click', () => 
+                    {
+                        dropdownMenu.classList.toggle('visible');
+                    });
+
+                    document.addEventListener('click', (event) => 
+                    {
+                        if (!userIcon.contains(event.target) && !dropdownMenu.contains(event.target)) 
+                        {
+                            dropdownMenu.classList.remove('visible');
+                        }
+                    });
+
+                    const logoutButton = document.querySelector('.logout-button');
+                    if (logoutButton) 
+                    {
+                        logoutButton.addEventListener('click', () => 
+                        {
+                            window.location.href = '/';
+                        });
+                    }
+
+                    const displayButton = document.querySelector('.display-button');
+                    const displayDropdown = document.querySelector('.display-dropdown');
+
+                    if (displayButton && displayDropdown) 
+                    {
+                        displayButton.addEventListener('click', (event) => 
+                        {
+                            event.stopPropagation();
+                            displayDropdown.classList.toggle('visible');
+
+                            if (displayDropdown.classList.contains('visible')) 
+                            {
+                                displayDropdown.style.display = 'block';
+                            } 
+                            else 
+                            {
+                                displayDropdown.style.display = 'none';
+                            }
+                        });
+
+                        document.addEventListener('click', (event) => 
+                        {
+                            if (!displayButton.contains(event.target) && !displayDropdown.contains(event.target)) 
+                            {
+                                displayDropdown.style.display = 'none';
+                            }
+                        });
+
+                        const radioButtons = displayDropdown.querySelectorAll('input[name="display"]');
+                        const darkModeClass = 'dark-mode';
+
+                        radioButtons.forEach((radio) => 
+                        {
+                            radio.addEventListener('change', (event) => 
+                            {
+                                if (event.target.value === 'on') 
+                                {
+                                    enableDarkMode();
+                                } 
+                                else 
+                                {
+                                    disableDarkMode();
+                                }
+                            });
+                        });
+
+                        function enableDarkMode() 
+                        {
+                            document.body.classList.add(darkModeClass);
+                        }
+
+                        function disableDarkMode() 
+                        {
+                            document.body.classList.remove(darkModeClass);
+                        }
+                    }
                 }
             })
             .catch(error => 
