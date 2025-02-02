@@ -319,7 +319,7 @@ body
 .account-dropdown-menu 
 {
     position: absolute;
-    top: 50px;
+    top: 51px;
     right: 0;
     background-color: #ffffff;
     border: 1px solid #ddd;
@@ -342,6 +342,7 @@ body
     background: none;
     border: none;
     text-align: left;
+    font-weight: bold;
     width: 100%;
     max-width: 400px;
     padding: 10px 15px;
@@ -364,9 +365,15 @@ body
 }
 
 
-.account-dropdown-menu button:hover 
+.account-dropdown-menu button:hover:not(.display-button)
 {
     background-color: #f0f0f0; /* Subtle background change on hover */
+    border: 2px solid transparent;
+}
+
+.display-button:hover
+{
+    background-color: #f0f0f0;
     border: 2px solid transparent;
 }
 
@@ -387,24 +394,16 @@ body
 
 .display-button 
 {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 5px;
-}
-
-.icon-group 
-{
-    display: flex;
-    gap: 8px;
-    margin-left: -26px;
+    gap: 0px;
+    margin-left: -40px;
 }
 
 .chevron-icon 
 {
-    width: 4vh;
+    width: 10vh;
     max-width: 20px;
     height: auto;
+    margin-left: 10px;
     transition: transform 0.2s ease;
 }
 
@@ -417,10 +416,11 @@ body
 .display-dropdown-menu
 {
     font-size: 14px;
+    font-weight: bold;
     display: none;
     position: absolute;
     right: 101%;
-    top: 37%;
+    top: 38%;
     background-color: #ffffff;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -433,7 +433,7 @@ body
 .display-dropdown-menu label 
 {
     display: block;
-    padding: 5px 10px;
+    padding: 10px 0px;
     font-size: 14px;
     cursor: pointer;
 }
@@ -441,6 +441,7 @@ body
 .dark-mode-icon 
 {
     margin-left: -5px;
+    margin-bottom: -7px;
     width: 3vh;
     max-width: 12px;
     height: auto;
@@ -517,7 +518,7 @@ body
     display: none;
     position: absolute;
     top: 170%; /* Appears below the button */
-    left: -94px;
+    left: -93px;
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -556,4 +557,18 @@ body
     color: #666;
     text-align: center;
     font-size: 14px;
+}
+
+.account-dropdown-menu img:not(.chevron-icon),
+.shared-dropdown-menu img,
+.notifications-dropdown-menu img
+{
+    border-radius: 100%; /* Make the background circular */
+    background-color: #DFDFDF; /* Choose a background color */
+    padding: 5px; /* Add padding to extend the background */
+    width: 200px;
+    height: auto;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    object-fit: contain;
+    box-sizing: content-box;
 }

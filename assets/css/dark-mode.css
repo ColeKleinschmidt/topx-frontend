@@ -1,4 +1,9 @@
-body.dark-mode 
+body.main-page
+{
+    background-color: #ffffff !important;
+}
+
+body.dark-mode:not(.main-page)
 {
     background-color: #3C3C3C !important;
     color: #888;
@@ -41,4 +46,14 @@ body.dark-mode .notification-icon .tooltip,
 body.dark-mode .shared-icon .tooltip
 {
     background-color: #2C2C2C;
+}
+
+body.dark-mode .account-dropdown-menu button:hover:not(.display-button)
+{
+    background-color: #777777;
+}
+
+body.dark-mode .display-button:hover
+{
+    background-color: #777777;
 }
