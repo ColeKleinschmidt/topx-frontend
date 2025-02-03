@@ -39,7 +39,8 @@ function loadPage(route) {
 }
 
 // Event listeners for navigation and state changes
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => 
+{
     const route = window.location.pathname;
     loadPage(route);
 

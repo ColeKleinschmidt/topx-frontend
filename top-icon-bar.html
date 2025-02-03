@@ -27,14 +27,50 @@
         <div class="notification-icon">
             <img src="assets/images/Notifications Icon.png" alt="Notifications">
             <span class="tooltip">Notifications</span>
+            <!-- 'Notifications' Dropdown Menu -->
+            <div class ="notifications-dropdown-menu">
+                <div class="notifications-dropdown-header">Notifications</div>
+                <hr class="notifications-dropdown-divider">
+                <div class="notifications-dropdown-message">No new notifications.</div>
+            </div>
         </div>
-        <div class="message-icon">
-            <img src="assets/images/Messages Icon.png" alt="Messages">
-            <span class="tooltip">Messages</span>
+        <div class="shared-icon">
+            <img src="assets/images/Shared Icon.png" alt="Shared">
+            <span class="tooltip">Shared</span>
+            <!-- 'Shared' Dropdown Menu -->
+            <div class ="shared-dropdown-menu">
+                <div class="shared-dropdown-header">Shared</div>
+                <hr class="shared-dropdown-divider">
+                <div class="shared-dropdown-message">Nothing new shared with you</div>
+            </div>
         </div>
         <div class="user-icon">
             <img src="assets/images/User Icon.png" alt="Account">
             <span class="tooltip">Account</span>
+
+            <!-- 'Account' Dropdown Menu -->
+            <div class ="account-dropdown-menu">
+                <button onclick="window.location.href = 'settings.html';">
+                    <img src="assets/images/Settings Icon.png" alt="Settings" class="account-dropdown-icon">
+                    Settings
+                </button>
+                <button class="display-button">
+                    <img src="assets/images/Chevron Icon.png" alt="Chevron" class="chevron-icon">
+                    <img src="assets/images/Display Icon.png" alt="Display" class="account-dropdown-icon">
+                    <span>Display</span>
+                </button>
+                <!-- 'Display' Dropdown Menu -->
+                <div class="display-dropdown-menu">
+                    <img src="assets/images/Dark Mode Icon.png" alt="Dark Mode" class="dark-mode-icon">
+                    <span>Dark Mode</span>
+                    <label><input type="radio" name="display" value="on"> On</label>
+                    <label><input type="radio" name="display" value="off" checked> Off</label>
+                </div>
+                <button class="logout-button">
+                    <img src="assets/images/Log Out Icon.png" alt="Log Out" class="account-dropdown-icon">
+                    Log Out
+                </button>
+            </div>
         </div>
     </div>
 

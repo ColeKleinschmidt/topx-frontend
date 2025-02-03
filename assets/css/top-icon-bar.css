@@ -46,13 +46,30 @@ body
 }
 
 /* Tooltip flavor text */
-.icon-link .tooltip,
-.user-icon .tooltip,
-.notification-icon .tooltip,
-.message-icon .tooltip
+.icon-link .tooltip
 {
     position: absolute;
     bottom: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #3C3C3C;
+    color: white;
+    font-size: 1.5vh;
+    padding: 5px 10px;
+    border-radius: 5px;
+    opacity: 0;
+    visibility: hidden;
+    white-space: nowrap;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    transition-delay: 0.2s;
+}
+
+.user-icon .tooltip,
+.notification-icon .tooltip,
+.shared-icon .tooltip
+{
+    position: absolute;
+    bottom: -50px;
     left: 50%;
     transform: translateX(-50%);
     background-color: #3C3C3C;
@@ -72,10 +89,11 @@ body
 .icon-link:hover .tooltip,
 .user-icon:hover .tooltip,
 .notification-icon:hover .tooltip,
-.message-icon:hover .tooltip
+.shared-icon:hover .tooltip
 {
     opacity: 1;
     visibility: visible;
+    z-index: 2000;
 }
 
 /* Draw line when hovering over icon */
@@ -121,7 +139,7 @@ body
     height: 100%
 }
 
-.user-icon, .notification-icon, .message-icon
+.user-icon, .notification-icon, .shared-icon
 {
     position: relative;
     width: auto;
@@ -133,16 +151,23 @@ body
     transition: transform 0.2s ease;
 }
 
-.user-icon img, .notification-icon img, .message-icon img 
+.user-icon img, .notification-icon img, .shared-icon img 
 {
     width: 100%;
     height: 100%;
     object-fit: contain;
 }
 
-.user-icon:hover, .notification-icon:hover, .message-icon:hover 
+.user-icon:hover img,
+.notification-icon:hover img,
+.shared-icon:hover img
 {
     transform: scale(1.1);
+    transition: transform 0.2s ease;
+}
+.user-icon:hover, .notification-icon:hover, .shared-icon:hover 
+{
+    transform: none;
 }
 
 .auth-links
@@ -288,4 +313,262 @@ body
 .icon-link.disabled .tooltip 
 {
     display: none;
+}
+
+/* Account Dropdown Menu */
+.account-dropdown-menu 
+{
+    position: absolute;
+    top: 51px;
+    right: 0;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 200px;
+    display: none;
+    z-index: 1000;
+    flex-direction: column;
+    padding: 10px;
+}
+
+.account-dropdown-menu.visible 
+{
+    display: flex;
+}
+
+.account-dropdown-menu button 
+{
+    background: none;
+    border: none;
+    text-align: left;
+    font-weight: bold;
+    width: 100%;
+    max-width: 400px;
+    padding: 10px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border 0.2s ease;
+    border-radius: 10px;
+    border: 2px solid transparent;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.account-dropdown-icon 
+{
+    width: 4vh;
+    max-width: 20px;
+    height: auto;
+    left: 20px;
+}
+
+
+.account-dropdown-menu button:hover:not(.display-button)
+{
+    background-color: #f0f0f0; /* Subtle background change on hover */
+    border: 2px solid transparent;
+}
+
+.display-button:hover
+{
+    background-color: #f0f0f0;
+    border: 2px solid transparent;
+}
+
+.logout-button 
+{
+    color: #d9534f;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    transition: background-color 0.2s ease, border 0.2s ease;
+    font-weight: bold;
+}
+
+.logout-button:hover 
+{
+    background-color: #ffecec;
+    border-radius: 10px;
+}
+
+.display-button 
+{
+    gap: 0px;
+    margin-left: -40px;
+}
+
+.chevron-icon 
+{
+    width: 10vh;
+    max-width: 20px;
+    height: auto;
+    margin-left: 10px;
+    transition: transform 0.2s ease;
+}
+
+.account-dropdown-icon 
+{
+    width: 18px;
+    height: auto;
+}
+
+.display-dropdown-menu
+{
+    font-size: 14px;
+    font-weight: bold;
+    display: none;
+    position: absolute;
+    right: 101%;
+    top: 38%;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    width: 100px;
+    align-items: center;
+}
+
+.display-dropdown-menu label 
+{
+    display: block;
+    padding: 10px 0px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.dark-mode-icon 
+{
+    margin-left: -5px;
+    margin-bottom: -7px;
+    width: 3vh;
+    max-width: 12px;
+    height: auto;
+    transition: transform 0.2s ease;
+}
+
+.account-dropdown-menu, .account-dropdown-menu *
+{
+    transform: none !important;
+}
+
+/* Shared dropdown container */
+.shared-container 
+{
+    position: relative;
+}
+
+/* Shared dropdown menu (hidden by default) */
+.shared-dropdown-menu 
+{
+    display: none;
+    position: absolute;
+    top: 170%; /* Appears below the button */
+    left: -143px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    width: 200px;
+    z-index: 10;
+}
+
+/* Show the dropdown menu when visible */
+.shared-dropdown-menu.visible 
+{
+    display: block;
+}
+
+/* Header for the shared dropdown */
+.shared-dropdown-header 
+{
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+/* Divider styling */
+.shared-dropdown-divider 
+{
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 8px 0;
+}
+
+/* Message styling */
+.shared-dropdown-message 
+{
+    color: #666;
+    text-align: center;
+    font-size: 14px;
+}
+
+/* Notifications dropdown container */
+.notifications-container 
+{
+    position: relative;
+}
+
+/* Notifications dropdown menu (hidden by default) */
+.notifications-dropdown-menu 
+{
+    display: none;
+    position: absolute;
+    top: 170%; /* Appears below the button */
+    left: -93px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    width: 200px;
+    z-index: 10;
+}
+
+/* Show the dropdown menu when visible */
+.notifications-dropdown-menu.visible 
+{
+    display: block;
+}
+
+/* Header for the shared dropdown */
+.notifications-dropdown-header 
+{
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+/* Divider styling */
+.notifications-dropdown-divider 
+{
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 8px 0;
+}
+
+/* Message styling */
+.notifications-dropdown-message 
+{
+    color: #666;
+    text-align: center;
+    font-size: 14px;
+}
+
+.account-dropdown-menu img:not(.chevron-icon),
+.shared-dropdown-menu img,
+.notifications-dropdown-menu img
+{
+    border-radius: 100%; /* Make the background circular */
+    background-color: #DFDFDF; /* Choose a background color */
+    padding: 5px; /* Add padding to extend the background */
+    width: 200px;
+    height: auto;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    object-fit: contain;
+    box-sizing: content-box;
 }
