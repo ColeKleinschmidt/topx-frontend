@@ -31,7 +31,7 @@
             <div class ="notifications-dropdown-menu">
                 <div class="notifications-dropdown-header">Notifications</div>
                 <hr class="notifications-dropdown-divider">
-                <div class="notifications-dropdown-message">No new notifications.</div>
+                <div class="notifications-dropdown-message">No new notifications</div>
             </div>
         </div>
         <div class="shared-icon">
@@ -50,19 +50,22 @@
 
             <!-- 'Account' Dropdown Menu -->
             <div class ="account-dropdown-menu">
-                <button onclick="window.location.href = 'settings.html';">
+                <button class="setting-button" data-route="/settings">
                     <img src="assets/images/Settings Icon.png" alt="Settings" class="account-dropdown-icon">
                     Settings
                 </button>
                 <button class="display-button">
-                    <img src="assets/images/Chevron Icon.png" alt="Chevron" class="chevron-icon">
-                    <img src="assets/images/Display Icon.png" alt="Display" class="account-dropdown-icon">
-                    <span>Display</span>
+                    <div class="content">
+                        <img src="assets/images/Chevron Icon.png" alt="Chevron" class="chevron-icon">
+                        <img src="assets/images/Display Icon.png" alt="Display" class="account-dropdown-icon">
+                        <span>Display</span>
+                    </div>
                 </button>
                 <!-- 'Display' Dropdown Menu -->
                 <div class="display-dropdown-menu">
                     <img src="assets/images/Dark Mode Icon.png" alt="Dark Mode" class="dark-mode-icon">
                     <span>Dark Mode</span>
+                    <hr class="display-dropdown-divider">
                     <label><input type="radio" name="display" value="on"> On</label>
                     <label><input type="radio" name="display" value="off" checked> Off</label>
                 </div>
