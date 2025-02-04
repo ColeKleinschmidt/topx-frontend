@@ -60,12 +60,7 @@ function loadTopIconBar(containerId, url)
 
                 async function handleUserAuthentication() 
                 {
-                    const response = await fetch("http://localhost:8080/authStatus", 
-                    {
-                        credentials: "include",
-                    });
-
-                    const data = await response.json();
+                    const data = await authStatusAPI();
 
                     if (data.authenticated) 
                     {
@@ -113,23 +108,7 @@ function loadTopIconBar(containerId, url)
                     {
                         event.preventDefault();
 
-                        authLinks.style.display = 'none';
-                        userActions.style.display = 'flex';
-
-                        centerIcons.forEach(icon => 
-                        {
-                            icon.classList.remove('disabled');
-                            icon.style.visibility = 'visible';
-                        });
-
-                        if (typeof loadPage === 'function') 
-                        {
-                            loadPage('/feed');
-                        } 
-                        else 
-                        {
-                            console.error(`Route '/feed' is not defined.`);
-                        }
+                        loginRedirect();
                     });
                 }
 
