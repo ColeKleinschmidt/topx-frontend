@@ -50,11 +50,61 @@ function loadTopIconBar(containerId, url)
                 const authLinks = document.querySelector('.auth-links');
                 const userActions = document.querySelector('.user-actions');
                 const centerIcons = document.querySelectorAll('.icon-link[data-requires-login]');
+                const userIcon = document.querySelector('.user-icon img');
 
                 centerIcons.forEach(icon => 
                 {
                     icon.classList.add('disabled');
                     icon.style.visibility = 'hidden';
+                });
+
+                async function handleUserAuthentication() 
+                {
+                    const response = await fetch("http://localhost:8080/authStatus", 
+                    {
+                        credentials: "include",
+                    });
+
+                    const data = await response.json();
+
+                    if (data.authenticated) 
+                    {
+                        authLinks.style.display = 'none';
+                        userActions.style.display = 'flex';
+
+                        centerIcons.forEach(icon => 
+                        {
+                            icon.classList.remove('disabled');
+                            icon.style.visibility = 'visible';
+                        });
+
+                        if (data.user.profilePicture) 
+                        {
+                            userIcon.src = data.user.profilePicture;
+                        }
+                    } 
+                    else 
+                    {
+                        authLinks.style.display = 'flex';
+                        userActions.style.display = 'none';
+
+                        centerIcons.forEach(icon => 
+                        {
+                            icon.classList.add('disabled');
+                            icon.style.visibility = 'hidden';
+                        });
+                    }
+                }
+
+                handleUserAuthentication();
+
+                // Update user icon dynamically when changed from settings.html
+                window.addEventListener("profilePictureUpdated", (event) => 
+                {
+                    if (event.detail.imageUrl) 
+                    {
+                        userIcon.src = event.detail.imageUrl;
+                    }
                 });
 
                 if (loginLink && authLinks && userActions) 
@@ -83,34 +133,6 @@ function loadTopIconBar(containerId, url)
                     });
                 }
 
-                const welcomeLoginLink = document.querySelector('.welcome-card-footer .login-link');
-                if (welcomeLoginLink) 
-                {
-                    welcomeLoginLink.addEventListener('click', (event) => 
-                    {
-                        event.preventDefault();
-
-                        authLinks.style.display = 'none';
-                        userActions.style.display = 'flex';
-
-                        centerIcons.forEach(icon => 
-                        {
-                            icon.classList.remove('disabled');
-                            icon.style.visibility = 'visible';
-                        });
-
-                        if (typeof loadPage === 'function') 
-                        {
-                            loadPage('/feed');
-                        } 
-                        else 
-                        {
-                            console.error(`Route '/feed' is not defined.`);
-                        }
-                    });
-                }
-
-                const userIcon = document.querySelector('.user-icon');
                 const accountDropdown = document.querySelector('.account-dropdown-menu');
                 const sharedButton = document.querySelector('.shared-icon img');
                 const sharedDropdown = document.querySelector('.shared-dropdown-menu');
@@ -119,7 +141,6 @@ function loadTopIconBar(containerId, url)
                 const displayButton = document.querySelector('.display-button');
                 const displayDropdown = document.querySelector('.display-dropdown-menu');
 
-                // Function to close all menus except the specified one
                 function closeAllMenus(exceptMenu) 
                 {
                     const menus = [accountDropdown, sharedDropdown, notificationsDropdown];
@@ -131,34 +152,39 @@ function loadTopIconBar(containerId, url)
                         }
                     });
 
-                    // Close Display menu unless explicitly excluded
-                    if (exceptMenu !== displayDropdown && displayDropdown && displayDropdown.classList.contains('visible')) 
+                    // Only close Display menu if clicking outside both account & display menus
+                    if (
+                        exceptMenu !== displayDropdown &&
+                        displayDropdown &&
+                        displayDropdown.classList.contains('visible') &&
+                        !accountDropdown.contains(exceptMenu)
+                    ) 
                     {
                         displayDropdown.classList.remove('visible');
                     }
                 }
 
-                // Account dropdown logic
-                if (userIcon && accountDropdown) 
+                function toggleMenu(button, dropdown) 
                 {
-                    userIcon.addEventListener('click', () => 
+                    button.addEventListener('click', (event) => 
                     {
-                        closeAllMenus(accountDropdown);
-                        accountDropdown.classList.toggle('visible');
+                        event.stopPropagation();
+                        closeAllMenus(dropdown);
+                        dropdown.classList.toggle('visible');
                     });
 
                     document.addEventListener('click', (event) => 
                     {
-                        if (
-                            !userIcon.contains(event.target) &&
-                            !accountDropdown.contains(event.target) &&
-                            !displayDropdown.contains(event.target)
-                        ) 
+                        if (!dropdown.contains(event.target) && !button.contains(event.target)) 
                         {
-                            accountDropdown.classList.remove('visible');
-                            displayDropdown.classList.remove('visible');
+                            dropdown.classList.remove('visible');
                         }
                     });
+                }
+
+                if (userIcon && accountDropdown) 
+                {
+                    toggleMenu(userIcon, accountDropdown);
 
                     const logoutButton = document.querySelector('.logout-button');
                     if (logoutButton) 
@@ -170,7 +196,7 @@ function loadTopIconBar(containerId, url)
                     }
                 }
 
-                // Display dropdown logic
+                // Ensure Display submenu toggles correctly inside the account menu
                 if (displayButton && displayDropdown) 
                 {
                     displayButton.addEventListener('click', (event) => 
@@ -192,85 +218,57 @@ function loadTopIconBar(containerId, url)
                             displayDropdown.classList.remove('visible');
                         }
                     });
-
-                    const radioButtons = displayDropdown.querySelectorAll('input[name="display"]');
-                    const darkModeClass = 'dark-mode';
-
-                    radioButtons.forEach(radio => 
-                    {
-                        radio.addEventListener('change', (event) => 
-                        {
-                            if (event.target.value === 'on') 
-                            {
-                                document.body.classList.add(darkModeClass);
-                            } 
-                            else 
-                            {
-                                document.body.classList.remove(darkModeClass);
-                            }
-                        });
-                    });
                 }
 
-                // Shared dropdown logic
                 if (sharedButton && sharedDropdown) 
                 {
-                    sharedButton.addEventListener('click', () => 
-                    {
-                        closeAllMenus(sharedDropdown);
-                        sharedDropdown.classList.toggle('visible');
-                    });
-
-                    document.addEventListener('click', (event) => 
-                    {
-                        if (
-                            !sharedButton.contains(event.target) &&
-                            !sharedDropdown.contains(event.target)
-                        ) 
-                        {
-                            sharedDropdown.classList.remove('visible');
-                        }
-                    });
+                    toggleMenu(sharedButton, sharedDropdown);
                 }
 
-                // Notifications dropdown logic
                 if (notificationsButton && notificationsDropdown) 
                 {
-                    notificationsButton.addEventListener('click', () => 
+                    toggleMenu(notificationsButton, notificationsDropdown);
+                }
+
+                // Fully working Dark Mode toggle (Corrected logic)
+                const darkModeClass = 'dark-mode';
+                const darkModeOn = document.querySelector('input[name="display"][value="on"]');
+                const darkModeOff = document.querySelector('input[name="display"][value="off"]');
+
+                function applyDarkMode(state) 
+                {
+                    if (state === 'on') 
                     {
-                        closeAllMenus(notificationsDropdown);
-                        notificationsDropdown.classList.toggle('visible');
+                        document.body.classList.add(darkModeClass);
+                    } 
+                    else 
+                    {
+                        document.body.classList.remove(darkModeClass);
+                    }
+                }
+
+                // Load stored dark mode preference (default is OFF)
+                const savedDarkMode = localStorage.getItem('darkMode') || 'off';
+                applyDarkMode(savedDarkMode);
+
+                if (darkModeOn && darkModeOff) 
+                {
+                    darkModeOn.checked = savedDarkMode === 'on';
+                    darkModeOff.checked = savedDarkMode === 'off';
+
+                    darkModeOn.addEventListener('change', () => 
+                    {
+                        localStorage.setItem('darkMode', 'on');
+                        applyDarkMode('on');
                     });
 
-                    document.addEventListener('click', (event) => 
+                    darkModeOff.addEventListener('change', () => 
                     {
-                        if (
-                            !notificationsButton.contains(event.target) &&
-                            !notificationsDropdown.contains(event.target)
-                        ) 
-                        {
-                            notificationsDropdown.classList.remove('visible');
-                        }
+                        localStorage.setItem('darkMode', 'off');
+                        applyDarkMode('off');
                     });
                 }
 
-                // Global click handler to close all menus
-                document.addEventListener('click', (event) => 
-                {
-                    if (
-                        !accountDropdown.contains(event.target) &&
-                        !sharedDropdown.contains(event.target) &&
-                        !notificationsDropdown.contains(event.target) &&
-                        !userIcon.contains(event.target) &&
-                        !sharedButton.contains(event.target) &&
-                        !notificationsButton.contains(event.target) &&
-                        !displayDropdown.contains(event.target) &&
-                        !displayButton.contains(event.target)
-                    ) 
-                    {
-                        closeAllMenus(null);
-                    }
-                });
             })
             .catch(error => 
             {

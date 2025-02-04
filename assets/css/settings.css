@@ -1,0 +1,33 @@
+.profile-picture-container 
+{
+    text-align: center;
+    margin-top: 20px;
+}
+
+.profile-picture 
+{
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #4CB95F;
+    display: block;
+    margin: 0 auto 10px;
+}
+
+.change-icon-button 
+{
+    background-color: #4CB95F;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.change-icon-button:hover 
+{
+    background-color: #42a954;
+}

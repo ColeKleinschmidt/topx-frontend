@@ -337,7 +337,7 @@ body
     display: flex;
 }
 
-.account-dropdown-menu button 
+.account-dropdown-menu button:not(.display-button)
 {
     background: none;
     border: none;
@@ -371,12 +371,6 @@ body
     border: 2px solid transparent;
 }
 
-.display-button:hover
-{
-    background-color: #f0f0f0;
-    border: 2px solid transparent;
-}
-
 .logout-button 
 {
     color: #d9534f;
@@ -394,8 +388,36 @@ body
 
 .display-button 
 {
-    gap: 0px;
+    background: none;
+    border: none;
+    text-align: left;
+    font-weight: bold;
+    width: 100%;
+    max-width: 400px;
+    padding: 10px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border 0.2s ease;
+    border-radius: 10px;
+    border: 2px solid transparent;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+}
+
+.display-button .content 
+{
     margin-left: -40px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.display-button:hover
+{
+    background-color: #f0f0f0;
+    border: 2px solid transparent;
 }
 
 .chevron-icon 
@@ -433,9 +455,15 @@ body
 .display-dropdown-menu label 
 {
     display: block;
-    padding: 10px 0px;
+    padding: 5px 0px;
     font-size: 14px;
     cursor: pointer;
+}
+
+.display-dropdown-divider {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin-top: 15px;
 }
 
 .dark-mode-icon 
