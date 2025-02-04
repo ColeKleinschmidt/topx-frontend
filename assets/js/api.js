@@ -1,12 +1,13 @@
 const ENDPOINT = "http://localhost:8080/";
 
-export const createAccountAPI = async (username, email, password) => {
+const createAccountAPI = async (username, email, password) => {
     const data = {
         username: username,
         email: email,
         password: password
     }
-    const backend_query = await fetch(`${ENDPOINT}createAccount`, {
+    alert('fetching backend call');
+    const backend_query = await fetch(`http://localhost:8080/createAccount`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -16,17 +17,13 @@ export const createAccountAPI = async (username, email, password) => {
         },
         body: JSON.stringify(data),
     });
-    if(backend_query.ok){
-        const response = await backend_query.json();
-        console.log(response);
-        return response;
-    }else{
-        return { message: 'nr' };
-    }
+    const response = await backend_query.json();
+    console.log(response);
+    return response;
 
 }
 
-export const loginAPI = async (email, password) => {
+const loginAPI = async (email, password) => {
     const data = {
         email: email,
         password: password,
@@ -51,7 +48,7 @@ export const loginAPI = async (email, password) => {
 
 }
 
-export const authStatusAPI = async (email, password) => {
+const authStatusAPI = async (email, password) => {
     const backend_query = await fetch(`${ENDPOINT}authStatus`, {
         method: 'GET',
         credentials: 'include',
@@ -69,6 +66,10 @@ export const authStatusAPI = async (email, password) => {
         return { message: 'nr' };
     }
 
+}
+
+const testFuction = () => {
+    alert('this is a test!');
 }
 
 

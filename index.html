@@ -9,6 +9,27 @@
         <link rel="stylesheet" href="assets/css/welcome-card.css">
         <link rel="stylesheet" href="assets/css/dark-mode.css">
         <script src ="assets/js/spa.js"></script>
+        <script src="assets/js/api.js"></script>
+        <script>
+            const createAccount = () => {
+                const username = document.getElementById('username').value;
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+
+                if (username && email && password) {
+                    createAccountAPI(username, email, password).then((response) => {
+                        if (response.message === "Account created successfully") {
+                            alert('Account created successfully');
+                            loadPage('/feed');
+                        }else {
+                            alert(response.message);
+                        }
+                    });
+                }else {
+                    alert('Please fill in all fields');
+                }
+            }
+        </script>
         <style>
             body
             {
@@ -50,9 +71,9 @@
                     <label for="password" class="form-label">Password</label>
                     <input type="password" id="password" placeholder="Create a password" class="form-input">
                     
-                    <button type="submit" class="form-button">
+                    <div type="submit" class="form-button" onclick="createAccount()">
                         Continue
-                    </button>
+                    </div>
 
                     <div class="form-divider">
                         <span>OR</span>
