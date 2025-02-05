@@ -58,8 +58,15 @@ function loadPage(route)
 
 document.addEventListener('DOMContentLoaded', () => 
 {
-    const route = window.location.pathname;
-    loadPage(route);
+    authStatusAPI().then((response) => {
+        if (response.authenticated) {
+            loadPage("/feed");
+        }else {
+            const route = window.location.pathname;
+            loadPage(route);
+        }
+    });
+
 
     // Handle SPA navigation links
     const spaLinks = document.querySelectorAll('a[data-spa="true"]');
