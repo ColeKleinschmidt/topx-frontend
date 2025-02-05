@@ -170,6 +170,7 @@ function loadTopIconBar(containerId, url)
                     {
                         logoutButton.addEventListener('click', () => 
                         {
+                            logoutAPI();
                             window.location.href = '/';
                         });
                     }

@@ -67,6 +67,26 @@ const authStatusAPI = async () => {
 
 }
 
+const logoutAPI = async () => {
+    const backend_query = await fetch(`${ENDPOINT}logout`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+            'Accept': 'application/json',
+            'Accept-encoding': 'gzip, deflate',
+            'Content-Type': 'application/json'
+        }
+    });
+    if(backend_query.ok){
+        const response = await backend_query.json();
+        console.log(response);
+        return response;
+    }else{
+        return { message: 'nr' };
+    }
+
+}
+
 const getAllUsersAPI = async () => {
     const backend_query = await fetch(`${ENDPOINT}getAllUsers`, {
         method: 'GET',
