@@ -6,26 +6,35 @@ const notificationsDropdown = document.querySelector('.notifications-dropdown-me
 const displayButton = document.querySelector('.display-button');
 const displayDropdown = document.querySelector('.display-dropdown-menu');
 
-const createAccount = () => {
-    const username = document.getElementById('username').value;
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+const createAccount = () => 
+{
+    const username = document.getElementById('signup-username').value;
+    const email = document.getElementById('signup-email').value;
+    const password = document.getElementById('signup-password').value;
 
-    if (username && email && password) {
-        createAccountAPI(username, email, password).then((response) => {
-            if (response.message === "Account created successfully") {
+    if (username && email && password) 
+    {
+        createAccountAPI(username, email, password).then((response) => 
+        {
+            if (response.message === "Account created successfully") 
+            {
                 alert('Account created successfully');
                 loadPage('/feed');
-            }else {
+            } 
+            else 
+            {
                 alert(response.message);
             }
         });
-    }else {
+    } 
+    else 
+    {
         alert('Please fill in all fields');
     }
-}
+};
 
-const loginRedirect = () => {
+const loginRedirect = () => 
+{
     const authLinks = document.querySelector('.auth-links');
     const userActions = document.querySelector('.user-actions');
     const centerIcons = document.querySelectorAll('.icon-link[data-requires-login]');
@@ -46,21 +55,108 @@ const loginRedirect = () => {
     {
         console.error(`Route '/feed' is not defined.`);
     }
-}
+};
 
-const login = () => {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+const login = () => 
+{
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
 
-    if (email && password) {
-        loginAPI(email, password).then((response) => {
-            if (response.message === "success") {
+    if (email && password) 
+    {
+        loginAPI(email, password).then((response) => 
+        {
+            if (response.message === "success") 
+            {
                 loginRedirect();
-            }else {
+            } 
+            else 
+            {
                 alert(response.message);
             }
         });
-    }else {
+    } 
+    else 
+    {
         alert('Please fill in all fields');
     }
-}
+};
+
+document.addEventListener('DOMContentLoaded', () => 
+{
+    const signupForm = document.getElementById('signup-form');
+    const loginForm = document.getElementById('login-form');
+    const toggleLink = document.getElementById('toggle-link');
+    const toggleText = document.getElementById('toggle-text');
+    const formTitle = document.getElementById('form-title');
+    const submitButton = document.querySelector('.form-button');
+
+    // Ensure forms are in their initial states
+    loginForm.classList.add('hidden');
+    let isLogin = false; // Tracks the current state
+
+    // Toggle between Sign Up and Log In forms
+    toggleLink.addEventListener('click', (event) => 
+    {
+        event.preventDefault();
+
+        if (isLogin) 
+        {
+            // Switch to Sign Up form
+            loginForm.classList.add('hidden');
+            signupForm.classList.remove('hidden');
+            toggleText.textContent = "Already a member?";
+            toggleLink.textContent = "Log In";
+            formTitle.textContent = "Sign Up";
+            isLogin = false;
+        } 
+        else 
+        {
+            // Switch to Log In form
+            signupForm.classList.add('hidden');
+            loginForm.classList.remove('hidden');
+            toggleText.textContent = "New here?";
+            toggleLink.textContent = "Sign Up";
+            formTitle.textContent = "Log In";
+            isLogin = true;
+        }
+    });
+
+    // Handle form submission
+    submitButton.addEventListener('click', (event) => 
+    {
+        event.preventDefault();
+
+        if (isLogin) 
+        {
+            // Submit Log In form
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            if (email && password) 
+            {
+                login(); // Call login function
+            } 
+            else 
+            {
+                alert('Please fill in all fields');
+            }
+        } 
+        else 
+        {
+            // Submit Sign Up form
+            const username = document.getElementById('signup-username').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+
+            if (username && email && password) 
+            {
+                createAccount(); // Call createAccount function
+            } 
+            else 
+            {
+                alert('Please fill in all fields');
+            }
+        }
+    });
+});

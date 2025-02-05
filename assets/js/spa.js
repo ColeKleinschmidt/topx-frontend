@@ -14,6 +14,12 @@ function loadPage(route)
     const body = document.body;
     const routeData = routes[route] || routes['404'];
 
+    // Prevent unnecessary route reloading
+    if (route === window.location.pathname) 
+    {
+        return;
+    }
+
     // Toggle the main-page class based on the route
     if (route === '/') 
     {
@@ -43,7 +49,6 @@ function loadPage(route)
         })
         .catch(error => 
         {
-            console.error('Error loading page:', error);
             content.innerHTML = '<p>Error loading content. Please try again later.</p>';
         });
 
@@ -51,30 +56,20 @@ function loadPage(route)
     history.pushState({ route }, '', route);
 }
 
-// Event listeners for navigation and state changes
 document.addEventListener('DOMContentLoaded', () => 
 {
     const route = window.location.pathname;
     loadPage(route);
 
-    // Handle link clicks for SPA navigation
-    document.addEventListener('click', (event) => 
+    // Handle SPA navigation links
+    const spaLinks = document.querySelectorAll('a[data-spa="true"]');
+    spaLinks.forEach((spaLink) => 
     {
-        const link = event.target.closest('a[href^="/"]');
-        if (link) 
+        spaLink.addEventListener('click', (event) => 
         {
             event.preventDefault();
-            const route = link.getAttribute('href');
-            loadPage(route);
-        }
-
-        // Handle button clicks for SPA navigation via data-route
-        const button = event.target.closest('button[data-route]');
-        if (button) 
-        {
-            const route = button.getAttribute('data-route');
-            loadPage(route);
-        }
+            loadPage(spaLink.getAttribute('href'));
+        });
     });
 
     // Handle back/forward navigation

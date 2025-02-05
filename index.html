@@ -43,30 +43,40 @@
                 <img src="assets/images/TopXLogo.png" alt="TopX Logo" class="welcome-logo">
                 <h1>Welcome to TopX</h1>
                 <p class="welcome-subtext">Let's hear your favorites</p>
-                <form class="welcome-form">
-                    <label for="username" class="form-label">Username</label>
-                    <input type="text" id="username" placeholder="Enter your username" class="form-input">
 
-                    <label for="email" class="form-label">Email</label>
-                    <input type="email" id="email" placeholder="Enter your email" class="form-input">
+                <!-- Sign Up Form-->
+                <div id="signup-form" class="form-container">
+                    <h2 id="form-title">Sign Up</h2>
+                    <form>
+                        <label for="signup-username" class="form-label">Username</label>
+                        <input type="text" id="signup-username" placeholder="Enter your username" class="form-input">
+
+                        <label for="signup-email" class="form-label">Email</label>
+                        <input type="email" id="signup-email" placeholder="Enter your email" class="form-input">
                     
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" id="password" placeholder="Create a password" class="form-input">
+                        <label for="signup-password" class="form-label">Password</label>
+                        <input type="password" id="signup-password" placeholder="Create a password" class="form-input">
                     
-                    <div type="submit" class="form-button" onclick="createAccount()">
-                        Continue
-                    </div>
+                        <button type="button" class="form-button" id="signup-button">Continue</button>
+                    </form>
+                </div>
 
-                    <div class="form-divider">
-                        <span>OR</span>
-                    </div>
+                <!-- Log In Form -->
+                <div id="login-form" class="form-container hidden">
+                    <h2 id="form-title">Log In</h2>
+                    <form>
+                        <label for="login-email" class="form-label">Email</label>
+                        <input type="email" id="login-email" placeholder="Enter your email" class="form-input">
 
-                    <button class="google-button">
-                        Continue with Google
-                    </button>
-                </form>
+                        <label for="login-password" class="form-label">Password</label>
+                        <input type="password" id="login-password" placeholder="Enter your password" class="form-input">
+
+                        <button type="button" class="form-button" id="login-button">Log In</button>
+                    </form>
+                </div>
                 <div class="welcome-card-footer">
-                    Already a member? <a href="#" class="login-link">Log In</a>
+                    <span id="toggle-text">Already a member?</span>
+                    <a href="#" id="toggle-link">Log In</a>
                 </div>
             </div>
         </div>

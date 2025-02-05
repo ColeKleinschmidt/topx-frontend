@@ -57,6 +57,7 @@
 {
     padding: 12px;
     border: 2px solid #ccc;
+    margin-bottom: 20px;
     border-radius: 15px;
     font-size: 16px;
     outline: none;
@@ -76,6 +77,7 @@
     font-size: 16px;
     width: 100%;
     max-width: 250px;
+    margin-bottom: 50px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
@@ -92,8 +94,8 @@
     font-size: 14px;
     color: #777;
     display: block;
-    margin-bottom: -5px;
-    padding-right: 100px;
+    padding-left: 80px;
+    padding-bottom: 5px;
     width: 100%;
     max-width: 240px;
     text-align: left;
@@ -119,15 +121,16 @@
 }
 
 /* Log In Link */
-.login-link 
+#toggle-link
 {
     color: #4CB95F; /* Green color for the link */
     text-decoration: none; /* Remove underline from the link */
     font-weight: bold;
+    cursor: pointer;
 }
 
  /* Underline link on hover */
-.login-link:hover 
+#toggle-link:hover 
 {
     text-decoration: underline;
 }
@@ -182,7 +185,7 @@
     position: absolute;
 }
 
-.welcome-card-footer .login-link 
+.welcome-card-footer #toggle-link 
 {
     margin-left: 5px;
     color: #4CB95F;
@@ -190,7 +193,24 @@
     font-weight: bold;
 }
 
-.welcome-card-footer .login-link:hover 
+.welcome-card-footer #toggle-link:hover 
 {
     text-decoration: underline;
 }
+
+#form-title
+{
+    color: #3c3c3c;
+    text-decoration: underline; 
+}
+
+.form-container 
+{
+    display: block;
+}
+
+.hidden 
+{
+    display: none;
+}
+
