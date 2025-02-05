@@ -89,7 +89,8 @@ document.addEventListener('DOMContentLoaded', () =>
     const toggleLink = document.getElementById('toggle-link');
     const toggleText = document.getElementById('toggle-text');
     const formTitle = document.getElementById('form-title');
-    const submitButton = document.querySelector('.form-button');
+    const signupButton = document.getElementById('signup-button');
+    const loginButton = document.getElementById('login-button');
 
     // Ensure forms are in their initial states
     loginForm.classList.add('hidden');
@@ -123,40 +124,40 @@ document.addEventListener('DOMContentLoaded', () =>
     });
 
     // Handle form submission
-    submitButton.addEventListener('click', (event) => 
+    signupButton.addEventListener('click', (event) => 
     {
         event.preventDefault();
 
-        if (isLogin) 
-        {
-            // Submit Log In form
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
+        // Submit Sign Up form
+        const username = document.getElementById('signup-username').value;
+        const email = document.getElementById('signup-email').value;
+        const password = document.getElementById('signup-password').value;
 
-            if (email && password) 
-            {
-                login(); // Call login function
-            } 
-            else 
-            {
-                alert('Please fill in all fields');
-            }
+        if (username && email && password) 
+        {
+            createAccount(); // Call createAccount function
         } 
         else 
         {
-            // Submit Sign Up form
-            const username = document.getElementById('signup-username').value;
-            const email = document.getElementById('signup-email').value;
-            const password = document.getElementById('signup-password').value;
+            alert('Please fill in all fields');
+        }
+    });
 
-            if (username && email && password) 
-            {
-                createAccount(); // Call createAccount function
-            } 
-            else 
-            {
-                alert('Please fill in all fields');
-            }
+    loginButton.addEventListener('click', (event) => {
+
+        event.preventDefault();
+
+        // Submit Log In form
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+
+        if (email && password) 
+        {
+            login(); // Call login function
+        } 
+        else 
+        {
+            alert('Please fill in all fields');
         }
     });
 });

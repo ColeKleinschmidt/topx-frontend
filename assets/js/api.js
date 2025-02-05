@@ -6,8 +6,7 @@ const createAccountAPI = async (username, email, password) => {
         email: email,
         password: password
     }
-    alert('fetching backend call');
-    const backend_query = await fetch(`http://localhost:8080/createAccount`, {
+    const backend_query = await fetch(`${ENDPOINT}createAccount`, {
         method: 'POST',
         credentials: 'include',
         headers: {
