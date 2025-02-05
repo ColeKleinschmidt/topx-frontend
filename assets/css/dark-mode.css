@@ -57,3 +57,18 @@ body.dark-mode .display-button:hover
 {
     background-color: #777777;
 }
+
+body.dark-mode .settings-container
+{
+    background-color: #c4c4c4;
+}
+
+body.dark-mode .change-icon-button
+{
+    background-color: #2C2C2C;
+}
+
+body.dark-mode .change-icon-button:hover
+{
+    background-color: #414141;
+}

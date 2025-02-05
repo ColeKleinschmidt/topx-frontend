@@ -17,9 +17,7 @@ const createAccountAPI = async (username, email, password) => {
         body: JSON.stringify(data),
     });
     const response = await backend_query.json();
-    console.log(response);
     return response;
-
 }
 
 const loginAPI = async (email, password) => {
@@ -37,36 +35,36 @@ const loginAPI = async (email, password) => {
         },
         body: JSON.stringify(data),
     });
-    if(backend_query.ok){
+    if (backend_query.ok) {
         const response = await backend_query.json();
-        console.log(response);
+        // Returning the full response including iconUrl
         return response;
-    }else{
+    } else {
         return { message: 'nr' };
     }
-
 }
 
-const authStatusAPI = async () => {
-    const backend_query = await fetch(`${ENDPOINT}authStatus`, {
-        method: 'GET',
-        credentials: 'include',
-        headers: {
-            'Accept': 'application/json',
-            'Accept-encoding': 'gzip, deflate',
-            'Content-Type': 'application/json'
+const authStatusAPI = async () => 
+    {
+        const backend_query = await fetch(`${ENDPOINT}authStatus`, {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json',
+                'Accept-encoding': 'gzip, deflate',
+                'Content-Type': 'application/json'
+            }
+        });
+        if (backend_query.ok) 
+        {
+            const response = await backend_query.json();
+            return response; // Includes profilePicture
+        } 
+        else 
+        {
+            return { message: 'nr' };
         }
-    });
-    if(backend_query.ok){
-        const response = await backend_query.json();
-        console.log(response);
-        return response;
-    }else{
-        return { message: 'nr' };
-    }
-
-}
-
+    };
 const logoutAPI = async () => {
     const backend_query = await fetch(`${ENDPOINT}logout`, {
         method: 'GET',
@@ -77,14 +75,12 @@ const logoutAPI = async () => {
             'Content-Type': 'application/json'
         }
     });
-    if(backend_query.ok){
+    if (backend_query.ok) {
         const response = await backend_query.json();
-        console.log(response);
         return response;
-    }else{
+    } else {
         return { message: 'nr' };
     }
-
 }
 
 const getAllUsersAPI = async () => {
@@ -98,10 +94,32 @@ const getAllUsersAPI = async () => {
         },
     });
     const response = await backend_query.json();
-    console.log(response);
     return response;
 }
 
+const uploadProfilePictureAPI = async (file) => {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+        const backend_query = await fetch(`${ENDPOINT}uploadProfilePicture`, {
+            method: 'POST',
+            credentials: 'include', // Ensure session cookies are sent
+            body: formData,
+        });
+
+        if (backend_query.ok) {
+            const response = await backend_query.json();
+            return response;
+        } else {
+            const errorResponse = await backend_query.json();
+            return { message: 'Upload failed', error: errorResponse };
+        }
+    } catch (error) {
+        console.error("Error during upload:", error);
+        return { message: 'Error', error };
+    }
+}
 
 //------------------TEMPLATE API CALL------------------//
 /*

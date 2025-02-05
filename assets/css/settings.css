@@ -1,7 +1,18 @@
+.settings-container
+{
+    background-color: #f1f1f1; /* Light gray background */
+    border-radius: 12px; /* Rounded corners */
+    padding: 16px; /* Add padding inside the box */
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    width: fit-content; /* Adjust to fit the content */
+    margin: 16px auto; /* Center align and add spacing */
+}
+
 .profile-picture-container 
 {
     text-align: center;
-    margin-top: 20px;
 }
 
 .profile-picture 
@@ -31,3 +42,10 @@
 {
     background-color: #42a954;
 }
+
+#format-text, #file-size-text
+{
+    font-style: italic;
+    margin: 1vh;
+}
+

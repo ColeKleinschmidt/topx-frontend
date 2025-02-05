@@ -46,8 +46,16 @@ function loadPage(route)
 
             // Update the document title
             document.title = routeData.title;
+
+            // Trigger specific scripts based on route
+            if (route === '/settings') 
+            {
+                const settingsScript = document.createElement('script');
+                settingsScript.src = 'assets/js/settings.js';
+                document.body.appendChild(settingsScript);
+            }
         })
-        .catch(error => 
+        .catch(() => 
         {
             content.innerHTML = '<p>Error loading content. Please try again later.</p>';
         });
@@ -58,26 +66,50 @@ function loadPage(route)
 
 document.addEventListener('DOMContentLoaded', () => 
 {
-    authStatusAPI().then((response) => {
-        if (response.authenticated) {
+    // Check authentication and load the appropriate page
+    authStatusAPI().then((response) => 
+    {
+        if (response.authenticated) 
+        {
             loadPage("/feed");
-        }else {
+        } 
+        else 
+        {
             const route = window.location.pathname;
             loadPage(route);
         }
     });
 
-
-    // Handle SPA navigation links
-    const spaLinks = document.querySelectorAll('a[data-spa="true"]');
-    spaLinks.forEach((spaLink) => 
+    // Attach SPA navigation to both <a> and <button> elements with data-spa="true"
+    const attachSPAListeners = () => 
     {
-        spaLink.addEventListener('click', (event) => 
+        const spaElements = document.querySelectorAll('[data-spa="true"]');
+
+        spaElements.forEach((spaElement) => 
         {
-            event.preventDefault();
-            loadPage(spaLink.getAttribute('href'));
+            spaElement.addEventListener('click', (event) => 
+            {
+                event.preventDefault();
+                const route = spaElement.getAttribute('href') || spaElement.getAttribute('data-route');
+                if (route) 
+                {
+                    loadPage(route);
+                }
+            });
         });
+    };
+
+    // Attach listeners initially
+    attachSPAListeners();
+
+    // Observe DOM changes for dynamically added elements
+    const observer = new MutationObserver(() => 
+    {
+        attachSPAListeners();
     });
+
+    // Start observing the document for changes
+    observer.observe(document.body, { childList: true, subtree: true });
 
     // Handle back/forward navigation
     window.addEventListener('popstate', (event) => 

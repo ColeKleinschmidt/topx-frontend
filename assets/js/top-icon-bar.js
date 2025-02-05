@@ -148,8 +148,13 @@ function loadTopIconBar(containerId, url)
                     button.addEventListener('click', (event) => 
                     {
                         event.stopPropagation();
+                        const isVisible = dropdown.classList.contains('visible');
+
                         closeAllMenus(dropdown);
-                        dropdown.classList.toggle('visible');
+                        if (!isVisible) 
+                        {
+                            dropdown.classList.add('visible');
+                        }
                     });
 
                     document.addEventListener('click', (event) => 
@@ -248,7 +253,6 @@ function loadTopIconBar(containerId, url)
                         applyDarkMode('off');
                     });
                 }
-
             })
             .catch(error => 
             {

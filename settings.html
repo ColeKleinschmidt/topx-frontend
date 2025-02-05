@@ -1,9 +1,16 @@
-<h1>Settings</h1>
+<div class ="settings-container">
+    <h1>Change account settings</h1>
 
-<!-- User Icon Preview -->
-<div class="profile-picture-container">
-    <img id="profile-pic-preview" src="assets/images/User Icon.png" alt="Profile Picture" class="profile-picture">
-    <input type="file" id="profile-pic-input" accept="image/*" style="display: none;">
-    <button id="change-user-icon-button" class="change-icon-button">Change User Icon</button>
+    <!-- User Icon Preview -->
+    <div class="profile-picture-container">
+        <img id="profile-pic-preview" src="assets/images/User Icon.png" alt="Profile Picture" class="profile-picture">
+        <input type="file" id="profile-pic-input" accept="image/*" style="display: none;">
+        <button id="change-user-icon-button" class="change-icon-button" type="button">Change User Icon</button>
+        <h5 id="format-text">Supported formats: .jpg, .png, .gif</h5>
+        <h5 id="file-size-text">Max file size: 5mb</h5>
+    </div>
 </div>
+
+<div id="upload-status" style="display: none;">Uploading...</div>
+
 <script src="assets/js/settings.js"></script>

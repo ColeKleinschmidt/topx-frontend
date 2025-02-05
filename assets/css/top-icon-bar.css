@@ -158,6 +158,12 @@ body
     object-fit: contain;
 }
 
+.user-icon img
+{
+    border-radius: 50%;
+    overflow: hidden;
+}
+
 .user-icon:hover img,
 .notification-icon:hover img,
 .shared-icon:hover img
