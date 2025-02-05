@@ -1,4 +1,4 @@
-const ENDPOINT = "http://localhost:8080/";
+const ENDPOINT = "http://127.0.0.1:8080/";
 
 const createAccountAPI = async (username, email, password) => {
     const data = {
@@ -47,7 +47,7 @@ const loginAPI = async (email, password) => {
 
 }
 
-const authStatusAPI = async (email, password) => {
+const authStatusAPI = async () => {
     const backend_query = await fetch(`${ENDPOINT}authStatus`, {
         method: 'GET',
         credentials: 'include',
