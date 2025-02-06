@@ -24,7 +24,7 @@ const loginAPI = async (email, password) => {
     const data = {
         email: email,
         password: password,
-    }
+    };
     const backend_query = await fetch(`${ENDPOINT}login`, {
         method: 'POST',
         credentials: 'include',
@@ -37,12 +37,15 @@ const loginAPI = async (email, password) => {
     });
     if (backend_query.ok) {
         const response = await backend_query.json();
-        // Returning the full response including iconUrl
+        console.log(response);
+
+        // Emit a custom event with the user's data
+        window.dispatchEvent(new CustomEvent("userLoggedIn", { detail: { user: response.user } }));
         return response;
     } else {
         return { message: 'nr' };
     }
-}
+};
 
 const authStatusAPI = async () => 
     {

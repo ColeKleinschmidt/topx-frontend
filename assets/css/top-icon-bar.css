@@ -149,6 +149,9 @@ body
     justify-content: center;
     align-items: center;
     transition: transform 0.2s ease;
+    background-color: #888888;
+    border-radius: 100%;
+    padding: 5px;
 }
 
 .user-icon img, .notification-icon img, .shared-icon img 
@@ -174,43 +177,6 @@ body
 .user-icon:hover, .notification-icon:hover, .shared-icon:hover 
 {
     transform: none;
-}
-
-.auth-links
-{
-    position: absolute;
-    display: flex;
-    gap: 2vh;
-    align-items: center;
-    right: 3vh;
-}
-
-.auth-link
-{
-    text-decoration: none;
-    font-size: 1.5vh;
-    font-weight: bold;
-    padding: 8px 16px;
-    border-radius: 20px;
-    display: inline-block;
-    transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-.auth-link[href="signup.html"]
-{
-    background-color: #E9E9E9;
-    color: black;
-}
-
-.auth-link#login
-{
-    background-color: #4CB95F;
-    color: white;
-}
-
-.auth-link[href="signup.html"]:hover
-{
-    background-color: #D9D9D9;
 }
 
 .auth-link#login:hover
@@ -325,7 +291,7 @@ body
 .account-dropdown-menu 
 {
     position: absolute;
-    top: 51px;
+    top: 55px;
     right: 0;
     background-color: #ffffff;
     border: 1px solid #ddd;
@@ -448,7 +414,7 @@ body
     display: none;
     position: absolute;
     right: 101%;
-    top: 38%;
+    top: 58.5%;
     background-color: #ffffff;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -498,8 +464,8 @@ body
 {
     display: none;
     position: absolute;
-    top: 170%; /* Appears below the button */
-    left: -143px;
+    top: 143%; /* Appears below the button */
+    left: -126px;
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -551,8 +517,8 @@ body
 {
     display: none;
     position: absolute;
-    top: 170%; /* Appears below the button */
-    left: -93px;
+    top: 143%; /* Appears below the button */
+    left: -68px;
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -593,16 +559,44 @@ body
     font-size: 14px;
 }
 
-.account-dropdown-menu img:not(.chevron-icon),
+.account-dropdown-menu img:not(.chevron-icon, .account-profile-picture),
 .shared-dropdown-menu img,
 .notifications-dropdown-menu img
 {
     border-radius: 100%; /* Make the background circular */
-    background-color: #DFDFDF; /* Choose a background color */
+    background-color: #888888; /* Choose a background color */
     padding: 5px; /* Add padding to extend the background */
     width: 200px;
     height: auto;
     transition: background-color 0.2s ease, transform 0.2s ease;
     object-fit: contain;
     box-sizing: content-box;
+}
+
+.account-header 
+{
+    display: flex;
+    align-items: center;
+    padding: 15px;
+}
+
+.account-profile-picture 
+{
+    max-height: 4vh;
+    max-width: auto;
+    margin-right: 10px;
+}
+
+.account-username 
+{
+    font-size: 14px;
+    font-weight: bold;
+    color: #000000;
+}
+
+.dropdown-divider {
+    margin: 10px 0;
+    border: 0;
+    height: 1px;
+    background-color: #e5e5e5;
 }

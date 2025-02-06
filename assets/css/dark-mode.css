@@ -72,3 +72,22 @@ body.dark-mode .change-icon-button:hover
 {
     background-color: #414141;
 }
+
+body.dark-mode .account-username 
+{
+    color:#bbbbbb
+}
+
+body.dark-mode .account-dropdown-menu img:not(.chevron-icon, .account-profile-picture),
+body.dark-mode .shared-dropdown-menu img,
+body.dark-mode .notifications-dropdown-menu img
+{
+    background-color: #3b3d3d;
+}
+
+body.dark-mode .user-icon, 
+body.dark-mode .notification-icon, 
+body.dark-mode .shared-icon
+{
+    background-color: #3b3d3d;
+}
