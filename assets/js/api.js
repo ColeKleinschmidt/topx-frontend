@@ -124,6 +124,44 @@ const uploadProfilePictureAPI = async (file) => {
     }
 }
 
+const sendFriendRequestAPI = async (recipientID) => {
+    data = {
+        receiver: recipientID
+    }
+    const backend_query = await fetch(`${ENDPOINT}sendFriendRequest`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Accept': 'application/json',
+            'Accept-encoding': 'gzip, deflate',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data),
+    });
+    const response = await backend_query.json();
+    console.log(response);
+    return response;
+}
+
+const acceptFriendRequestAPI = async (requestId) => {
+    data = {
+        requestId: requestId
+    }
+    const backend_query = await fetch(`${ENDPOINT}acceptFriendRequest`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Accept': 'application/json',
+            'Accept-encoding': 'gzip, deflate',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data),
+    });
+    const response = await backend_query.json();
+    console.log(response);
+    return response;
+}
+
 //------------------TEMPLATE API CALL------------------//
 /*
 const api = async () => {
