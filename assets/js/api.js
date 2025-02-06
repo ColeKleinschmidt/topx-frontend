@@ -162,6 +162,18 @@ const acceptFriendRequestAPI = async (requestId) => {
     return response;
 }
 
+window.fetchImages = async (query) => {
+    const url = `${ENDPOINT}scrape-images?q=${query}`;
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        return data.images;
+    } catch (error) {
+        console.error("Error fetching images:", error);
+        throw error;
+    }
+};
+
 //------------------TEMPLATE API CALL------------------//
 /*
 const api = async () => {

@@ -5,3 +5,24 @@ body
     background-color: #CAEFD1;
     z-index: 20;
 }
+
+/* Center the image container within its parent */
+.image-result-container {
+    width: 400px; /* Circle diameter */
+    height: 400px; /* Match width for a perfect circle */
+    border-radius: 50%; /* Makes the container a circle */
+    overflow: hidden; /* Ensures any overflow is cropped */
+    display: flex; /* Enable flexbox for centering */
+    align-items: center; /* Center image vertically */
+    justify-content: center; /* Center image horizontally */
+    border: 2px solid #ccc; /* Optional: Add a border */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Add shadow */
+    margin: 20px auto; /* Horizontally center the container itself */
+}
+
+/* Style for the image inside the circular container */
+.result-image {
+    width: 100%; /* Fill the container */
+    height: 100%; /* Ensure it fills the height too */
+    object-fit: cover; /* Crop the image to fit the container */
+}
