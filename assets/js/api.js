@@ -205,7 +205,7 @@ const findItemsAPI = async (title) => {
         title: title
     }
     const backend_query = await fetch(`${ENDPOINT}findItems`, {
-        method: 'GET',
+        method: 'POST',
         credentials: 'include',
         headers: {
             'Accept': 'application/json',
