@@ -162,6 +162,44 @@ const acceptFriendRequestAPI = async (requestId) => {
     return response;
 }
 
+const declineFriendRequestAPI = async (userId) => {
+    data = {
+        user: userId
+    }
+    const backend_query = await fetch(`${ENDPOINT}declineFriendRequest`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Accept': 'application/json',
+            'Accept-encoding': 'gzip, deflate',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data),
+    });
+    const response = await backend_query.json();
+    console.log(response);
+    return response;
+}
+
+const removeFriendAPI = async (userId) => {
+    data = {
+        user: userId
+    }
+    const backend_query = await fetch(`${ENDPOINT}removeFriend`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Accept': 'application/json',
+            'Accept-encoding': 'gzip, deflate',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data),
+    });
+    const response = await backend_query.json();
+    console.log(response);
+    return response;
+}
+
 window.fetchImages = async (query) => {
     const url = `${ENDPOINT}scrape-images?q=${query}`;
     try {
