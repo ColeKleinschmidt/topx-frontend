@@ -200,6 +200,25 @@ const removeFriendAPI = async (userId) => {
     return response;
 }
 
+const findItemsAPI = async (title) => {
+    data = {
+        title: title
+    }
+    const backend_query = await fetch(`${ENDPOINT}findItems`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+            'Accept': 'application/json',
+            'Accept-encoding': 'gzip, deflate',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data),
+    });
+    const response = await backend_query.json();
+    console.log(response);
+    return response;
+}
+
 window.fetchImages = async (query) => {
     const url = `${ENDPOINT}scrape-images?q=${query}`;
     try {
