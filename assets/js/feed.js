@@ -1,3 +1,8 @@
+let page = 1;
+const limit = 5;
+let isLoading = false;
+let hasMoreData = true;
+
 function populateDropdown(items) {
     const dropdown = document.getElementById("dropdown-menu");
     dropdown.innerHTML = "";
@@ -48,12 +53,89 @@ async function fetchResults(query) {
     }
 }
 
+// Function to check if user scrolled to bottom
+function handleScroll(feedSection) {
+    alert("scrolling");
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
+        fetchLists(feedSection);
+    }
+}
+
+// Function to fetch lists
+async function fetchLists(feedSection) {
+    if (isLoading || !hasMoreData) return;
+    isLoading = true;
+
+    try {
+        const data = await getListsAPI(page, limit);
+        
+        if (data.lists && data.lists.length > 0) {
+            data.lists.forEach(list => {
+                const listContainer = document.createElement("div");
+                listContainer.classList.add("list-container");
+                listContainer.style.width = "30vw";
+                listContainer.style.borderRadius = "20px";
+                listContainer.style.border = "1px solid white";
+                
+                const title = document.createElement("h2");
+                title.textContent = list.title;
+                listContainer.appendChild(title);
+                
+                const itemsContainer = document.createElement("div");
+                itemsContainer.classList.add("items-container");
+                
+                list.items.forEach(item => {
+                    const itemRow = document.createElement("div");
+                    itemRow.classList.add("item-row");
+                    itemRow.style.width = "100%";
+                    itemRow.style.display = "flex";
+                    itemRow.style.flexDirection = "row";
+                    itemRow.style.justifyContent = "space-evenly";
+                    itemRow.style.alignItems = "center";
+                    
+                    const itemName = document.createElement("span");
+                    itemName.textContent = item.title;
+                    
+                    const itemImage = document.createElement("img");
+                    itemImage.src = item.image;
+                    itemImage.alt = item.title;
+                    itemImage.style.width = "55px";
+                    itemImage.style.height = "55px";
+                    itemImage.style.borderRadius = "50%";
+                    itemImage.style.objectFit = "cover";
+                    itemImage.classList.add("item-image");
+                    
+                    itemRow.appendChild(itemName);
+                    itemRow.appendChild(itemImage);
+                    itemsContainer.appendChild(itemRow);
+                });
+                
+                listContainer.appendChild(itemsContainer);
+                feedSection.appendChild(listContainer);
+            });
+            page++; // Increment page for next request
+        } else {
+            hasMoreData = false;
+            const endMessage = document.createElement("p");
+            endMessage.textContent = "You've reached the end!";
+            endMessage.classList.add("end-message");
+            feedSection.appendChild(endMessage);
+        }
+    } catch (error) {
+        console.error("Error fetching lists:", error);
+    } finally {
+        isLoading = false;
+    }
+}
+
 document.addEventListener("DOMContentLoaded", () => 
     {
         const observer = new MutationObserver(() => 
         {
             let searchTimeout;
             const searchInput = document.getElementById("item-query");
+            const feedSection = document.getElementById("feed-section");
+            const content = document.getElementById("content");
     
             if (searchInput) 
             {
@@ -64,6 +146,13 @@ document.addEventListener("DOMContentLoaded", () =>
                     clearTimeout(searchTimeout);
                     searchTimeout = setTimeout(() => fetchResults(event.target.value), 500);
                 });
+            }
+            if (feedSection && content) {
+                observer.disconnect();
+
+                content.addEventListener("scroll", handleScroll(feedSection));
+
+                fetchLists(feedSection);
             }
         });
     

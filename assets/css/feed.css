@@ -35,6 +35,14 @@ body
     flex-direction: column;
 }
 
+#feed-section {
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
 #dropdown-menu {
     width: 20vw;
 }

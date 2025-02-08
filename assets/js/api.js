@@ -219,6 +219,26 @@ const findItemsAPI = async (title) => {
     return response;
 }
 
+const getListsAPI = async (page, limit) => {
+    data = {
+        page: page,
+        limit: limit
+    }
+    const backend_query = await fetch(`${ENDPOINT}getLists`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Accept': 'application/json',
+            'Accept-encoding': 'gzip, deflate',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data),
+    });
+    const response = await backend_query.json();
+    console.log(response);
+    return response;
+}
+
 window.fetchImages = async (query) => {
     const url = `${ENDPOINT}scrape-images?q=${query}`;
     try {
