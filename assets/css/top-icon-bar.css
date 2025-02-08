@@ -139,10 +139,10 @@ body
     height: 100%
 }
 
-.user-icon, .notification-icon, .shared-icon
+.notification-icon, .shared-icon
 {
     position: relative;
-    width: auto;
+    max-width: 3vh;
     height: 3vh;
     cursor: pointer;
     display: flex;
@@ -150,21 +150,35 @@ body
     align-items: center;
     transition: transform 0.2s ease;
     background-color: #888888;
-    border-radius: 100%;
+    border-radius: 50%;
     padding: 5px;
 }
 
-.user-icon img, .notification-icon img, .shared-icon img 
+.notification-icon img, .shared-icon img 
 {
     width: 100%;
     height: 100%;
     object-fit: contain;
 }
 
-.user-icon img
-{
+.user-icon {
+    width: 4vh;
+    height: 4vh;
     border-radius: 50%;
+    object-fit: cover;
+    display: block;
     overflow: hidden;
+    border: none;
+    cursor: pointer;
+}
+
+.user-icon img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    border: none;
 }
 
 .user-icon:hover img,
@@ -174,6 +188,7 @@ body
     transform: scale(1.1);
     transition: transform 0.2s ease;
 }
+
 .user-icon:hover, .notification-icon:hover, .shared-icon:hover 
 {
     transform: none;
