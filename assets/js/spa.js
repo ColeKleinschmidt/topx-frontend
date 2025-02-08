@@ -14,11 +14,48 @@ function loadPage(route)
     const body = document.body;
     const routeData = routes[route] || routes['404'];
 
-    // Prevent unnecessary route reloading
-    if (route === window.location.pathname) 
-    {
-        return;
-    }
+    console.log(`Requested route: ${route}`); // Debug log
+    console.log(`Resolved path: ${routeData.path}`); // Debug log
+
+    // Clear previous content
+    content.innerHTML = '<p>Loading...</p>';
+
+    // Load SPA content dynamically
+    fetch(routeData.path)
+        .then(response => 
+        {
+            console.log(`Fetching: ${routeData.path}, Status: ${response.status}`); // Debug log
+            if (!response.ok) 
+            {
+                console.error(`Failed to fetch content for ${routeData.path}`);
+                throw new Error(`Failed to load page: ${response.status}`);
+            }
+            return response.text();
+        })
+        .then(html => 
+        {
+            console.log(`Content fetched for ${routeData.path}`); // Debug log
+
+            // Update content
+            content.innerHTML = html;
+
+            // Update the document title
+            document.title = routeData.title;
+
+            // Trigger specific scripts based on route
+            if (route === '/settings') 
+            {
+                loadScript('assets/js/settings.js');
+            }
+        })
+        .catch((error) => 
+        {
+            console.error(`Error loading content for route: ${route}`, error);
+            content.innerHTML = '<p>Error loading content. Please try again later.</p>';
+        });
+
+    // Update browser URL without reloading the page
+    history.pushState({ route }, '', route);
 
     // Toggle the main-page class based on the route
     if (route === '/') 
@@ -29,56 +66,24 @@ function loadPage(route)
     {
         body.classList.remove('main-page'); // Remove background image
     }
+}
 
-    // Load SPA content dynamically
-    fetch(routeData.path)
-        .then(response => 
-        {
-            if (!response.ok) 
-            {
-                throw new Error(`Failed to load page: ${response.status}`);
-            }
-            return response.text();
-        })
-        .then(html => 
-        {
-            content.innerHTML = html;
-
-            // Update the document title
-            document.title = routeData.title;
-
-            // Trigger specific scripts based on route
-            if (route === '/settings') 
-            {
-                const settingsScript = document.createElement('script');
-                settingsScript.src = 'assets/js/settings.js';
-                document.body.appendChild(settingsScript);
-            }
-        })
-        .catch(() => 
-        {
-            content.innerHTML = '<p>Error loading content. Please try again later.</p>';
-        });
-
-    // Update browser URL without reloading the page
-    history.pushState({ route }, '', route);
+// Helper function to dynamically load scripts
+function loadScript(src) 
+{
+    const script = document.createElement('script');
+    script.src = src;
+    script.async = true;
+    document.body.appendChild(script);
+    console.log(`Script loaded: ${src}`); // Debug log
 }
 
 document.addEventListener('DOMContentLoaded', () => 
 {
-    // Check authentication and load the appropriate page
-    authStatusAPI().then((response) => 
-    {
-        if (response.authenticated) 
-        {
-            loadPage("/feed");
-        } 
-        else 
-        {
-            const route = window.location.pathname;
-            loadPage(route);
-        }
-    });
+    // Handle the current route on page load
+    const currentRoute = window.location.pathname;
+    console.log(`Loading current route: ${currentRoute}`); // Debug log
+    loadPage(currentRoute);
 
     // Attach SPA navigation to both <a> and <button> elements with data-spa="true"
     const attachSPAListeners = () => 
@@ -93,6 +98,7 @@ document.addEventListener('DOMContentLoaded', () =>
                 const route = spaElement.getAttribute('href') || spaElement.getAttribute('data-route');
                 if (route) 
                 {
+                    console.log(`Navigating to route: ${route}`); // Debug log
                     loadPage(route);
                 }
             });
@@ -115,6 +121,7 @@ document.addEventListener('DOMContentLoaded', () =>
     window.addEventListener('popstate', (event) => 
     {
         const route = event.state?.route || '/';
+        console.log(`Navigating back/forward to route: ${route}`); // Debug log
         loadPage(route);
     });
 });
