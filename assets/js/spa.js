@@ -55,7 +55,10 @@ function loadPage(route)
                 document.title = routeData.title;
 
                 // Ensure event listeners are re-attached if needed
-                if (route !== '/' && route !== '404') {
+                if (route !== '404') {
+                    if (route === '/') {
+                        route = '/index';
+                    }
                     const scriptName = `assets/js${route}.js`;
                     const existingScript = document.querySelector(`script[src='${scriptName}']`);
                     if (existingScript) 
