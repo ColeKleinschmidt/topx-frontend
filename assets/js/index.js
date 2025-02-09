@@ -126,6 +126,7 @@ document.addEventListener('DOMContentLoaded', () =>
     // Handle form submission
     signupButton.addEventListener('click', (event) => 
     {
+        alert("working");
         event.preventDefault();
 
         // Submit Sign Up form

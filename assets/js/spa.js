@@ -55,22 +55,22 @@ function loadPage(route)
                 document.title = routeData.title;
 
                 // Ensure event listeners are re-attached if needed
-                if (route === '/settings') 
-                {
-                    console.log("Settings page loaded. Attempting to reload settings.js");
-
-                    const existingScript = document.querySelector("script[src='assets/js/settings.js']");
+                if (route !== '/' && route !== '404') {
+                    const scriptName = `assets/js${route}.js`;
+                    const existingScript = document.querySelector(`script[src='${scriptName}']`);
                     if (existingScript) 
                     {
                         existingScript.remove();
+                        console.log("removed: " + scriptName + " successfully");
                     }
-
                     const script = document.createElement("script");
-                    script.src = "assets/js/settings.js";
-                    script.onload = () => console.log("Settings script loaded successfully.");
+                    script.src = `assets/js${route}.js`;
+                    script.onload = () => console.log(`${script.src} script loaded successfully.`);
                     script.onerror = () => console.error("Failed to load settings.js.");
-                    document.body.appendChild(script);
+                    document.head.appendChild(script);
+
                 }
+
             })
             .catch(error => 
             {
