@@ -80,6 +80,7 @@ const logoutAPI = async () => {
     });
     if (backend_query.ok) {
         const response = await backend_query.json();
+        deleteCookie("userId");
         return response;
     } else {
         return { message: 'nr' };
@@ -137,6 +138,21 @@ const sendFriendRequestAPI = async (recipientID) => {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(data),
+    });
+    const response = await backend_query.json();
+    console.log(response);
+    return response;
+}
+
+const getAllNotificationsAPI = async () => {
+    const backend_query = await fetch(`${ENDPOINT}getAllNotifications`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+            'Accept': 'application/json',
+            'Accept-encoding': 'gzip, deflate',
+            'Content-Type': 'application/json'
+        }
     });
     const response = await backend_query.json();
     console.log(response);

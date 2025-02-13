@@ -7,35 +7,9 @@
     const displayButton = document.querySelector('.display-button');
     const displayDropdown = document.querySelector('.display-dropdown-menu');
     
-    const createAccount = () => 
+    const loginRedirect = (id) => 
     {
-        const username = document.getElementById('signup-username').value;
-        const email = document.getElementById('signup-email').value;
-        const password = document.getElementById('signup-password').value;
-    
-        if (username && email && password) 
-        {
-            createAccountAPI(username, email, password).then((response) => 
-            {
-                if (response.message === "Account created successfully") 
-                {
-                    alert('Account created successfully');
-                    loadPage('/feed');
-                } 
-                else 
-                {
-                    alert(response.message);
-                }
-            });
-        } 
-        else 
-        {
-            alert('Please fill in all fields');
-        }
-    };
-    
-    const loginRedirect = () => 
-    {
+        setCookieWithMonthExpiration("userID", id);
         const authLinks = document.querySelector('.auth-links');
         const userActions = document.querySelector('.user-actions');
         const centerIcons = document.querySelectorAll('.icon-link[data-requires-login]');
@@ -50,6 +24,7 @@
     
         if (typeof loadPage === 'function') 
         {
+            getNotifications();
             loadPage('/feed');
         } 
         else 
@@ -57,6 +32,32 @@
             console.error(`Route '/feed' is not defined.`);
         }
     };
+
+    const createAccount = () => 
+        {
+            const username = document.getElementById('signup-username').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+        
+            if (username && email && password) 
+            {
+                createAccountAPI(username, email, password).then((response) => 
+                {
+                    if (response.message === "Account created successfully") 
+                    {
+                        loginRedirect(response.user._id);
+                    } 
+                    else 
+                    {
+                        alert(response.message);
+                    }
+                });
+            } 
+            else 
+            {
+                alert('Please fill in all fields');
+            }
+        };
     
     const login = () => 
     {
@@ -69,7 +70,7 @@
             {
                 if (response.message === "success") 
                 {
-                    loginRedirect();
+                    loginRedirect(response.user._id);
                 } 
                 else 
                 {
@@ -125,7 +126,6 @@
     // Handle form submission
     signupButton.addEventListener('click', (event) => 
     {
-        alert("working");
         event.preventDefault();
     
         // Submit Sign Up form

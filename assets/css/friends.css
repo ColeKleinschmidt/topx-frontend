@@ -43,6 +43,33 @@
     border-radius: 5px;
     cursor: pointer;
 }
+
+.accept-friend-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.decline-friend-btn {
+    background-color: #c92929;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
 .add-friend-btn:hover {
     background-color: #45a049;
+}
+
+.accept-friend-btn:hover {
+    background-color: #45a049;
+}
+
+.decline-friend-btn:hover {
+    background-color: #ac4242;
 }
