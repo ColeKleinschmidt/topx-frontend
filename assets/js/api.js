@@ -101,6 +101,20 @@ const getAllUsersAPI = async () => {
     return response;
 }
 
+const getUsersAPI = async () => {
+    const backend_query = await fetch(`${ENDPOINT}getUsers`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+            'Accept': 'application/json',
+            'Accept-encoding': 'gzip, deflate',
+            'Content-Type': 'application/json'
+        },
+    });
+    const response = await backend_query.json();
+    return response;
+}
+
 const uploadProfilePictureAPI = async (file) => {
     const formData = new FormData();
     formData.append("image", file);
@@ -178,9 +192,9 @@ const acceptFriendRequestAPI = async (requestId) => {
     return response;
 }
 
-const declineFriendRequestAPI = async (userId) => {
+const declineFriendRequestAPI = async (requestId) => {
     data = {
-        user: userId
+        requestId: requestId
     }
     const backend_query = await fetch(`${ENDPOINT}declineFriendRequest`, {
         method: 'POST',
@@ -241,6 +255,25 @@ const getListsAPI = async (page, limit) => {
         limit: limit
     }
     const backend_query = await fetch(`${ENDPOINT}getLists`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Accept': 'application/json',
+            'Accept-encoding': 'gzip, deflate',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data),
+    });
+    const response = await backend_query.json();
+    console.log(response);
+    return response;
+}
+
+const getUserAPI = async (username) => {
+    data = {
+        username: username
+    }
+    const backend_query = await fetch(`${ENDPOINT}getUser`, {
         method: 'POST',
         credentials: 'include',
         headers: {

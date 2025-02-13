@@ -9,12 +9,13 @@ function loadPage(route)
             '/feed': { path: './feed.html', title: 'TopX | Feed' },
             '/createlist': { path: './createlist.html', title: 'TopX | Create List' },
             '/settings': { path: './settings.html', title: 'TopX | Settings' },
+            '/user': { path: './user.html', title: 'TopX | User Profile' },
             '404': { path: './404.html', title: 'Page Not Found' },
         };
 
         const content = document.getElementById('content');
         const body = document.body;
-        const routeData = routes[route] || routes['404'];
+        const routeData = /^\/user-[a-zA-Z0-9]+$/.test(route) ? routes["/user"] : routes[route] || routes['404'];
 
         if (!content) 
         {
@@ -58,6 +59,9 @@ function loadPage(route)
                 if (route !== '404') {
                     if (route === '/') {
                         route = '/index';
+                    }
+                    if (/^\/user-[a-zA-Z0-9]+$/.test(route)) {
+                        route = "/user";
                     }
                     const scriptName = `assets/js${route}.js`;
                     const existingScript = document.querySelector(`script[src='${scriptName}']`);

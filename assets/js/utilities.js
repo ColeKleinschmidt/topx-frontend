@@ -75,6 +75,12 @@ function doesFriendRequestExist(sender, receiver) {
     return { exist: false, id: null };
 }
 
+function visitUserProfile(username) {
+    pathName = "/user-" + username;
+    window.location.pathname = pathName;
+    //loadPage(pathName);
+}
+
 if (getCookie("userID") !== "") {
     getNotifications();
 }

@@ -5,7 +5,7 @@
 
     async function fetchUsers() {
         try {
-            const users = await getAllUsersAPI();
+            const users = await getUsersAPI();
             if (users.message !== "success") {
                 throw (users.message);
             }else {
@@ -21,6 +21,7 @@
         for (const user of users) {
             const userCard = document.createElement("div");
             userCard.classList.add("friend-item");
+            userCard.addEventListener("click", () => visitUserProfile(user.username));
 
             const profileImg = document.createElement("img");
             profileImg.src = user.profilePicture;
@@ -63,12 +64,12 @@
                 const acceptButton = document.createElement("button");
                 acceptButton.textContent = "Accept";
                 acceptButton.classList.add("accept-friend-btn");
-                acceptButton.addEventListener("click", () => acceptFriend(incomingRequest.id, userCard));
+                acceptButton.addEventListener("click", (event) => acceptFriend(event, incomingRequest.id, userCard));
 
                 const declineButton = document.createElement("button");
                 declineButton.textContent = "Decline";
                 declineButton.classList.add("decline-friend-btn");
-                declineButton.addEventListener("click", () => declineFriend(incomingRequest.id, userCard));
+                declineButton.addEventListener("click", (event) => declineFriend(event, incomingRequest.id, userCard));
 
                 buttons.appendChild(acceptButton);
                 buttons.appendChild(declineButton);
@@ -84,7 +85,7 @@
             } else {
                 actionButton.textContent = "Add Friend";
                 actionButton.classList.add("add-friend-btn");
-                actionButton.addEventListener("click", () => addFriend(user._id, actionButton));
+                actionButton.addEventListener("click", (event) => addFriend(event, user._id, actionButton));
             }
 
             userInfo.appendChild(username);
@@ -98,7 +99,8 @@
         }
     }
 
-    async function addFriend(userId, button) {
+    async function addFriend(event, userId, button) {
+        event.stopPropagation();
         try {
             const request = await sendFriendRequestAPI(userId);
             if (request.message == "success") {
@@ -115,7 +117,8 @@
         }
     }
 
-    async function acceptFriend(requestId, userCard) {
+    async function acceptFriend(event, requestId, userCard) {
+        event.stopPropagation();
         try {
             const request = await acceptFriendRequestAPI(requestId);
             if (request.message == "success") {
@@ -129,7 +132,8 @@
         }
     }
 
-    async function declineFriend(requestId, userCard) {
+    async function declineFriend(event, requestId, userCard) {
+        event.stopPropagation();
         try {
             const request = await declineFriendRequestAPI(requestId);
             if (request.message == "success") {
