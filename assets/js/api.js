@@ -269,11 +269,30 @@ const getListsAPI = async (page, limit) => {
     return response;
 }
 
-const getUserAPI = async (username) => {
+const getUserByUsernameAPI = async (username) => {
     data = {
         username: username
     }
-    const backend_query = await fetch(`${ENDPOINT}getUser`, {
+    const backend_query = await fetch(`${ENDPOINT}getUserByUsername`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Accept': 'application/json',
+            'Accept-encoding': 'gzip, deflate',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data),
+    });
+    const response = await backend_query.json();
+    console.log(response);
+    return response;
+}
+
+const getUserByIdAPI = async (id) => {
+    data = {
+        id: id
+    }
+    const backend_query = await fetch(`${ENDPOINT}getUserById`, {
         method: 'POST',
         credentials: 'include',
         headers: {

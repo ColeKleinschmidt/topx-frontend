@@ -1,6 +1,6 @@
 (async () => {
     const username = window.location.pathname.split('-')[1];
-    const userResponse = await getUserAPI(username);
+    const userResponse = await getUserByUsernameAPI(username);
     const user = userResponse.user;
     const pendingRequests = new Set();
 
@@ -109,6 +109,7 @@
                 declineButton.remove();
                 acceptButton.disabled = true;
                 acceptButton.textContent = "Friends";
+                removeNotification(requestId);
             } else {
                 alert(request.message);
             }
@@ -127,6 +128,7 @@
                 acceptButton.classList.remove("accept-friend-btn");
                 acceptButton.classList.add("add-friend-btn");
                 acceptButton.addEventListener("click", () => addFriend(user._id, actionButton));
+                removeNotification(requestId);
 
             } else {
                 alert(request.message);

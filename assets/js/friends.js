@@ -123,6 +123,7 @@
             const request = await acceptFriendRequestAPI(requestId);
             if (request.message == "success") {
                 userCard.remove();
+                removeNotification(requestId);
             } else {
                 alert(request.message);
             }
@@ -138,6 +139,7 @@
             const request = await declineFriendRequestAPI(requestId);
             if (request.message == "success") {
                 userCard.remove();
+                removeNotification(requestId);
             } else {
                 alert(request.message);
             }

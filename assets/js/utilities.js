@@ -56,6 +56,7 @@ async function getNotifications() {
     const notifications = await getAllNotificationsAPI();
     if (notifications.message === "success") {
         setLocalStorageWithMonthExpiration("notifications", notifications.notifications);
+        countNotifications();
     }
 }
 
@@ -73,6 +74,26 @@ function doesFriendRequestExist(sender, receiver) {
     }
 
     return { exist: false, id: null };
+}
+
+function removeNotification(id) {
+    let notifications = getLocalStorage("notifications");
+
+    notifications = notifications.filter(x => x !== id);
+
+    setLocalStorageWithMonthExpiration("notifications", notifications);
+}
+
+function countNotifications() {
+    const notifications = getLocalStorage("notifications");
+    const currentUserId = getCookie("userID");
+    const notificationIcon = document.querySelector(".notification-icon");
+    if (notifications.filter(x => x.receiver === currentUserId).length > 0) {
+        const notificationsIndicator = document.createElement("div");
+        notificationsIndicator.classList.add("notifications-indicator");
+
+        notificationIcon.appendChild(notificationsIndicator);
+    }
 }
 
 function visitUserProfile(username) {

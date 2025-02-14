@@ -64,6 +64,122 @@ function loadTopIconBar(containerId, url)
                 const notificationsDropdown = document.querySelector(".notifications-dropdown-menu");
                 const displayButton = document.querySelector(".display-button");
                 const displayDropdown = document.querySelector(".display-dropdown-menu");
+                let displayedAllNotifications = false;
+
+                async function acceptFriend(event, requestId, notification) {
+                    event.stopPropagation();
+                    try {
+                        const request = await acceptFriendRequestAPI(requestId);
+                        if (request.message == "success") {
+                            notification.remove();
+                            removeNotification(requestId).then(() => {
+                                countNotifications();
+                            });
+                        } else {
+                            alert(request.message);
+                        }
+                        
+                    } catch (error) {
+                        console.error("Error accepting friend request:", error);
+                    }
+                }
+            
+                async function declineFriend(event, requestId, notification) {
+                    event.stopPropagation();
+                    try {
+                        const request = await declineFriendRequestAPI(requestId);
+                        if (request.message == "success") {
+                            notification.remove();
+                            removeNotification(requestId).then(() => {
+                                countNotifications();
+                            });
+                            
+                        } else {
+                            alert(request.message);
+                        }
+                    } catch (error) {
+                        console.error("Error declining friend request:", error);
+                    }
+                }
+
+                async function displayNotifiations() {
+                    const notifications = getLocalStorage("notifications");
+                    const currentUserId = getCookie("userID");
+                    if (notifications.length > 0 && !displayedAllNotifications) {
+                        const message = document.querySelector(".notifications-dropdown-message");
+                        message.innerHTML = "Loading...";
+
+                        let displayedNotifications = [];
+                        for (let i = 0; i < notifications.length; i++) {
+                            try {
+                                if (notifications[i].type === 'friendRequest' && notifications[i].receiver === currentUserId) {
+                                    const fetchUser = await getUserByIdAPI(notifications[i].sender);
+                                    const user = fetchUser.user;
+                                    
+                                    if (user !== undefined && user !== null) {
+                                        const notification = document.createElement("div");
+                                        notification.classList.add("friend-request-notification");
+
+                                        const profileImg = document.createElement("img");
+                                        profileImg.src = user.profilePicture;
+                                        profileImg.alt = user.username;
+                                        profileImg.classList.add("profile-pic-notification");
+                                        profileImg.style.width = "20px";
+                                        profileImg.style.height = "20px";
+                                        profileImg.style.borderRadius = "50%";
+                                        profileImg.styleobjectFit = "cover";
+
+                                        const username = document.createElement("h4");
+                                        username.textContent = user.username;
+
+                                        const buttons = document.createElement("div");
+                                        buttons.style.display = "flex";
+                                        buttons.style.flexDirection = "column";
+                                        buttons.style.justifyContent = 'center';
+                                        buttons.style.alignItems = "center";
+                        
+                                        const acceptButton = document.createElement("button");
+                                        acceptButton.textContent = "Accept";
+                                        acceptButton.classList.add("accept-friend-btn");
+                                        acceptButton.addEventListener("click", (event) => acceptFriend(event, notifications[i]._id, notification));
+                        
+                                        const declineButton = document.createElement("button");
+                                        declineButton.textContent = "Decline";
+                                        declineButton.classList.add("decline-friend-btn");
+                                        declineButton.addEventListener("click", (event) => declineFriend(event, notifications[i]._id, notification));
+                        
+                                        buttons.appendChild(acceptButton);
+                                        buttons.appendChild(declineButton);
+
+                                        notification.appendChild(profileImg);
+                                        notification.appendChild(username);
+                                        notification.appendChild(buttons);
+                                        displayedNotifications.push(notification);
+
+                                    }else {
+                                        throw (fetchUser.message);
+                                    }
+                                }
+                            } catch (error) {
+                                console.log("could not load user: " + error);
+                            }
+                        }
+
+                        if (displayedNotifications.length > 0) {
+                            message.innerHTML = "No new notifications";
+                        }else {
+                            message.innerHTML = "No new notifications";
+                            message.display = "none";
+                        }
+
+                        displayedNotifications.map((x) => {
+                            notificationsDropdown.appendChild(x);
+                            if (!displayedAllNotifications) {
+                                displayedAllNotifications = true;
+                            }
+                        });
+                    }
+                }
 
                 centerIcons.forEach(icon => 
                 {
@@ -164,6 +280,10 @@ function loadTopIconBar(containerId, url)
                         event.stopPropagation();
                         if (!isChild) closeAllMenus(dropdown);
                         dropdown.classList.toggle("visible");
+                        if (dropdown.classList.contains("notifications-dropdown-menu")) {
+                            displayNotifiations();
+                            countNotifications();
+                        }
                         dropdown.style.display = dropdown.classList.contains("visible") ? "block" : "none";
                     });
 
@@ -195,6 +315,10 @@ function loadTopIconBar(containerId, url)
                 if (sharedButton && sharedDropdown) 
                 {
                     toggleMenu(sharedButton, sharedDropdown);
+                    setTimeout(() => {
+                        countNotifications();
+                    },50);
+                    
                 }
 
                 if (notificationsButton && notificationsDropdown) 
