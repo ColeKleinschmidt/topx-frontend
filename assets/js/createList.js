@@ -58,38 +58,18 @@
             const removeButton = document.querySelector(".remove-button");
             removeButton.remove();
         });
-        itemRow.style.width = "100%";
-        itemRow.style.display = "flex";
-        itemRow.style.flexDirection = "row";
-        itemRow.style.justifyContent = "space-between";
-        itemRow.style.alignItems = "center";
-        itemRow.style.position = "relative";
 
         const itemNum = document.createElement("span");
-        itemNum.style.borderRadius = "50%";
-        itemNum.style.width = "40px";
-        itemNum.style.height = "40px";
-        itemNum.style.backgroundColor = "black";
-        itemNum.style.display = "flex";
-        itemNum.style.justifyContent = "center";
-        itemNum.style.alignItems = "center";
-        itemNum.style.color = "white";
-        itemNum.style.fontSize = "15px";
-        itemNum.style.fontWeight = "bold";
+        itemNum.classList.add('item-num')
         itemNum.textContent = `${newListItems.length == 10 ? "x" : newListItems.length}`;
         
         const itemName = document.createElement("span");
         itemName.textContent = item.title;
-        itemName.style.display = "flex";
-        itemName.style.alignText = "flex-start";
+        itemName.classList.add('item-name');
         
         const itemImage = document.createElement("img");
         itemImage.src = item.image;
         itemImage.alt = item.title;
-        itemImage.style.width = "55px";
-        itemImage.style.height = "55px";
-        itemImage.style.borderRadius = "50%";
-        itemImage.style.objectFit = "cover";
         itemImage.classList.add("item-image");
         
         itemRow.appendChild(itemNum);
