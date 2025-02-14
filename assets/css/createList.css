@@ -1,0 +1,98 @@
+#create-list-section {
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+#new-list {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 20vw;
+    border-radius: 50px;
+    padding: 25px;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    position: relative;
+    padding-bottom: 50px;
+}
+
+#dropdown-menu {
+    position: absolute;
+    top: 130px;
+    width: 75%;
+    align-self: center;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+#create-list-button {
+    position: absolute;
+    bottom: 10px;
+    padding: 4px 10px 4px 10px;
+    display: flex;
+    font-size: 15px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+}
+
+.create-list-button-disabled {
+    background-color: rgb(82, 148, 82);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    color: rgb(56, 56, 56);
+}
+
+.create-list-button-enabled {
+    background-color: green;
+    transition: 50ms;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    color: white;
+}
+
+.create-list-button-enabled:hover {
+    background-color: green;
+    cursor: pointer;
+    transition: 50ms;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+}
+#title-input {
+    width: 75%;
+    padding: 12px 15px;
+    font-size: 16px;
+    border: 2px solid #ddd;
+    border-radius: 25px;
+    outline: none;
+    transition: all 0.2s ease-in-out;
+    background-color: #f9f9f9;
+    text-align: center;
+}
+
+#title-input:focus {
+    border-color: #4CAF50;
+    background-color: white;
+    box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
+}
+
+#search-for-item {
+    margin-top: 25px;
+    margin-bottom: 25px;
+    width: 75%;
+    padding: 10px 0;
+    font-size: 16px;
+    border: none;
+    border-bottom: 2px solid #494949;
+    outline: none;
+    background-color: transparent;
+    transition: border-bottom 0.2s ease-in-out;
+    text-align: center;
+}
+
+#search-for-item:focus {
+    border-bottom: 2px solid #2E7D32;
+    box-shadow: 0 2px 5px rgba(46, 125, 50, 0.2);
+}

@@ -307,6 +307,22 @@ const getUserByIdAPI = async (id) => {
     return response;
 }
 
+const createListAPI = async (list) => {
+    const backend_query = await fetch(`${ENDPOINT}createList`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Accept': 'application/json',
+            'Accept-encoding': 'gzip, deflate',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(list),
+    });
+    const response = await backend_query.json();
+    console.log(response);
+    return response;
+}
+
 window.fetchImages = async (query) => {
     const url = `${ENDPOINT}scrape-images?q=${query}`;
     try {
