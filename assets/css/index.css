@@ -1,12 +1,14 @@
 /* Default body styling for all pages */
-body 
+html, body 
 {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
     background-color: #CAEFD1 !important;
     background-image: none !important;
+    overflow-x: hidden; /* Prevents horizontal scrolling */
 }
+
 
 /* Background image and styles for the main page only */
 body.main-page 

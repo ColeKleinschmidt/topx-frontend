@@ -13,7 +13,8 @@ body
     align-items: center;
 }
 
-.profile-pic-notification {
+.profile-pic-notification 
+{
 
 }
 
@@ -36,11 +37,13 @@ body
     cursor: pointer;
 }
 
-.accept-friend-btn:hover {
+.accept-friend-btn:hover 
+{
     background-color: #45a049;
 }
 
-.decline-friend-btn:hover {
+.decline-friend-btn:hover 
+{
     background-color: #ac4242;
 }
 
@@ -84,11 +87,10 @@ body
     transition: transform 0.2s ease;
 }
 
-/* Tooltip flavor text */
-.icon-link .tooltip
+.tooltip 
 {
     position: absolute;
-    bottom: -40px;
+    bottom: -4vh;
     left: 50%;
     transform: translateX(-50%);
     background-color: #3C3C3C;
@@ -102,37 +104,29 @@ body
     transition: opacity 0.2s ease, visibility 0.2s ease;
     transition-delay: 0.2s;
 }
-
-.user-icon .tooltip,
-.notification-icon .tooltip,
-.shared-icon .tooltip
-{
-    position: absolute;
-    bottom: -50px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #3C3C3C;
-    color: white;
-    font-size: 1.5vh;
-    padding: 5px 10px;
-    border-radius: 5px;
-    opacity: 0;
-    visibility: hidden;
-    white-space: nowrap;
-    transition: opacity 0.2s ease, visibility 0.2s ease;
-    transition-delay: 0.2s;
-}
-
 
 /* Show tooltip on hover */
 .icon-link:hover .tooltip,
 .user-icon:hover .tooltip,
 .notification-icon:hover .tooltip,
-.shared-icon:hover .tooltip
+.shared-icon:hover .tooltip 
 {
     opacity: 1;
     visibility: visible;
     z-index: 2000;
+}
+
+/* Ensure the account icon tooltip behaves the same */
+.notification-icon .tooltip,
+.shared-icon .tooltip 
+{
+    bottom: -4.5vh;
+}
+
+.user-icon .tooltip 
+{
+    bottom: -3vh;
+    left: 14vh;
 }
 
 /* Draw line when hovering over icon */
@@ -345,7 +339,7 @@ body
 .account-dropdown-menu 
 {
     position: absolute;
-    top: 55px;
+    top: 7vh;
     right: 0;
     background-color: #ffffff;
     border: 1px solid #ddd;
@@ -461,46 +455,57 @@ body
     height: auto;
 }
 
-.display-dropdown-menu
+.display-dropdown-menu 
 {
     font-size: 14px;
     font-weight: bold;
     display: none;
     position: absolute;
-    right: 101%;
-    top: 58.5%;
+    right: 22.4vh;
+    top: 15vh;
     background-color: #ffffff;
     border: 1px solid #ddd;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     padding: 10px;
-    width: 100px;
-    align-items: center;
+    width: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px; /* Ensures even spacing */
 }
 
+.dark-mode-label 
+{
+    display: flex;
+    align-items: center;
+    gap: 6px; /* Adds space between icon and text */
+    font-size: 14px;
+    font-weight: bold;
+    color: #ccc;
+}
+
+/* Restrict the icon size */
+.dark-mode-icon 
+{
+    max-width: 16px;
+    height: auto;
+    flex-shrink: 0;
+}
+
+
+/* Style for the radio buttons */
 .display-dropdown-menu label 
 {
-    display: block;
-    padding: 5px 0px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
     font-size: 14px;
+    padding: 5px;
+    margin-left: -1vh;
     cursor: pointer;
 }
 
-.display-dropdown-divider {
-    border: none;
-    border-top: 1px solid #ddd;
-    margin-top: 15px;
-}
-
-.dark-mode-icon 
-{
-    margin-left: -5px;
-    margin-bottom: -7px;
-    width: 3vh;
-    max-width: 12px;
-    height: auto;
-    transition: transform 0.2s ease;
-}
 
 .account-dropdown-menu, .account-dropdown-menu *
 {
@@ -518,8 +523,8 @@ body
 {
     display: none;
     position: absolute;
-    top: 143%; /* Appears below the button */
-    left: -126px;
+    top: 5.5vh; /* Appears below the button */
+    left: -12.4vh;
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -571,8 +576,8 @@ body
 {
     display: none;
     position: absolute;
-    top: 143%; /* Appears below the button */
-    left: -168px;
+    top: 5.5vh; /* Appears below the button */
+    left: -16.4vh;
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -582,7 +587,7 @@ body
     z-index: 10;
     max-height: 500px;
     overflow-x: hidden;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .notifications-indicator {
@@ -649,21 +654,94 @@ body
 
 .account-profile-picture 
 {
-    max-height: 4vh;
-    max-width: auto;
-    margin-right: 10px;
+    max-width: 4vh; /* Set explicit width */
+    height: auto; /* Ensure equal height */
+    border-radius: 50%; /* Force a perfect circle */
+    object-fit: cover; /* Crop to fit within the circle */
+    display: block; /* Prevent extra spacing issues */
+    aspect-ratio: 1 / 1; /* Ensures width and height remain proportional */
 }
+
 
 .account-username 
 {
     font-size: 14px;
+    margin-left: 1vh;
     font-weight: bold;
     color: #000000;
 }
 
-.dropdown-divider {
+.dropdown-divider 
+{
     margin: 10px 0;
     border: 0;
     height: 1px;
     background-color: #e5e5e5;
 }
+
+.account-header 
+{
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+    width: 100%;
+    box-sizing: border-box; /* Ensures padding doesn't expand the width */
+    max-width: 100%; /* Prevents it from extending past the dropdown */
+}
+
+/* Hover effect for selection */
+.account-header:hover 
+{
+    background-color: rgba(87, 87, 87, 0.1);
+}
+
+.account-dropdown-menu:hover ~ .user-icon .tooltip,
+.notifications-dropdown-menu:hover ~ .notification-icon .tooltip,
+.shared-dropdown-menu:hover ~ .shared-icon .tooltip
+{
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+body.menu-open .tooltip
+{
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+.icon-link:hover:not(.user-icon):not(.notification-icon):not(.shared-icon) .tooltip
+{
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+body.menu-open .user-icon:not(:hover) > img,
+body.menu-open .notification-icon:not(:hover) > img,
+body.menu-open .shared-icon:not(:hover) > img
+{
+    transform: none !important;
+    transition: none !important;
+}
+
+.account-dropdown-menu:hover ~ .user-icon > img:not(:hover),
+.notifications-dropdown-menu:hover ~ .notification-icon > img:not(:hover),
+.shared-dropdown-menu:hover ~ .shared-icon > img:not(:hover)
+{
+    transform: none !important;
+    transition: none !important;
+}
+
+.user-icon:hover > img,
+.notification-icon:hover > img,
+.shared-icon:hover > img
+{
+    transform: scale(1.1) !important;
+    transition: transform 0.2s ease !important;
+}
+

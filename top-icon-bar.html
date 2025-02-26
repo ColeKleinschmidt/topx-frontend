@@ -50,6 +50,7 @@
 
             <!-- 'Account' Dropdown Menu -->
             <div class ="account-dropdown-menu">
+                <div id="account-header-container"></div>
                 <button class="setting-button" data-route="/settings" data-spa="true">
                     <img src="assets/images/Settings Icon.png" alt="Settings" class="account-dropdown-icon">
                     Settings
@@ -63,12 +64,15 @@
                 </button>
                 <!-- 'Display' Dropdown Menu -->
                 <div class="display-dropdown-menu">
-                    <img src="assets/images/Dark Mode Icon.png" alt="Dark Mode" class="dark-mode-icon">
-                    <span>Dark Mode</span>
+                    <div class="dark-mode-label">
+                        <img src="assets/images/Dark Mode Icon.png" alt="Dark Mode" class="dark-mode-icon">
+                        <span>Dark Mode</span>
+                    </div>
                     <hr class="display-dropdown-divider">
                     <label><input type="radio" name="display" value="on"> On</label>
                     <label><input type="radio" name="display" value="off" checked> Off</label>
                 </div>
+
                 <button class="logout-button">
                     <img src="assets/images/Log Out Icon.png" alt="Log Out" class="account-dropdown-icon">
                     Log Out

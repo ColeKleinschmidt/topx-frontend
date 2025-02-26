@@ -1,5 +1,6 @@
 function loadTopIconBar(containerId, url) 
 {
+    let menuOpen = false;
     document.addEventListener("DOMContentLoaded", () => 
     {
         const container = document.getElementById(containerId);
@@ -210,19 +211,28 @@ function loadTopIconBar(containerId, url)
 
                         // Add account header with username and profile picture
                         if (accountDropdown) 
-                        {
-                            const accountHeader = `
-                                <div class="account-header">
-                                    <img src="${data.user.profilePicture}" alt="Profile Picture" class="account-profile-picture">
-                                    <span class="account-username">${data.user.username}</span>
-                                </div>
-                                <hr class="dropdown-divider">
-                            `;
-                            if (!accountDropdown.querySelector(".account-header")) 
                             {
-                                accountDropdown.insertAdjacentHTML("afterbegin", accountHeader);
+                                const userProfileUrl = `/user-${data.user.username}`; // Dynamic profile URL
+
+                                const accountHeader = `
+                                    <a href="${userProfileUrl}" class="account-header" data-spa="true">
+                                        <img src="${data.user.profilePicture}" alt="Profile Picture" class="account-profile-picture">
+                                        <span class="account-username">${data.user.username}</span>
+                                    </a>
+                                    <hr class="dropdown-divider">
+                                `;
+                            
+                                const existingHeader = accountDropdown.querySelector(".account-header");
+                            
+                                if (existingHeader) 
+                                {
+                                    existingHeader.outerHTML = accountHeader; // Replace existing header
+                                } 
+                                else 
+                                {
+                                    accountDropdown.insertAdjacentHTML("afterbegin", accountHeader);
+                                }
                             }
-                        }
                     } 
                     else 
                     {
@@ -263,14 +273,18 @@ function loadTopIconBar(containerId, url)
                 function closeAllMenus(exceptMenu) 
                 {
                     const menus = [accountDropdown, sharedDropdown, notificationsDropdown, displayDropdown];
+                    
                     menus.forEach(menu => 
                     {
                         if (menu !== exceptMenu && menu && menu.classList.contains("visible")) 
                         {
                             menu.classList.remove("visible");
                             menu.style.display = "none";
+                            menuOpen = false;
                         }
                     });
+                
+                    updateTooltipVisibility();
                 }
 
                 function toggleMenu(button, dropdown, isChild = false) 
@@ -278,24 +292,45 @@ function loadTopIconBar(containerId, url)
                     button.addEventListener("click", (event) => 
                     {
                         event.stopPropagation();
-                        if (!isChild) closeAllMenus(dropdown);
-                        dropdown.classList.toggle("visible");
-                        if (dropdown.classList.contains("notifications-dropdown-menu")) {
-                            displayNotifiations();
-                            countNotifications();
+                        
+                        if (!isChild) 
+                        {
+                            closeAllMenus(dropdown);
                         }
-                        dropdown.style.display = dropdown.classList.contains("visible") ? "block" : "none";
+                
+                        const isVisible = dropdown.classList.toggle("visible");
+                        dropdown.style.display = isVisible ? "block" : "none";
+                
+                        // Set the menuOpen flag to true when a menu is opened
+                        if (isVisible) 
+                        {
+                            menuOpen = true;
+                            button.classList.add("active");
+                            dropdown.classList.add("active");
+                        } 
+                        else 
+                        {
+                            menuOpen = false;
+                            button.classList.remove("active");
+                            dropdown.classList.remove("active");
+                        }
+                
+                        updateTooltipVisibility();
                     });
-
+                
                     document.addEventListener("click", (event) => 
                     {
                         if (!dropdown.contains(event.target) && !button.contains(event.target)) 
                         {
                             dropdown.style.display = "none";
                             dropdown.classList.remove("visible");
+                            button.classList.remove("active");
+                            menuOpen = false;
+                            updateTooltipVisibility();
                         }
                     });
                 }
+                
 
                 if (userIcon && accountDropdown) 
                 {
@@ -312,6 +347,23 @@ function loadTopIconBar(containerId, url)
                     }
                 }
 
+                function updateTooltipVisibility() 
+                {
+                    const body = document.body;
+                    const menus = document.querySelectorAll(".account-dropdown-menu, .shared-dropdown-menu, .notifications-dropdown-menu");
+                
+                    let anyMenuOpen = Array.from(menus).some(menu => menu.classList.contains("visible"));
+                
+                    if (anyMenuOpen) 
+                    {
+                        body.classList.add("menu-open");
+                    } 
+                    else 
+                    {
+                        body.classList.remove("menu-open");
+                    }
+                }
+                
                 if (sharedButton && sharedDropdown) 
                 {
                     toggleMenu(sharedButton, sharedDropdown);

@@ -91,3 +91,8 @@ body.dark-mode .shared-icon
 {
     background-color: #3b3d3d;
 }
+
+body.dark-mode .account-header:hover 
+{
+    background-color: rgba(255, 255, 255, 0.1);
+}
