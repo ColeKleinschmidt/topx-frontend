@@ -1,9 +1,14 @@
 body 
 {
     margin: 0;
-    font-family: Arial, sans-serif;
+    font-family: 'Open Sans';
     background-color: #CAEFD1;
     z-index: 20;
+}
+
+.list-container
+{
+    color: #080808;
 }
 
 /* Center the image container within its parent */

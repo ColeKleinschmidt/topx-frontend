@@ -1,8 +1,14 @@
 body 
 {
     margin: 0;
-    font-family: Arial, sans-serif;
+    font-family: 'Open Sans';
     height: 100vh;
+}
+
+.account-dropdown-menu, 
+.account-dropdown-menu * 
+{
+    font-family: 'Open Sans' !important;
 }
 
 .friend-request-notification {
@@ -340,6 +346,7 @@ body
 {
     position: absolute;
     top: 7vh;
+    font-size: 14px;
     right: 0;
     background-color: #ffffff;
     border: 1px solid #ddd;
@@ -462,7 +469,7 @@ body
     display: none;
     position: absolute;
     right: 22.4vh;
-    top: 15vh;
+    top: 14.7vh;
     background-color: #ffffff;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -482,13 +489,14 @@ body
     gap: 6px; /* Adds space between icon and text */
     font-size: 14px;
     font-weight: bold;
-    color: #ccc;
+    color: #000000;
 }
 
 /* Restrict the icon size */
 .dark-mode-icon 
 {
     max-width: 16px;
+    height: auto;
     height: auto;
     flex-shrink: 0;
 }
