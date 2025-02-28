@@ -15,7 +15,15 @@
     text-align: center;
     font-size: 24px;
     font-weight: bold;
-    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
+/* Action Button (Friend Request) */
+.action-button-container 
+{
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
 }
 
 /* User Info (Friends Count + Joined Date) */
@@ -25,30 +33,12 @@
     justify-content: center;
     align-items: center;
     gap: 15px;
-    font-size: 18px; /* Ensure consistent font size */
-    font-weight: bold;
-    margin-top: 10px;
-}
-
-/* User Info Text (Ensures Friends & Joined Match) */
-.user-info-text 
-{
     font-size: 18px;
     font-weight: bold;
-    margin: 0;
-}
-
-/* Vertical Divider */
-.vertical-divider 
-{
-    font-weight: bold;
-    font-size: 18px;
-    color: #555;
-    margin: 0;
 }
 
 /* Horizontal Divider */
-.user-info-divider, .lists-divider
+.user-info-divider 
 {
     width: 60%;
     height: 2px;
@@ -56,11 +46,83 @@
     margin: 15px auto;
 }
 
-/* "My Lists" Section */
+/* Lists Section */
 .my-lists-heading 
 {
     text-align: center;
     font-size: 22px;
     font-weight: bold;
+    margin-top: 10px;
+}
+
+/* Lists Divider */
+.lists-divider 
+{
+    width: 60%;
+    height: 2px;
+    background-color: #555;
+    margin: 15px auto;
+}
+
+/* Lists Container */
+.lists-container 
+{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 20px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* List Card */
+.list-card 
+{
+    background: #333;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+/* List Title */
+.list-title 
+{
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* List Items */
+.list-items 
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Individual List Item */
+.list-item 
+{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.list-item img 
+{
+    width: 40px;
+    height: 40px;
+    border-radius: 5px;
+    object-fit: cover;
+}
+
+/* No Lists Found */
+.no-lists 
+{
+    text-align: center;
+    font-size: 18px;
+    color: #999;
     margin-top: 20px;
 }
