@@ -1,0 +1,66 @@
+/* Profile Picture */
+.profile-pic 
+{
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    display: block;
+    margin: 0 auto;
+    object-fit: cover;
+}
+
+/* Username Styling */
+.username 
+{
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+/* User Info (Friends Count + Joined Date) */
+.user-info-container 
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    font-size: 18px; /* Ensure consistent font size */
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+/* User Info Text (Ensures Friends & Joined Match) */
+.user-info-text 
+{
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
+}
+
+/* Vertical Divider */
+.vertical-divider 
+{
+    font-weight: bold;
+    font-size: 18px;
+    color: #555;
+    margin: 0;
+}
+
+/* Horizontal Divider */
+.user-info-divider, .lists-divider
+{
+    width: 60%;
+    height: 2px;
+    background-color: #555;
+    margin: 15px auto;
+}
+
+/* "My Lists" Section */
+.my-lists-heading 
+{
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+    margin-top: 20px;
+}
