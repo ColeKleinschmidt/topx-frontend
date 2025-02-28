@@ -1,12 +1,13 @@
 (() => {
     let page = 1;
-    const limit = 5;
+    const limit = 2;
     let isLoading = false;
     let hasMoreData = true;
     
     // Function to check if user scrolled to bottom
     function handleScroll(feedSection) {
-        if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 10) {
+    
+        if (window.innerHeight + document.body.scrollTop >= document.body.scrollHeight - 500) {
             fetchLists(feedSection);
         }
     }
@@ -42,7 +43,7 @@
     const feedSection = document.getElementById("feed-section");
     
     if (feedSection) {
-        document.addEventListener("scroll", () => handleScroll(feedSection));
+        document.body.addEventListener("scroll", () => handleScroll(feedSection));
     
         fetchLists(feedSection);
     }
