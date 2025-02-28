@@ -66,6 +66,7 @@ function loadTopIconBar(containerId, url)
                 const displayButton = document.querySelector(".display-button");
                 const displayDropdown = document.querySelector(".display-dropdown-menu");
                 let displayedAllNotifications = false;
+                let displayedAllSharedLists = false;
 
                 async function acceptFriend(event, requestId, notification) {
                     event.stopPropagation();
@@ -103,6 +104,67 @@ function loadTopIconBar(containerId, url)
                     }
                 }
 
+                async function displaySharedList() {
+                    const notifications = getLocalStorage("notifications").filter(x => x.type === "share");
+                    const currentUserId = getCookie("userID");
+                    if (notifications.length > 0 && !displayedAllSharedLists) {
+                        const message = document.querySelector(".shared-dropdown-message");
+                        message.innerHTML = "Loading...";
+
+                        let displayedSharedLists = [];
+                        for (let i = 0; i < notifications.length; i++) {
+                            console.log(notifications[i]);
+                            try {
+                                if (notifications[i].receiver === currentUserId) {
+                                    const fetchUser = await getUserByIdAPI(notifications[i].sender);
+                                    const user = fetchUser.user;
+                                    
+                                    if (user !== undefined && user !== null) {
+                                        const notification = document.createElement("div");
+                                        notification.classList.add("notification");
+                                        notification.addEventListener("click", () => {
+                                            visitList(notifications[i].listId);
+                                        })
+
+                                        const profileImg = document.createElement("img");
+                                        profileImg.src = user.profilePicture;
+                                        profileImg.alt = user.username;
+                                        profileImg.classList.add("profile-pic-notification");
+                                        profileImg.style.width = "20px";
+                                        profileImg.style.height = "20px";
+                                        profileImg.style.borderRadius = "50%";
+                                        profileImg.styleobjectFit = "cover";
+
+                                        const username = document.createElement("h4");
+                                        username.textContent = user.username + " shared a list.";
+
+                                        notification.appendChild(profileImg);
+                                        notification.appendChild(username);
+                                        displayedSharedLists.push(notification);
+
+                                    }
+                                }
+                            } catch (error) {
+                                console.log("could not load user: " + error);
+                            }
+                        }
+
+                        if (displayedSharedLists.length > 0) {
+                            message.innerHTML = "";
+                        }else {
+                            message.innerHTML = "No new shared items";
+                            message.display = "none";
+                        }
+
+                        displayedSharedLists.map((x) => {
+                            sharedDropdown.appendChild(x);
+                            if (!displayedAllSharedLists) {
+                                displayedAllSharedLists = true;
+                            }
+                        });
+                    }
+                }
+
                 async function displayNotifiations() {
                     const notifications = getLocalStorage("notifications");
                     const currentUserId = getCookie("userID");
@@ -112,6 +174,7 @@ function loadTopIconBar(containerId, url)
 
                         let displayedNotifications = [];
                         for (let i = 0; i < notifications.length; i++) {
+                            console.log(notifications[i]);
                             try {
                                 if (notifications[i].type === 'friendRequest' && notifications[i].receiver === currentUserId) {
                                     const fetchUser = await getUserByIdAPI(notifications[i].sender);
@@ -119,7 +182,7 @@ function loadTopIconBar(containerId, url)
                                     
                                     if (user !== undefined && user !== null) {
                                         const notification = document.createElement("div");
-                                        notification.classList.add("friend-request-notification");
+                                        notification.classList.add("notification");
 
                                         const profileImg = document.createElement("img");
                                         profileImg.src = user.profilePicture;
@@ -156,7 +219,6 @@ function loadTopIconBar(containerId, url)
                                         notification.appendChild(username);
                                         notification.appendChild(buttons);
                                         displayedNotifications.push(notification);
-
                                     }else {
                                         throw (fetchUser.message);
                                     }
@@ -167,7 +229,7 @@ function loadTopIconBar(containerId, url)
                         }
 
                         if (displayedNotifications.length > 0) {
-                            message.innerHTML = "No new notifications";
+                            message.innerHTML = "";
                         }else {
                             message.innerHTML = "No new notifications";
                             message.display = "none";
@@ -313,6 +375,16 @@ function loadTopIconBar(containerId, url)
                             menuOpen = false;
                             button.classList.remove("active");
                             dropdown.classList.remove("active");
+                        }
+
+                        if (dropdown.classList.contains("notifications-dropdown-menu")) {
+                            displayNotifiations();
+                            countNotifications();
+                        }
+
+                        if (dropdown.classList.contains("shared-dropdown-menu")) {
+                            displaySharedList();
+                            countShared();
                         }
                 
                         updateTooltipVisibility();

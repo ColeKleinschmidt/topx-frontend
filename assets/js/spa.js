@@ -139,6 +139,12 @@ if (!window.spaInitialized)
                     loadPage(route);
                 }
             }
+
+            //close shared list menu
+            const menus = document.querySelectorAll(`.share-list-menu`);
+            menus.forEach(element => {
+              element.remove();
+            });
         } 
         catch (error) 
         {
