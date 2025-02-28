@@ -1,7 +1,6 @@
 (async () => {
-    const username = window.location.pathname.split('-')[1];
+    const username = window.location.pathname.split('/')[2];
     const userResponse = await getUserByUsernameAPI(username);
-    const user = userResponse.user;
     const pendingRequests = new Set();
 
     const currentUserId = getCookie("userID");
@@ -9,12 +8,13 @@
     const container = document.getElementById("user-container");
     container.innerHTML = ""; // Clear existing content
 
-    if (user.message === "no user found") {
+    if (userResponse.message === "no user found") {
         const noUserFound = document.createElement("h1");
         noUserFound.innerHTML = "No user found";
 
         container.appendChild(noUserFound);
     }else {
+        const user = userResponse.user;
         // Create profile picture
         const profilePic = document.createElement("img");
         profilePic.src = user.profilePicture;

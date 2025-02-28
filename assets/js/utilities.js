@@ -97,7 +97,7 @@ function countNotifications() {
 }
 
 function visitUserProfile(username) {
-    pathName = "/user-" + username;
+    pathName = "/user/" + username;
     window.location.pathname = pathName;
     //loadPage(pathName);
 }

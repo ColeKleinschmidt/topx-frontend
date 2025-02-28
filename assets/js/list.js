@@ -1,6 +1,6 @@
 (() => {
     function displayList(listSection) {
-        const listId = window.location.pathname.split('-')[1];
+        const listId = window.location.pathname.split('/')[2];
         const listResponse = getListAPI(listId);
         if (listResponse.message == "success") {
             const list = generateListElement(listResponse.list);

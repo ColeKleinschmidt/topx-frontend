@@ -16,7 +16,7 @@ function loadPage(route)
 
         const content = document.getElementById('content');
         const body = document.body;
-        const routeData = /^\/user-[a-zA-Z0-9]+$/.test(route) ? routes["/user"] : /^\/list-[a-zA-Z0-9]+$/.test(route) ? routes["/list"] : routes[route] || routes['404'];
+        const routeData = /^\/user\/[a-zA-Z0-9]+$/.test(route) ? routes["/user"] : /^\/list\/[a-zA-Z0-9]+$/.test(route) ? routes["/list"] : routes[route] || routes['404'];
 
         if (!content) 
         {
@@ -61,10 +61,10 @@ function loadPage(route)
                     if (route === '/') {
                         route = '/index';
                     }
-                    if (/^\/user-[a-zA-Z0-9]+$/.test(route)) {
+                    if (/^\/user\/[a-zA-Z0-9]+$/.test(route)) {
                         route = "/user";
                     }
-                    if (/^\/list-[a-zA-Z0-9]+$/.test(route)) {
+                    if (/^\/list\/[a-zA-Z0-9]+$/.test(route)) {
                         route = "/list";
                     }  
                     const scriptName = `assets/js${route}.js`;
