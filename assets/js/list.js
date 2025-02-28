@@ -1,13 +1,13 @@
 (() => {
-    function displayList(listSection) {
+    async function displayList(listSection) {
         const listId = window.location.pathname.split('/')[2];
-        const listResponse = getListAPI(listId);
-        if (listResponse.message == "success") {
+        const listResponse = await getListAPI(listId);
+        if (listResponse.message === "success") {
             const list = generateListElement(listResponse.list);
 
             listSection.appendChild(list);
         }else {
-            alert(listResponse.message);
+            alert("message: " + listResponse.message);
         }
     }
 
