@@ -106,4 +106,51 @@ if (getCookie("userID") !== "") {
     getNotifications();
 }
 
+function generateListElement (list) {
+    const listContainer = document.createElement("div");
+    listContainer.classList.add("list-container");
+    listContainer.style.backgroundColor = list.backgroundColor;
+
+    const profilePic = document.createElement("img");
+    profilePic.src = list.user.profilePicture;
+    profilePic.alt = list.user.username;
+    profilePic.classList.add("list-profile-pic");
+    
+    const title = document.createElement("h2");
+    title.textContent = list.title;
+
+    listContainer.appendChild(profilePic);
+    listContainer.appendChild(title);
+    
+    const itemsContainer = document.createElement("div");
+    itemsContainer.classList.add("items-container");
+    
+    list.items.forEach((item,i) => {
+        const itemRow = document.createElement("div");
+        itemRow.classList.add("item-row");
+
+        const itemNum = document.createElement("span");
+        itemNum.classList.add("item-num")
+        itemNum.textContent = `${i+1 == 10 ? "x" : i+1}`;
+        
+        const itemName = document.createElement("span");
+        itemName.textContent = item.title;
+        itemName.classList.add('item-name');
+        
+        const itemImage = document.createElement("img");
+        itemImage.src = item.image;
+        itemImage.alt = item.title;
+        itemImage.classList.add("item-image");
+        
+        itemRow.appendChild(itemNum);
+        itemRow.appendChild(itemName);
+        itemRow.appendChild(itemImage);
+        itemsContainer.appendChild(itemRow);
+    });
+    
+    listContainer.appendChild(itemsContainer);
+
+    return listContainer;
+}
+
 

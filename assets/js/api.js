@@ -269,6 +269,25 @@ const getListsAPI = async (page, limit) => {
     return response;
 }
 
+const getListAPI = async (listId) => {
+    data = {
+        listId
+    }
+    const backend_query = await fetch(`${ENDPOINT}getList`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Accept': 'application/json',
+            'Accept-encoding': 'gzip, deflate',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data),
+    });
+    const response = await backend_query.json();
+    console.log(response);
+    return response;
+}
+
 const getUserByUsernameAPI = async (username) => {
     data = {
         username: username

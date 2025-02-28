@@ -10,12 +10,13 @@ function loadPage(route)
             '/createlist': { path: './createlist.html', title: 'TopX | Create List' },
             '/settings': { path: './settings.html', title: 'TopX | Settings' },
             '/user': { path: './user.html', title: 'TopX | User Profile' },
+            '/list': { path: './list.html', title: 'TopX | List' },
             '404': { path: './404.html', title: 'Page Not Found' },
         };
 
         const content = document.getElementById('content');
         const body = document.body;
-        const routeData = /^\/user-[a-zA-Z0-9]+$/.test(route) ? routes["/user"] : routes[route] || routes['404'];
+        const routeData = /^\/user-[a-zA-Z0-9]+$/.test(route) ? routes["/user"] : /^\/list-[a-zA-Z0-9]+$/.test(route) ? routes["/list"] : routes[route] || routes['404'];
 
         if (!content) 
         {
@@ -63,6 +64,9 @@ function loadPage(route)
                     if (/^\/user-[a-zA-Z0-9]+$/.test(route)) {
                         route = "/user";
                     }
+                    if (/^\/list-[a-zA-Z0-9]+$/.test(route)) {
+                        route = "/list";
+                    }  
                     const scriptName = `assets/js${route}.js`;
                     const existingScript = document.querySelector(`script[src='${scriptName}']`);
                     if (existingScript) 
