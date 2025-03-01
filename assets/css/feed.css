@@ -124,6 +124,10 @@ body
     right: 30px;
 }
 
+.shared-icon-list-container:hover {
+    cursor: pointer;
+}
+
 
 .shared-icon-list-img {
     height: 20px;
