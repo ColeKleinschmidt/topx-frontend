@@ -23,7 +23,7 @@
 {
     display: flex;
     justify-content: center;
-    margin-bottom: 15px;
+    margin-bottom: 20px; /* 20px beneath the button */
 }
 
 /* User Info (Friends Count + Joined Date) */
@@ -35,6 +35,29 @@
     gap: 15px;
     font-size: 18px;
     font-weight: bold;
+    margin-top: -5px; /* Adjusted to -5px */
+}
+
+/* Ensure 'Friends' and 'Joined' text are #4caf50 */
+.user-info-container span.label 
+{
+    color: #4caf50;
+    font-weight: bold;
+}
+
+/* Ensure numbers and date remain original color */
+.user-info-container span.value 
+{
+    color: #ddd;
+    font-weight: normal;
+}
+
+/* Vertical Divider between Friends and Joined */
+.user-info-container span.divider 
+{
+    font-size: 18px;
+    font-weight: bold;
+    color: #999;
 }
 
 /* Horizontal Divider */
@@ -118,9 +141,10 @@
     object-fit: cover;
 }
 
-/* No Lists Found */
+/* No Lists Found - Centered */
 .no-lists 
 {
+    grid-column: span 3; /* Spans across the entire grid */
     text-align: center;
     font-size: 18px;
     color: #999;

@@ -30,9 +30,9 @@
         const userInfoContainer = document.createElement("div");
         userInfoContainer.classList.add("user-info-container");
         userInfoContainer.innerHTML = `
-            <span>Friends: ${user.friends.length}</span>
-            <span>|</span>
-            <span>Joined: ${new Date(user.createdTimestamp).toLocaleDateString()}</span>
+            <span class="label">Friends:</span> <span class="value">${user.friends.length}</span>
+            <span class="divider">|</span>
+            <span class="label">Joined:</span> <span class="value">${new Date(user.createdTimestamp).toLocaleDateString()}</span>
         `;
     
         // Create Action Button (Add Friend) if it's not the current user
@@ -108,7 +108,10 @@
                 } 
                 else 
                 {
-                    listsContainer.innerHTML = "<p class='no-lists'>This user has not posted any lists.</p>";
+                    const noListsMessage = document.createElement("p");
+                    noListsMessage.textContent = "This user has not posted any lists.";
+                    noListsMessage.classList.add("no-lists");
+                    listsContainer.appendChild(noListsMessage);
                 }
             } 
             catch (error) 
