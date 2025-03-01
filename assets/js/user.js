@@ -1,142 +1,150 @@
-(async () => {
-    const username = window.location.pathname.split('/')[2];
-    const userResponse = await getUserByUsernameAPI(username);
-    const pendingRequests = new Set();
-
-    const currentUserId = getCookie("userID");
-
-    const container = document.getElementById("user-container");
-    container.innerHTML = ""; // Clear existing content
-
-    if (userResponse.message === "no user found") {
-        const noUserFound = document.createElement("h1");
-        noUserFound.innerHTML = "No user found";
-
-        container.appendChild(noUserFound);
-    }else {
+(async () => 
+    {
+        const username = window.location.pathname.split('/')[2];
+        const userResponse = await getUserByUsernameAPI(username);
+        const currentUserId = getCookie("userID");
+    
+        const container = document.getElementById("user-container");
+        container.innerHTML = ""; // Clear existing content
+    
+        if (userResponse.message === "no user found") 
+        {
+            container.innerHTML = "<h1>No user found</h1>";
+            return;
+        }
+    
         const user = userResponse.user;
-        // Create profile picture
+    
+        // Create Profile Picture
         const profilePic = document.createElement("img");
         profilePic.src = user.profilePicture;
         profilePic.alt = "Profile Picture";
-        profilePic.style.width = "150px";
-        profilePic.style.height = "150px";
-        profilePic.style.borderRadius = "50%";
-        profilePic.style.display = "block";
-        profilePic.style.margin = "0 auto";
-        profilePic.style.objectFit = "cover";
-        
-        // Create username element
-        const username = document.createElement("h2");
-        username.textContent = user.username;
-        username.style.textAlign = "center";
-        
-        // Create friends count
-        const friendsCount = document.createElement("p");
-        friendsCount.textContent = `Friends: ${user.friends.length}`;
-        friendsCount.style.textAlign = "center";
-
-        const actionButton = document.createElement("button");
-
-        const outgoingRequest = doesFriendRequestExist(currentUserId, user._id);
-        const incomingRequest = doesFriendRequestExist(user._id, currentUserId);
-
-        if (pendingRequests.has(user._id) || outgoingRequest.exist) {
-            actionButton.textContent = "Pending...";
-            actionButton.disabled = true;
-            actionButton.classList.add("pending-btn");
-            container.appendChild(profilePic);
-            container.appendChild(username);
-            container.appendChild(friendsCount);
-            container.appendChild(actionButton);
-        } else if (incomingRequest.exist) {
-            const buttons = document.createElement("div");
-            buttons.style.display = "flex";
-            buttons.style.flexDirection = "column";
-            buttons.style.justifyContent = 'center';
-            buttons.style.alignItems = "center";
-
-            const acceptButton = document.createElement("button");
-            const declineButton = document.createElement("button");
-            acceptButton.textContent = "Accept";
-            acceptButton.classList.add("accept-friend-btn");
-            acceptButton.addEventListener("click", () => acceptFriend(incomingRequest.id, acceptButton, declineButton));
-
-            
-            declineButton.textContent = "Decline";
-            declineButton.classList.add("decline-friend-btn");
-            declineButton.addEventListener("click", () => declineFriend(incomingRequest.id, acceptButton, declineButton));
-
-            buttons.appendChild(acceptButton);
-            buttons.appendChild(declineButton);
-
-            container.appendChild(profilePic);
-            container.appendChild(username);
-            container.appendChild(friendsCount);
-            container.appendChild(buttons);
-        } else {
+        profilePic.classList.add("profile-pic");
+    
+        // Create Username Element
+        const usernameElement = document.createElement("h2");
+        usernameElement.textContent = user.username;
+        usernameElement.classList.add("username");
+    
+        // Create Friends Count and Joined Date
+        const userInfoContainer = document.createElement("div");
+        userInfoContainer.classList.add("user-info-container");
+        userInfoContainer.innerHTML = `
+            <span>Friends: ${user.friends.length}</span>
+            <span>|</span>
+            <span>Joined: ${new Date(user.createdTimestamp).toLocaleDateString()}</span>
+        `;
+    
+        // Create Action Button (Add Friend) if it's not the current user
+        let actionButtonContainer = null;
+        if (user._id !== currentUserId) 
+        {
+            actionButtonContainer = document.createElement("div");
+            actionButtonContainer.classList.add("action-button-container");
+    
+            const actionButton = document.createElement("button");
             actionButton.textContent = "Add Friend";
             actionButton.classList.add("add-friend-btn");
-            actionButton.addEventListener("click", () => addFriend(user._id, actionButton));
-            container.appendChild(profilePic);
-            container.appendChild(username);
-            container.appendChild(friendsCount);
-            container.appendChild(actionButton);
+            actionButton.addEventListener("click", async () => 
+            {
+                const response = await sendFriendRequestAPI(user._id);
+                if (response.message === "success") 
+                {
+                    actionButton.textContent = "Pending...";
+                    actionButton.disabled = true;
+                    actionButton.classList.add("pending-btn");
+                } 
+                else 
+                {
+                    alert(response.message);
+                }
+            });
+    
+            actionButtonContainer.appendChild(actionButton);
         }
-    }
-
-    async function addFriend(userId, button) {
-        try {
-            const request = await sendFriendRequestAPI(userId);
-            if (request.message == "success") {
-                pendingRequests.add(userId);
-                button.textContent = "Pending...";
-                button.disabled = true;
-                button.classList.add("pending-btn");
-            }else {
-                alert(request.message);
+    
+        // Create Horizontal Divider
+        const horizontalDivider = document.createElement("div");
+        horizontalDivider.classList.add("user-info-divider");
+    
+        // Create Lists Header
+        const listsHeader = document.createElement("h2");
+        listsHeader.textContent = "Lists";
+        listsHeader.classList.add("my-lists-heading");
+    
+        // Create Lists Divider
+        const listsDivider = document.createElement("div");
+        listsDivider.classList.add("lists-divider");
+    
+        // Create Lists Container
+        const listsContainer = document.createElement("div");
+        listsContainer.classList.add("lists-container");
+    
+        // Append elements to container
+        container.append(profilePic, usernameElement);
+        if (actionButtonContainer) 
+        {
+            container.append(actionButtonContainer);
+        }
+        container.append(userInfoContainer, horizontalDivider, listsHeader, listsDivider, listsContainer);
+    
+        // Fetch and Display User's Lists
+        async function fetchUserLists() 
+        {
+            try 
+            {
+                const response = await fetch("/getListsByUserId", 
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ userId: user._id, page: 1, limit: 10 }),
+                });
+    
+                const data = await response.json();
+    
+                if (data.message === "success" && data.lists.length > 0) 
+                {
+                    displayLists(data.lists);
+                } 
+                else 
+                {
+                    listsContainer.innerHTML = "<p class='no-lists'>This user has not posted any lists.</p>";
+                }
+            } 
+            catch (error) 
+            {
+                console.error("Error fetching user lists:", error);
             }
-
-        } catch (error) {
-            console.error("Error adding friend:", error);
         }
-    }
-
-    async function acceptFriend(requestId, acceptButton, declineButton) {
-        try {
-            const request = await acceptFriendRequestAPI(requestId);
-            if (request.message == "success") {
-                declineButton.remove();
-                acceptButton.disabled = true;
-                acceptButton.textContent = "Friends";
-                removeNotification(requestId);
-            } else {
-                alert(request.message);
-            }
-            
-        } catch (error) {
-            console.error("Error accepting friend request:", error);
+    
+        function displayLists(lists) 
+        {
+            listsContainer.innerHTML = ""; // Clear previous content
+    
+            lists.forEach(list => 
+            {
+                const listCard = document.createElement("div");
+                listCard.classList.add("list-card");
+                listCard.style.backgroundColor = list.backgroundColor || "#444";
+    
+                listCard.innerHTML = `
+                    <h3 class="list-title">${list.title}</h3>
+                    <div class="list-items">
+                        ${list.items.slice(0, 3).map(item => 
+                        `
+                            <div class="list-item">
+                                <img src="${item.image}" alt="${item.title}">
+                                <span>${item.title}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+    
+                listsContainer.appendChild(listCard);
+            });
         }
-    }
-
-    async function declineFriend(requestId, acceptButton, declineButton) {
-        try {
-            const request = await declineFriendRequestAPI(requestId);
-            if (request.message == "success") {
-                declineButton.remove();
-                acceptButton.textContent = "Add Friend";
-                acceptButton.classList.remove("accept-friend-btn");
-                acceptButton.classList.add("add-friend-btn");
-                acceptButton.addEventListener("click", () => addFriend(user._id, actionButton));
-                removeNotification(requestId);
-
-            } else {
-                alert(request.message);
-            }
-        } catch (error) {
-            console.error("Error declining friend request:", error);
-        }
-    }
-
-
-})();
+    
+        fetchUserLists();
+    
+    })();
+    

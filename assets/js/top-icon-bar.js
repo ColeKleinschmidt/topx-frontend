@@ -274,7 +274,7 @@ function loadTopIconBar(containerId, url)
                         // Add account header with username and profile picture
                         if (accountDropdown) 
                             {
-                                const userProfileUrl = `/user-${data.user.username}`; // Dynamic profile URL
+                                const userProfileUrl = `/user/${data.user.username}`; // Dynamic profile URL
 
                                 const accountHeader = `
                                     <a href="${userProfileUrl}" class="account-header" data-spa="true">
