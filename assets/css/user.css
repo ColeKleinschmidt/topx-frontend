@@ -10,20 +10,42 @@
 }
 
 /* Username Styling */
-.username 
+#user-container .username 
 {
     text-align: center;
     font-size: 24px;
     font-weight: bold;
     margin-bottom: 15px;
+    cursor: default;
+    text-decoration: none;
 }
 
-/* Action Button (Friend Request) */
+#user-container .username:hover 
+{
+    text-decoration: none;
+}
+
 .action-button-container 
 {
     display: flex;
     justify-content: center;
+    align-items: center;
     margin-bottom: 20px;
+    width: 100%;
+}
+
+.add-friend-btn 
+{
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: auto;
+    display: inline-block;
+    text-align: center;
+    min-width: 120px;
 }
 
 /* User Info (Friends Count + Joined Date) */
@@ -38,14 +60,14 @@
     margin-top: -5px;
 }
 
-/* 'Friends' and 'Joined' text color */
+/* Friends and Joined Labels */
 .user-info-container span.label 
 {
     color: #4caf50;
     font-weight: bold;
 }
 
-/* Ensure numbers and date remain original color */
+/* Friends Count & Date */
 .user-info-container span.value 
 {
     color: #ddd;
@@ -61,7 +83,7 @@
 }
 
 /* Horizontal Divider */
-.user-info-divider, .lists-divider 
+.user-info-divider 
 {
     width: 60%;
     height: 2px;
@@ -69,13 +91,22 @@
     margin: 15px auto;
 }
 
-/* Lists Section Header */
+/* Lists Section */
 .my-lists-heading 
 {
     text-align: center;
     font-size: 22px;
     font-weight: bold;
     margin-top: 10px;
+}
+
+/* Lists Divider */
+.lists-divider 
+{
+    width: 60%;
+    height: 2px;
+    background-color: #555;
+    margin: 15px auto;
 }
 
 /* Lists Container */
@@ -96,10 +127,11 @@
     padding: 15px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    text-align: left;
-    transition: transform 0.2s ease-in-out, filter 0.2s ease-in-out;
+    transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
     cursor: pointer;
-    color: white; /* 👈 Ensures all text inside the list card is white */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 /* Hover Effect: Enlarge 1.05x & Brighten */
@@ -109,14 +141,14 @@
     filter: brightness(110%);
 }
 
-/* List Title (Centered) */
+/* List Title - CENTERED */
 .list-title 
 {
     font-size: 15px;
     font-weight: bold;
     text-align: center;
+    width: 100%;
     margin-bottom: 10px;
-    color: white; /* 👈 Makes sure the list title is also white */
 }
 
 /* List Items */
@@ -125,6 +157,9 @@
     display: flex;
     flex-direction: column;
     gap: 5px;
+    width: 100%;
+    align-items: flex-start;
+    padding-left: 15px; /* Ensures left alignment */
 }
 
 /* Individual List Item */
@@ -133,35 +168,31 @@
     display: flex;
     align-items: center;
     gap: 10px;
+    width: 100%;
 }
 
-/* List Item Image */
+/* Ensure images are left-aligned */
 .list-item img 
 {
     width: 40px;
     height: 40px;
     border-radius: 5px;
-    object-fit: cover;
+    object-fit: contain;
 }
 
-/* List Item Text */
-.list-item-text 
-{
-    color: white; /* 👈 Ensures text next to images is white */
-}
-
-/* Bold Ellipses if More than 5 Items */
+/* List Ellipses */
 .list-ellipsis 
 {
     font-weight: bold;
     text-align: left;
-    color: white;
+    padding-top: 5px;
+    padding-left: 95px;
 }
 
 /* No Lists Found - Centered */
 .no-lists 
 {
-    grid-column: span 3;
+    grid-column: span 3; /* Spans across the entire grid */
     text-align: center;
     font-size: 18px;
     color: #999;

@@ -13,13 +13,14 @@
 
 .friend-item 
 {
-    width: 400px;
+    width: 550px; /* Increased width */
     display: flex;
     align-items: center;
     background: #f5f5f5;
-    padding: 10px;
+    padding: 15px;
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    justify-content: space-between;
 }
 
 .profile-pic 
@@ -36,38 +37,110 @@
     flex-grow: 1;
 }
 
-.username 
+#friends-list .username 
 {
     font-weight: bold;
+    cursor: pointer;
+    font-size: 24px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: text-decoration 0.2s ease;
+}
+
+#friends-list .username:hover 
+{
+    text-decoration: underline;
 }
 
 .account-age, .friends-count 
 {
-    font-size: 0.9em;
+    font-size: 1em;
     color: gray;
+    white-space: nowrap; /* Ensures it stays on one line */
 }
 
+.action-buttons 
+{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    max-width: 120px;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Ensure both buttons have the same width */
+.add-friend-btn, .ignore-friend-btn 
+{
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+    text-align: center;
+}
+
+/* Add Friend Button */
 .add-friend-btn 
 {
     background-color: #4CAF50;
     color: white;
     border: none;
-    padding: 5px 20px;
-    border-radius: 10px;
-    cursor: pointer;
+    transition: background-color 0.2s ease;
+    padding: 20px 100px;
 }
 
+.add-friend-btn:hover 
+{
+    background-color: #45a049;
+}
+
+/* Ignore Button */
+.ignore-friend-btn 
+{
+    background-color: #555;
+    color: white;
+    border: none;
+    transition: background-color 0.2s ease;
+}
+
+.ignore-friend-btn:hover 
+{
+    background-color: #444; /* Slightly darker gray on hover */
+}
+
+/* Pending Friend Button */
+.pending-btn 
+{
+    background-color: #888;
+    color: white;
+    border: none;
+    padding: 8px 10px;
+    border-radius: 6px;
+    cursor: not-allowed;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+/* Accept Friend Button */
 .accept-friend-btn 
 {
     background-color: #4CAF50;
     color: white;
     border: none;
     padding: 5px 10px;
-    margin-bottom: 10px;
     border-radius: 5px;
     cursor: pointer;
+    white-space: nowrap;
 }
 
+.accept-friend-btn:hover 
+{
+    background-color: #45a049;
+}
+
+/* Decline Friend Button */
 .decline-friend-btn 
 {
     background-color: #c92929;
@@ -76,16 +149,7 @@
     padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
-}
-
-.add-friend-btn:hover 
-{
-    background-color: #45a049;
-}
-
-.accept-friend-btn:hover 
-{
-    background-color: #45a049;
+    white-space: nowrap;
 }
 
 .decline-friend-btn:hover 

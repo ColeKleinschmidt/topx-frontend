@@ -585,7 +585,7 @@ body
     display: none;
     position: absolute;
     top: 5.5vh; /* Appears below the button */
-    left: -16.5vh;
+    left: -16.4vh;
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 8px;

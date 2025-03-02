@@ -412,6 +412,26 @@ const getUserListsAPI = async (userId, page = 1, limit = 10) =>
     return response;
 };
 
+async function ignoreUser(userId, ignoredUserId) 
+{
+    try 
+    {
+        const response = await fetch("/ignoreUser", 
+        {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId, ignoredUserId })
+        });
+
+        return await response.json();
+    } 
+    catch (error) 
+    {
+        console.error("Error ignoring user:", error);
+        return { message: "Error" };
+    }
+}
+
 //------------------TEMPLATE API CALL------------------//
 /*
 const api = async () => {
