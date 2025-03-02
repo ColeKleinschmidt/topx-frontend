@@ -390,6 +390,28 @@ window.fetchImages = async (query) => {
     }
 };
 
+const getUserListsAPI = async (userId, page = 1, limit = 10) => 
+{
+    const data = { userId, page, limit };
+
+    const backend_query = await fetch(`${ENDPOINT}getListsByUserId`, 
+    {
+        method: 'POST',
+        credentials: 'include',
+        headers: 
+        {
+            'Accept': 'application/json',
+            'Accept-encoding': 'gzip, deflate',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data),
+    });
+
+    const response = await backend_query.json();
+    console.log(response);
+    return response;
+};
+
 //------------------TEMPLATE API CALL------------------//
 /*
 const api = async () => {

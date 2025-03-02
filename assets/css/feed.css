@@ -116,28 +116,54 @@ body
     overflow-x: hidden;
 }
 
-.shared-icon-list-container {
+.shared-icon-list-container 
+{
     position: absolute;
-    height: 20px;
-    width: 20px;
+    height: 30px;
+    width: 30px;
     top: 50px;
     right: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
-.shared-icon-list-container:hover {
+.shared-icon-list-container:hover 
+{
+    background-color: #888888;
     cursor: pointer;
 }
 
-
-.shared-icon-list-img {
+.shared-icon-list-img 
+{
     height: 20px;
     width: 20px;
+    position: relative; /* Ensures the image stays in place */
+    z-index: 1; /* Keeps it above the background */
 }
 
-.friend-share-list {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
+.shared-icon-tooltip 
+{
+    position: absolute;
+    bottom: 35px; /* Positions it 5px above the icon */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #3C3C3C;
+    color: white;
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+/* Show tooltip on hover */
+.shared-icon-list-container:hover .shared-icon-tooltip 
+{
+    opacity: 1;
+    visibility: visible;
 }
