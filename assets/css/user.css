@@ -48,6 +48,29 @@
     min-width: 120px;
 }
 
+.block-btn 
+{
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.blocked-message 
+{
+    text-align: center;
+    font-size: 20px;
+    color: rgb(128, 128, 128);
+    font-weight: bold;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
 /* User Info (Friends Count + Joined Date) */
 .user-info-container 
 {

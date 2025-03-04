@@ -1,80 +1,99 @@
 (() => 
+{
+    let page = 1;
+    const limit = 2;
+    let isLoading = false;
+    let hasMoreData = true;
+    let blockedUsers = new Set(); // Store blocked user IDs
+
+    async function fetchBlockedUsers() 
     {
-        let page = 1;
-        const limit = 2;
-        let isLoading = false;
-        let hasMoreData = true;
-        
-        function handleScroll(feedSection) 
+        try 
         {
-            if (window.innerHeight + document.body.scrollTop >= document.body.scrollHeight - 500) 
+            const response = await fetch(`/getBlockedUsers`);
+            const data = await response.json();
+            if (data.blockedUsers && Array.isArray(data.blockedUsers)) 
             {
-                fetchLists(feedSection);
+                blockedUsers = new Set(data.blockedUsers); // Store blocked user IDs in a Set for fast lookup
             }
-        }
-        
-        async function fetchLists(feedSection) 
+        } 
+        catch (error) 
         {
-            if (isLoading || !hasMoreData) return;
-            isLoading = true;
-        
-            try 
+            console.error("❌ Error fetching blocked users:", error);
+        }
+    }
+
+    function handleScroll(feedSection) 
+    {
+        if (window.innerHeight + document.body.scrollTop >= document.body.scrollHeight - 500) 
+        {
+            fetchLists(feedSection);
+        }
+    }
+
+    async function fetchLists(feedSection) 
+    {
+        if (isLoading || !hasMoreData) return;
+        isLoading = true;
+
+        try 
+        {
+            const data = await getListsAPI(page, limit);
+            
+            if (data.lists && data.lists.length > 0) 
             {
-                const data = await getListsAPI(page, limit);
-                
-                if (data.lists && data.lists.length > 0) 
+                data.lists.forEach(list => 
                 {
-                    data.lists.forEach(list => 
+                    if (!blockedUsers.has(list.userId)) 
                     {
                         const listElement = generateListElement(list);
                         feedSection.appendChild(listElement);
-                    });
-    
-                    // Ensure tooltips are added after lists load
-                    addTooltips();
-    
-                    page++;
-                } 
-                else 
-                {
-                    hasMoreData = false;
-                    const endMessage = document.createElement("p");
-                    endMessage.textContent = "You've reached the end!";
-                    endMessage.classList.add("end-message");
-                    feedSection.appendChild(endMessage);
-                }
+                    }
+                });
+
+                addTooltips();
+
+                page++;
             } 
-            catch (error) 
+            else 
             {
-                console.error("Error fetching lists:", error);
-            } 
-            finally 
-            {
-                isLoading = false;
+                hasMoreData = false;
+                const endMessage = document.createElement("p");
+                endMessage.textContent = "You've reached the end!";
+                endMessage.classList.add("end-message");
+                feedSection.appendChild(endMessage);
             }
-        }
-        
-        const feedSection = document.getElementById("feed-section");
-        
-        if (feedSection) 
+        } 
+        catch (error) 
         {
-            document.body.addEventListener("scroll", () => handleScroll(feedSection));
-            fetchLists(feedSection);
-        }
-    
-        function addTooltips() 
+            console.error("Error fetching lists:", error);
+        } 
+        finally 
         {
-            document.querySelectorAll(".shared-icon-list-container").forEach(container => 
+            isLoading = false;
+        }
+    }
+
+    const feedSection = document.getElementById("feed-section");
+
+    if (feedSection) 
+    {
+        document.body.addEventListener("scroll", () => handleScroll(feedSection));
+        fetchBlockedUsers().then(() => fetchLists(feedSection));
+    }
+
+    function addTooltips() 
+    {
+        document.querySelectorAll(".shared-icon-list-container").forEach(container => 
+        {
+            if (!container.querySelector(".shared-icon-tooltip")) 
             {
-                if (!container.querySelector(".shared-icon-tooltip")) 
-                {
-                    const tooltip = document.createElement("span");
-                    tooltip.classList.add("shared-icon-tooltip");
-                    tooltip.textContent = "Share";
-                    container.appendChild(tooltip);
-                }
-            });
-        }
-    
-    })();
-    
+                const tooltip = document.createElement("span");
+                tooltip.classList.add("shared-icon-tooltip");
+                tooltip.textContent = "Share";
+                container.appendChild(tooltip);
+            }
+        });
+    }
+
+})();

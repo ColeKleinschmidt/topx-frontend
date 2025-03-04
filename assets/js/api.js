@@ -432,6 +432,47 @@ async function ignoreUser(userId, ignoredUserId)
     }
 }
 
+async function toggleBlockUser(userId, blockedUserId) 
+{
+    try 
+    {
+        const response = await fetch("/toggleBlockUser", 
+        {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId, blockedUserId })
+        });
+
+        const data = await response.json();
+        console.log("toggleBlockUser API response:", data);
+        return data;
+    } 
+    catch (error) 
+    {
+        console.error("Error toggling block status:", error);
+        return { message: "Error" };
+    }
+}
+
+async function getBlockedUsers() 
+{
+    try 
+    {
+        const response = await fetch("/getBlockedUsers", 
+        { 
+            method: "GET", 
+            headers: { "Content-Type": "application/json" } 
+        });
+
+        return await response.json();
+    } 
+    catch (error) 
+    {
+        console.error("Error fetching blocked users:", error);
+        return { blockedUsers: [] }; // Return an empty array to prevent crashes
+    }
+}
+
 //------------------TEMPLATE API CALL------------------//
 /*
 const api = async () => {
