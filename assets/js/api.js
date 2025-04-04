@@ -1,4 +1,4 @@
-const ENDPOINT = "http://127.0.0.1:8080/";
+const ENDPOINT = "https://topx-backend.onrender.com/";
 
 const createAccountAPI = async (username, email, password) => {
     const data = {

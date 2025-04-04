@@ -19,11 +19,6 @@ body
     align-items: center;
 }
 
-.profile-pic-notification 
-{
-
-}
-
 .accept-friend-btn {
     background-color: #4CAF50;
     color: white;
@@ -58,11 +53,11 @@ body
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #F9F9F9;
+    background-color: #ff6b6b;
     padding: 10px 0;
     position: fixed;
     top: 0;
-    height: 5vh; /* Width of top icon bar */
+    height: 4vh; /* Width of top icon bar */
     width: 100%;
     z-index: 1000;
     gap: 3vh; /* Space between icons */
