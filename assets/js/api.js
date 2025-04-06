@@ -418,7 +418,7 @@ async function ignoreUser(userId, ignoredUserId)
 {
     try 
     {
-        const response = await fetch("/ignoreUser", 
+        const response = await fetch(`${ENDPOINT}ignoreUser"`, 
         {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -438,7 +438,7 @@ async function toggleBlockUser(userId, blockedUserId)
 {
     try 
     {
-        const response = await fetch("/toggleBlockUser", 
+        const response = await fetch(`${ENDPOINT}/toggleBlockUser`, 
         {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -460,7 +460,7 @@ async function getBlockedUsers()
 {
     try 
     {
-        const response = await fetch("/getBlockedUsers", 
+        const response = await fetch(`${ENDPOINT}/getBlockedUsers`, 
         { 
             method: "GET", 
             headers: { "Content-Type": "application/json" } 
