@@ -1,16 +1,18 @@
 import "../css/LandingPage.css";
+import topXlogo from "../../assets/TopXLogo.png";
+import backgroundImage from "../../assets/Index\ Background.png";
 
 export default function LandingPage() {
 
     return (
-        <div id ="content">
+        <div id ="content" style={{ backgroundImage: `url('${backgroundImage}')` }}>
             {"<!-- Welcome Card -->"}
             <div className="welcome-card">
-                <img src="assets/images/TopXLogo.png" alt="TopX Logo" className="welcome-logo" />
+                <img src={topXlogo} alt="TopX Logo" className="welcome-logo" />
                 <h1>Welcome to TopX</h1>
                 <p className="welcome-subtext">Let's hear your favorites</p>
 
-                {"<!-- Sign Up Form-->"}
+                {/*<!-- Sign Up Form-->*/}
                 <div id="signup-form" className="form-container">
                     <h2 id="form-title">Sign Up</h2>
                     <form>
@@ -27,7 +29,7 @@ export default function LandingPage() {
                     </form>
                 </div>
 
-                {"<!-- Log In Form -->"}
+                {/*<!-- Log In Form -->*/}
                 <div id="login-form" className="form-container hidden">
                     <h2 id="form-title">Log In</h2>
                     <form>
