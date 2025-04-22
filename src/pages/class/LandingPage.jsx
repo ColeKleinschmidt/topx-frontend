@@ -1,6 +1,6 @@
 import "../css/LandingPage.css";
-import topXlogo from "../../assets/TopXLogo.png";
-import backgroundImage from "../../assets/Index\ Background.png";
+import topXlogo from "src/assets/images/TopXLogo.png";
+import backgroundImage from "src/assets/images/IndexBackground.png";
 
 export default function LandingPage() {
 
