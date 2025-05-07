@@ -1,5 +1,12 @@
 import { useState, useEffect } from 'react';
 import "../css/NavigationBar.css"; 
+import { IoIosCheckmarkCircle } from "react-icons/io";
+import { BsLink } from "react-icons/bs";
+import { FaBell } from "react-icons/fa";
+import { IoIosSend } from "react-icons/io";
+import { MdAccountCircle } from "react-icons/md";
+
+
 
 const NavigationBar = ({ setPage, page }) => {
 
@@ -9,23 +16,25 @@ const NavigationBar = ({ setPage, page }) => {
                 <h2>Topx</h2>
             </div>
             <div className="navigation-container">
-                <div onClick={() => setPage("friends")} className={`navigation-element ${page === "friends" && "underline" }`}>
+                <div onClick={() => setPage("myLists")} className={`navigation-element ${page === "friends" && "underline" }`}>
+                    <IoIosCheckmarkCircle color="white" size={25} />
                     <h2>My lists</h2>
                 </div>
-                <div onClick={() => setPage("feed")} className={`navigation-element ${page === "feed" && "underline" }`}>
+                <div onClick={() => setPage("friendsLists")} className={`navigation-element ${page === "feed" && "underline" }`}>
+                    <BsLink color="white" size={40} />
                     <h2>Friend lists</h2>
                 </div>
                 <input className="search-lists" placeholder="Search lists" type="text" />
             </div>
             <div className={'profile-buttons'}>
                 <div onClick={() => alert("notifications")} className="notifications-button">
-                    alert
+                    <FaBell color="white" size={20}/>
                 </div>
-                <div onClick={() => alert("messages")} className="messages-button">
-                    something
+                <div onClick={() => alert("shared")} className="shared-button">
+                    <IoIosSend color="white" size={25}/>
                 </div>
                 <div onClick={() => alert("profile")} className="profile-button">
-                something
+                    <MdAccountCircle color="white" size={25}/>
                 </div>
             </div>
 

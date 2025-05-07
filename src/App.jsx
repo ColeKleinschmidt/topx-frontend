@@ -8,9 +8,9 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route index path="/" element={<LandingPage />} />
-        <Route path="/feed" element={<Home />} />
-        <Route path="/friends" element={<Home />} />
-        <Route path="/profile" element={<Home />} />
+        <Route path="/myLists" element={<Home route="myLists" />} />
+        <Route path="/friendsLists" element={<Home route="friendsLists" />} />
+        <Route path="/profile" element={<Home route="profile" />} />
       </Routes>
     </BrowserRouter>
   )

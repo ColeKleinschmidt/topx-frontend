@@ -3,8 +3,8 @@ import { useState, useEffect } from 'react';
 import NavigationBar from "../../components/class/NavigationBar.jsx";
 import { authStatusAPI } from "../../backend/apis.js";
 import { useNavigate } from 'react-router-dom';
-import Feed from "./Feed.jsx";
-import Friends from "./Friends.jsx";
+import MyLists from "./MyLists.jsx";
+import FriendsLists from "./FriendsLists.jsx";
 import Profile from "./Profile.jsx";
 
 const Home = ({ route }) => {
@@ -25,10 +25,10 @@ const Home = ({ route }) => {
         <div className="home-container">
             <NavigationBar setPage={setPage} page={page}/>
             <div className="home-content">
-                {page === "feed" ? (
-                    <Feed />
-                ) : page === "friends" ? (
-                    <Friends />
+                {page === "myLists" ? (
+                    <MyLists />
+                ) : page === "friendsLists" ? (
+                    <FriendsLists />
                 ) : page === "profile" && (
                     <Profile />
                 )}

@@ -1,14 +1,14 @@
-import "../css/Friends.css";
+import "../css/FriendsLists.css";
 import { useState, useEffect } from 'react';
 //import { } from "../../backend/apis.js";
 
-const Friends = () => {
+const FriendsLists = () => {
     
     return (
-        <div className="friends-container">
+        <div className="friends-lists-container">
             Friends
         </div>
     )
 }
 
-export default Friends;
+export default FriendsLists;
