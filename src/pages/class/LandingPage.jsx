@@ -1,8 +1,21 @@
 import "../css/LandingPage.css";
+import { useEffect, useState } from 'react';
 import topXlogo from "../../assets/images/TopXLogo.png";
 import backgroundImage from "../../assets/images/IndexBackground.png";
+import { useNavigate } from 'react-router-dom';
+import { authStatusAPI } from "../../backend/apis.js";
 
 export default function LandingPage() {
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        authStatusAPI().then((response) => {
+            if (response.authenticated) {
+                navigate("/feed");
+            }
+        })
+    },[]);
 
     return (
         <div id ="content" style={{ backgroundImage: `url('${backgroundImage}')` }}>

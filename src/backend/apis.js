@@ -1,4 +1,9 @@
-const ENDPOINT = "https://topx-backend.onrender.com/";
+//when true, pinging server will ping the local server. When false, it will ping real API.
+const local_server = true;
+//paste your local ip address here so expo can connect to local functions emulator
+export const local_ip_address = 'http://192.168.86.75';
+
+const ENDPOINT = local_server ? local_ip_address + ":8080/" : "https://topx-backend.onrender.com/"; 
 
 
 //Test Fully Updated Test Test
@@ -49,7 +54,7 @@ const loginAPI = async (email, password) => {
     }
 };
 
-const authStatusAPI = async () => 
+export const authStatusAPI = async () => 
     {
         const backend_query = await fetch(`${ENDPOINT}authStatus`, {
             method: 'GET',
