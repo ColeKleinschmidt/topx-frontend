@@ -7,7 +7,7 @@ const MyLists = () => {
     return (
         <div className="my-lists-container">
             <div className="my-lists-top-bar">
-                <h1 className="my-lists-header">My Lists</h1>
+                <h2 className="my-lists-header">My Lists</h2>
             </div>
         </div>
     )

@@ -3,10 +3,8 @@ import "../css/NavigationBar.css";
 import { IoIosCheckmarkCircle } from "react-icons/io";
 import { BsLink } from "react-icons/bs";
 import { FaBell } from "react-icons/fa";
-import { IoIosSend } from "react-icons/io";
+import { IoIosSend, IoIosSearch } from "react-icons/io";
 import { MdAccountCircle } from "react-icons/md";
-
-
 
 const NavigationBar = ({ setPage, page }) => {
 
@@ -25,8 +23,9 @@ const NavigationBar = ({ setPage, page }) => {
                     <h2>Friend lists</h2>
                 </div>
                 <input className="search-lists" placeholder="Search lists" type="text" />
+                <IoIosSearch className="search-lists-icon" size={20} color="#FF6B6B"/>
             </div>
-            <div className={'profile-buttons'}>
+            <div className={'profile-buttons'}> 
                 <div onClick={() => alert("notifications")} className="notifications-button">
                     <FaBell color="white" size={20}/>
                 </div>

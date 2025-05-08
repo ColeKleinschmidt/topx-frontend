@@ -405,8 +405,7 @@ const getUserListsAPI = async (userId, page = 1, limit = 10) =>
     {
         method: 'POST',
         credentials: 'include',
-        headers: 
-        {
+        headers: {
             'Accept': 'application/json',
             'Accept-encoding': 'gzip, deflate',
             'Content-Type': 'application/json'

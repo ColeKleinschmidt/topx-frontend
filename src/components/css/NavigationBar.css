@@ -58,6 +58,13 @@
     color: #2D2D2D;
     font-weight: bold;
     padding: 0px 10px 0px 10px;
+    position: relative;
+}
+
+.search-lists-icon {
+    position: absolute;
+    right: 10px;
+    color: #FF6B6B;
 }
 
 .search-lists::placeholder {
