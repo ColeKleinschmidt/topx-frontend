@@ -7,7 +7,7 @@ const ENDPOINT = local_server ? local_ip_address + ":8080/" : "https://topx-back
 
 
 //Test Fully Updated Test Test
-const createAccountAPI = async (username, email, password) => {
+export const createAccountAPI = async (username, email, password) => {
     const data = {
         username: username,
         email: email,
@@ -27,7 +27,7 @@ const createAccountAPI = async (username, email, password) => {
     return response;
 }
 
-const loginAPI = async (email, password) => {
+export const loginAPI = async (email, password) => {
     const data = {
         email: email,
         password: password,
