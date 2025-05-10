@@ -37,6 +37,7 @@ export default function LandingPage() {
         createAccountAPI(username.trim(), email.trim(), password).then((response) => {
             if (response.user !== undefined && response.user !== null) {
                 // If successful, navigate to the feed page
+                localStorage.setItem("user", JSON.stringify(response.user));
                 navigate("/myLists");
             }else {
                 // If unsuccessful, alert the user
@@ -56,6 +57,7 @@ export default function LandingPage() {
         loginAPI(email.trim(), password).then((response) => {
             if (response.user !== undefined && response.user !== null) {
                 // If successful, navigate to the feed page
+                localStorage.setItem("user", JSON.stringify(response.user));
                 navigate("/myLists");
             }else {
                 // If unsuccessful, alert the user

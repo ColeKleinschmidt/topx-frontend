@@ -1,9 +1,18 @@
 //when true, pinging server will ping the local server. When false, it will ping real API.
 const local_server = true;
 //paste your local ip address here so expo can connect to local functions emulator
-export const local_ip_address = 'http://192.168.86.75';
+export const local_ip_address = 'http://192.168.86.73';
 
 const ENDPOINT = local_server ? local_ip_address + ":8080/" : "https://topx-backend.onrender.com/"; 
+
+export const getUserId = () => {
+    const user = localStorage.getItem("user");
+    if (user) {
+        const parsedUser = JSON.parse(user);
+        return parsedUser._id;
+    }
+    return null;
+}
 
 
 //Test Fully Updated Test Test
@@ -397,7 +406,7 @@ window.fetchImages = async (query) => {
     }
 };
 
-const getUserListsAPI = async (userId, page = 1, limit = 10) => 
+export const getUserListsAPI = async (userId, page = 1, limit = 10) => 
 {
     const data = { userId, page, limit };
 
