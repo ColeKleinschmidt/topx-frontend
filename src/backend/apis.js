@@ -265,8 +265,8 @@ const findItemsAPI = async (title) => {
     return response;
 }
 
-const getListsAPI = async (page, limit) => {
-    data = {
+export const getListsAPI = async (page, limit) => {
+    const data = {
         page: page,
         limit: limit
     }
