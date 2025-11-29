@@ -89,10 +89,10 @@ export default function LandingPage() {
                     
                         <button onClick={() => signUp()} type="button" className="form-button" id="signup-button">Continue</button>
                     </form>
+                    <div className="welcome-card-footer">
+                        <span id="toggle-text">Already a member?</span>
+                    <div onClick={() => setPage("login")} id="toggle-link">Log In</div>
                 </div>
-                <div className="welcome-card-footer">
-                    <span id="toggle-text">Don't have an account?</span>
-                    <div onClick={() => setPage("register")} id="toggle-link">Sign Up</div>
                 </div>
 
                 {/*<!-- Log In Form -->*/}
@@ -107,10 +107,10 @@ export default function LandingPage() {
 
                         <button onClick={() => login()} type="button" className="form-button" id="login-button">Log In</button>
                     </form>
+                    <div className="welcome-card-footer">
+                        <span id="toggle-text">Don't have an account?</span>
+                    <div onClick={() => setPage("register")} id="toggle-link">Sign Up</div>
                 </div>
-                <div className="welcome-card-footer">
-                    <span id="toggle-text">Already a member?</span>
-                    <div onClick={() => setPage("login")} id="toggle-link">Log In</div>
                 </div>
             </div>
         </div>
