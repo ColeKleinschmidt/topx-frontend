@@ -10,8 +10,13 @@ import Profile from "./Profile.jsx";
 const Home = ({ route }) => {
 
     const [page, setPage] = useState(route);
+    const [showNewList, setShowNewList] = useState(false);
 
     const navigate = useNavigate();
+
+    const newList = () => {
+
+    }
 
     // useEffect(() => {
     //     authStatusAPI().then((response) => {
@@ -32,6 +37,12 @@ const Home = ({ route }) => {
                 ) : page === "profile" && (
                     <Profile />
                 )}
+                <div className={`newList ${showNewList ? "active" : ""}`} onClick={() => {setShowNewList(!showNewList)}}>+</div>
+                <div className="newListContainerWrapper">
+                    <div className={`newListContainer ${showNewList && "animate"}`}>
+                        setting up a new list.
+                    </div>
+                </div>
             </div>
         </div>
     )
