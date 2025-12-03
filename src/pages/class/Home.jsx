@@ -1,7 +1,7 @@
 import "../css/Home.css";
 import { useState, useEffect } from 'react';
 import NavigationBar from "../../components/class/NavigationBar.jsx";
-import { authStatusAPI } from "../../backend/apis.js";
+import { authStatusAPI, findItemsAPI } from "../../backend/apis.js";
 import { useNavigate } from 'react-router-dom';
 import MyLists from "./MyLists.jsx";
 import FriendsLists from "./FriendsLists.jsx";
@@ -15,7 +15,7 @@ const Home = ({ route }) => {
     const navigate = useNavigate();
 
     const newList = () => {
-
+        
     }
 
     // useEffect(() => {
@@ -25,6 +25,12 @@ const Home = ({ route }) => {
     //         }
     //     })
     // },[]);
+
+    const async searchItem = (item) => {
+        findItemsAPI(item).then((response) => {
+            
+        })
+    }
     
     return (
         <div className="home-container">
@@ -40,7 +46,7 @@ const Home = ({ route }) => {
                 <div className={`newList ${showNewList ? "active" : ""}`} onClick={() => {setShowNewList(!showNewList)}}>+</div>
                 <div className="newListContainerWrapper">
                     <div className={`newListContainer ${showNewList && "animate"}`}>
-                        setting up a new list.
+                        <input onChange={(x) => {searchItem(x.target.value)} placholder="Title" className="titleInput"} />
                     </div>
                 </div>
             </div>
