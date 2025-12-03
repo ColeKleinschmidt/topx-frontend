@@ -1,6 +1,9 @@
 import "../css/List.css";
+import { useState } from "react";
 
-const List = ({ list }) => {
+const List = ({ list, setList, editable = false }) => {
+
+    const [newList, setNewList] = useState({title: "", listItems: []})
 
     const RowItem = ({ number, item }) => {
         return (
@@ -16,13 +19,20 @@ const List = ({ list }) => {
 
     return (
         <div className="list-container">
-            <h2 className="list-name">{list.title}</h2>
+            {editable ? (
+                <input onChange={(x) => {setNewList({...newList, title: x.target.value})}} placeholder="Title" className="list-name" />
+            ) : (
+                <h2 className="list-name">{list.title}</h2>
+            )}
             <div className = "separator">
                 <div className = "line" />
                 <div className = "dot" />
                 <div className = "line" />
             </div>
-            {list.items.map((item, index) => (
+            {!editable && list.items.map((item, index) => (
+                <RowItem key={index} item={item} number={index+1} />
+            ))}
+            {editable && newList.listItems.map((item, index) => (
                 <RowItem key={index} item={item} number={index+1} />
             ))}
 
