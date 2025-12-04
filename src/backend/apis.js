@@ -246,7 +246,7 @@ const removeFriendAPI = async (userId) => {
     return response;
 }
 
-const findItemsAPI = async (title) => {
+export const findItemsAPI = async (title) => {
     data = {
         title: title
     }

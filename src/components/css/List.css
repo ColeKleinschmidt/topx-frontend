@@ -14,6 +14,19 @@
     text-align: center;
 }
 
+.list-name.input {
+    width: 90%;
+    border: 2px solid #E0CFFC;
+    border-radius: 16px;
+    padding: 8px 12px;
+    font-size: 16px;
+    outline: none;
+}
+
+.list-name.input:focus {
+    border-color: #800080;
+}
+
 .separator {
     width: 35%;
     margin-bottom: 10px;
@@ -45,6 +58,10 @@
     align-items: center;
 }
 
+.row-item.editable {
+    gap: 12px;
+}
+
 .row-number {
     background-color: #E0CFFC;
     display: flex;
@@ -72,4 +89,142 @@
     width: 60px;
     height: 60px;
     overflow: hidden;
+}
+
+.item-image.preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.placeholder-image {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: #f1e6ff;
+}
+
+.item-editor {
+    flex: 1;
+    position: relative;
+}
+
+.item-input {
+    width: 100%;
+    border: 2px solid #E0CFFC;
+    border-radius: 16px;
+    padding: 10px 12px;
+    font-size: 16px;
+    outline: none;
+}
+
+.item-input:focus {
+    border-color: #800080;
+}
+
+.search-dropdown {
+    position: absolute;
+    top: 110%;
+    left: 0;
+    right: 0;
+    background-color: #ffffff;
+    border: 1px solid #E0CFFC;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    max-height: 240px;
+    overflow-y: auto;
+    z-index: 5;
+}
+
+.search-status {
+    padding: 10px 12px;
+    color: #3B1109;
+    font-size: 14px;
+}
+
+.dropdown-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 10px 12px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.dropdown-option:hover {
+    background-color: #f4e9ff;
+}
+
+.option-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: #f1e6ff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.option-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.option-title {
+    color: #3B1109;
+    font-size: 15px;
+}
+
+.remove-item {
+    border: none;
+    background: none;
+    color: #800080;
+    font-size: 22px;
+    cursor: pointer;
+    padding: 6px;
+}
+
+.list-actions {
+    width: 95%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.add-item, .submit-list {
+    border: none;
+    background-color: #E0CFFC;
+    color: #3B1109;
+    border-radius: 20px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.submit-list {
+    background-color: #d6c1f7;
+    color: #ffffff;
+    opacity: 0.6;
+}
+
+.submit-list.active {
+    background-color: #800080;
+    opacity: 1;
+}
+
+.submit-list:disabled {
+    cursor: not-allowed;
+}
+
+.input-hint {
+    color: #d04f4f;
+    font-size: 12px;
+    margin: 0;
 }
