@@ -1,7 +1,7 @@
 //when true, pinging server will ping the local server. When false, it will ping real API.
 const local_server = true;
 //paste your local ip address here so expo can connect to local functions emulator
-export const local_ip_address = 'http://192.168.86.73';
+export const local_ip_address = 'http://192.168.86.163';
 
 const ENDPOINT = local_server ? local_ip_address + ":8080/" : "https://topx-backend.onrender.com/"; 
 
