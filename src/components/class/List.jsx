@@ -143,8 +143,8 @@ const List = ({ list, setList, editable = false }) => {
                     ) : (
                         <div className="placeholder-image" />
                     )}
+                    <button className="remove-item" type="button" onClick={() => handleRemoveItem(index)}>×</button>
                 </div>
-                <button className="remove-item" type="button" onClick={() => handleRemoveItem(index)}>×</button>
             </div>
         );
     };

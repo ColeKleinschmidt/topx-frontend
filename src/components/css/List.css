@@ -15,12 +15,15 @@
 }
 
 .list-name.input {
-    width: 90%;
+    width: 100%;
     border: 2px solid #E0CFFC;
     border-radius: 16px;
     padding: 8px 12px;
     font-size: 16px;
     outline: none;
+    background-color: transparent;
+    color: black;
+    margin-bottom: 10px;
 }
 
 .list-name.input:focus {
@@ -110,12 +113,14 @@
 }
 
 .item-input {
-    width: 100%;
+    width: 90%;
     border: 2px solid #E0CFFC;
     border-radius: 16px;
     padding: 10px 12px;
     font-size: 16px;
     outline: none;
+    background-color: transparent;
+    color: black;
 }
 
 .item-input:focus {
@@ -186,7 +191,8 @@
     color: #800080;
     font-size: 22px;
     cursor: pointer;
-    padding: 6px;
+    position: absolute;
+    right: -5px;
 }
 
 .list-actions {
