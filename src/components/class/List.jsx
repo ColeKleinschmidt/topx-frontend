@@ -9,6 +9,7 @@ const List = ({ list, setList, editable = false }) => {
     const [isSearching, setIsSearching] = useState({});
     const searchTimeouts = useRef({});
     const inputRefs = useRef([]);
+    const [activeInputIndex, setActiveInputIndex] = useState(null);
 
     const isTitleValid = newList.title.trim().length > 0 && newList.title.trim().length <= 25;
 
@@ -32,11 +33,23 @@ const List = ({ list, setList, editable = false }) => {
         setNewList((prev) => ({ ...prev, title: value.slice(0, 25) }));
     };
 
+    useEffect(() => {
+        if (activeInputIndex === null) return;
+        const activeInput = inputRefs.current[activeInputIndex];
+        if (activeInput) {
+            const caretPosition = activeInput.value.length;
+            activeInput.focus();
+            activeInput.setSelectionRange(caretPosition, caretPosition);
+        }
+    }, [newList, activeInputIndex]);
+
     const handleItemTitleChange = (index, value) => {
         setNewList((prev) => {
             const updatedItems = prev.listItems.map((item, i) => i === index ? { ...item, title: value } : item);
             return { ...prev, listItems: updatedItems };
         });
+
+        setActiveInputIndex(index);
 
         if (searchTimeouts.current[index]) {
             clearTimeout(searchTimeouts.current[index]);
@@ -48,8 +61,8 @@ const List = ({ list, setList, editable = false }) => {
             return;
         }
 
-        setIsSearching((prev) => ({ ...prev, [index]: true }));
         searchTimeouts.current[index] = setTimeout(async () => {
+            setIsSearching((prev) => ({ ...prev, [index]: true }));
             try {
                 const response = await findItemsAPI(value);
                 setSearchResults((prev) => ({ ...prev, [index]: response?.items || [] }));
@@ -74,12 +87,18 @@ const List = ({ list, setList, editable = false }) => {
     const handleAddItem = () => {
         if (newList.listItems.length >= 10) return;
         setNewList((prev) => ({ ...prev, listItems: [...prev.listItems, { title: "", image: "" }] }));
+        setActiveInputIndex(newList.listItems.length);
     };
 
     const handleRemoveItem = (index) => {
         setNewList((prev) => {
             const updatedItems = prev.listItems.filter((_, i) => i !== index);
             const normalizedItems = updatedItems.length === 0 ? [{ title: "", image: "" }] : updatedItems;
+            setActiveInputIndex((prevIndex) => {
+                if (prevIndex === null) return prevIndex;
+                const maxIndex = normalizedItems.length - 1;
+                return Math.min(prevIndex, maxIndex);
+            });
             return { ...prev, listItems: normalizedItems };
         });
         setSearchResults((prev) => {
@@ -112,6 +131,7 @@ const List = ({ list, setList, editable = false }) => {
                         ref={(el) => { inputRefs.current[index] = el; }}
                         value={item.title}
                         onChange={(event) => handleItemTitleChange(index, event.target.value)}
+                        onFocus={() => setActiveInputIndex(index)}
                         placeholder="Item title"
                         className="item-input"
                     />
