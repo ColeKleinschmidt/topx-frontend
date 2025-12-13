@@ -26,13 +26,12 @@ const Home = ({ route }) => {
                 ) : page === "profile" && (
                     <Profile />
                 )}
-                <div className={`newList ${showNewList ? "active" : ""}`} onClick={() => {setShowNewList(!showNewList)}}>+</div>
-                <div className="newListContainerWrapper">
-                    <div className={`newListContainer ${showNewList && "animate"}`}>
-                        <List editable={true} />
-                    </div>
-                </div>
+
             </div>
+            <div className={`newListContainer ${showNewList && "animate"}`}>
+                <List editable={true} />
+            </div>
+            <div className={`newList ${showNewList ? "active" : ""}`} onClick={() => {setShowNewList(!showNewList)}}>+</div>
         </div>
     )
 }
