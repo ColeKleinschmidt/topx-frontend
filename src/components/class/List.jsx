@@ -6,9 +6,12 @@ const List = ({ list, setList, editable = false }) => {
 
     const [newList, setNewList] = useState({ title: "", listItems: [{ title: "", image: "" }] });
     const [searchResults, setSearchResults] = useState({});
+    const containerRef = useRef(null);
+    const [isScrollable, setIsScrollable] = useState(false);
     const [isSearching, setIsSearching] = useState({});
     const searchTimeouts = useRef({});
     const inputRefs = useRef([]);
+    const [activeInputIndex, setActiveInputIndex] = useState(null);
 
     const isTitleValid = newList.title.trim().length > 0 && newList.title.trim().length <= 25;
 
@@ -32,11 +35,24 @@ const List = ({ list, setList, editable = false }) => {
         setNewList((prev) => ({ ...prev, title: value.slice(0, 25) }));
     };
 
+    useEffect(() => {
+        if (activeInputIndex === null) return;
+        const activeInput = inputRefs.current[activeInputIndex];
+        if (activeInput) {
+            const caretPosition = activeInput.value.length;
+            activeInput.focus();
+            activeInput.setSelectionRange(caretPosition, caretPosition);
+        }
+    }, [newList.listItems, activeInputIndex]);
+
     const handleItemTitleChange = (index, value) => {
         setNewList((prev) => {
-            const updatedItems = prev.listItems.map((item, i) => i === index ? { ...item, title: value } : item);
+            // When user manually types, clear any selected image to allow searching again
+            const updatedItems = prev.listItems.map((item, i) => i === index ? { ...item, title: value, image: "" } : item);
             return { ...prev, listItems: updatedItems };
         });
+
+        setActiveInputIndex(index);
 
         if (searchTimeouts.current[index]) {
             clearTimeout(searchTimeouts.current[index]);
@@ -48,8 +64,8 @@ const List = ({ list, setList, editable = false }) => {
             return;
         }
 
-        setIsSearching((prev) => ({ ...prev, [index]: true }));
         searchTimeouts.current[index] = setTimeout(async () => {
+            setIsSearching((prev) => ({ ...prev, [index]: true }));
             try {
                 const response = await findItemsAPI(value);
                 setSearchResults((prev) => ({ ...prev, [index]: response?.items || [] }));
@@ -71,15 +87,32 @@ const List = ({ list, setList, editable = false }) => {
         setIsSearching((prev) => ({ ...prev, [index]: false }));
     };
 
+    const canAddNewItem = () => {
+        if (newList.listItems.length === 0) return true;
+        const last = newList.listItems[newList.listItems.length - 1];
+        // Require that the last item is a selected suggestion (has an image)
+        return Boolean(last && last.image);
+    };
+
     const handleAddItem = () => {
-        if (newList.listItems.length >= 10) return;
-        setNewList((prev) => ({ ...prev, listItems: [...prev.listItems, { title: "", image: "" }] }));
+        if (!canAddNewItem()) return;
+        setNewList((prev) => {
+            if (prev.listItems.length >= 10) return prev; // protect again inside callback
+            const next = { ...prev, listItems: [...prev.listItems, { title: "", image: "" }] };
+            setActiveInputIndex(prev.listItems.length);
+            return next;
+        });
     };
 
     const handleRemoveItem = (index) => {
         setNewList((prev) => {
             const updatedItems = prev.listItems.filter((_, i) => i !== index);
             const normalizedItems = updatedItems.length === 0 ? [{ title: "", image: "" }] : updatedItems;
+            setActiveInputIndex((prevIndex) => {
+                if (prevIndex === null) return prevIndex;
+                const maxIndex = normalizedItems.length - 1;
+                return Math.min(prevIndex, maxIndex);
+            });
             return { ...prev, listItems: normalizedItems };
         });
         setSearchResults((prev) => {
@@ -112,10 +145,11 @@ const List = ({ list, setList, editable = false }) => {
                         ref={(el) => { inputRefs.current[index] = el; }}
                         value={item.title}
                         onChange={(event) => handleItemTitleChange(index, event.target.value)}
+                        onFocus={() => setActiveInputIndex(index)}
                         placeholder="Item title"
                         className="item-input"
                     />
-                    {(isSearching[index] || (searchResults[index]?.length > 0) || (item.title.trim() && !isSearching[index] && (searchResults[index]?.length === 0))) && (
+                    {(!item.image && (isSearching[index] || (searchResults[index]?.length > 0) || (item.title.trim() && !isSearching[index] && (searchResults[index]?.length === 0)))) && (
                         <div className="search-dropdown">
                             {isSearching[index] && <div className="search-status">Searching...</div>}
                             {!isSearching[index] && searchResults[index]?.length === 0 && item.title.trim() && (
@@ -149,12 +183,38 @@ const List = ({ list, setList, editable = false }) => {
         );
     };
 
+    useEffect(() => {
+        const current = containerRef.current;
+        if (!current) {
+            return undefined;
+        }
+
+        const checkScrollable = () => {
+            setIsScrollable(current.scrollHeight > current.clientHeight);
+        };
+
+        // Use ResizeObserver to check when content size changes
+        const ro = new ResizeObserver(checkScrollable);
+        ro.observe(current);
+
+        // Also check on window resize
+        window.addEventListener("resize", checkScrollable);
+        // initial check
+        checkScrollable();
+
+        return () => {
+            ro.disconnect();
+            window.removeEventListener("resize", checkScrollable);
+        };
+    }, [newList, list, editable]);
+
     return (
-        <div className="list-container">
+        <div ref={containerRef} className={`list-container${isScrollable ? " scrollable" : ""}`}>
             {editable ? (
                 <input
                     value={newList.title}
                     onChange={(event) => handleTitleChange(event.target.value)}
+                    onFocus={() => setActiveInputIndex(null)}
                     placeholder="Title"
                     className="list-name input"
                 />
@@ -175,7 +235,7 @@ const List = ({ list, setList, editable = false }) => {
             {editable && (
                 <div className="list-actions">
                     {newList.listItems.length < 10 ? (
-                        <button type="button" className="add-item" onClick={handleAddItem}>+ Add item</button>
+                        <button type="button" className="add-item" onClick={handleAddItem} disabled={!canAddNewItem()} title={!canAddNewItem() ? "Select a suggestion to enable adding another item" : ""}>+ Add item</button>
                     ) : (
                         <button type="button" className={`submit-list ${isTitleValid ? "active" : ""}`} disabled={!isTitleValid}>Submit</button>
                     )}
