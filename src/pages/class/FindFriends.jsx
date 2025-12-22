@@ -204,43 +204,47 @@ const FindFriends = ({ onBackToFriends = () => {}, onNotificationsUpdated = asyn
             <div className="find-friends-list" ref={listContainerRef}>
                 {users.map((user) => (
                     <div className="friend-card" key={user._id ?? user.username}>
-                        <div className="friend-avatar">
-                            <img src={user.profilePic || user.profilePicture || defaultAvatar} alt={`${user.username}'s profile`} />
+                        <div className="friend-main">
+                            <div className="friend-avatar">
+                                <img src={user.profilePic || user.profilePicture || defaultAvatar} alt={`${user.username}'s profile`} />
+                            </div>
+                            <div className="friend-details">
+                                <h3>{user.username}</h3>
+                                <p className="muted">@{user.username?.toLowerCase()}</p>
+                            </div>
                         </div>
-                        <div className="friend-details">
-                            <h3>{user.username}</h3>
-                            <p className="muted">@{user.username?.toLowerCase()}</p>
-                        </div>
-                        {actionableRequests[user._id] ? (
-                            <div className="friend-request-actions">
-                                <button
-                                    className="secondary-button"
-                                    onClick={() => handleRespondToRequest(user._id, actionableRequests[user._id].requestId, "decline")}
-                                    disabled={["declining", "accepting", "accepted", "declined"].includes(incomingRequestStatus[user._id])}
-                                >
-                                    {incomingRequestStatus[user._id]?.startsWith("declin") ? "Declined" : "Decline"}
+                        <div className="friend-actions">
+                            {actionableRequests[user._id] ? (
+                                <>
+                                    <button
+                                        className="secondary-button"
+                                        onClick={() => handleRespondToRequest(user._id, actionableRequests[user._id].requestId, "decline")}
+                                        disabled={["declining", "accepting", "accepted", "declined"].includes(incomingRequestStatus[user._id])}
+                                    >
+                                        {incomingRequestStatus[user._id]?.startsWith("declin") ? "Declined" : "Decline"}
+                                    </button>
+                                    <button
+                                        className="add-friend-button"
+                                        onClick={() => handleRespondToRequest(user._id, actionableRequests[user._id].requestId, "accept")}
+                                        disabled={["declining", "accepting", "accepted", "declined"].includes(incomingRequestStatus[user._id])}
+                                    >
+                                        {incomingRequestStatus[user._id]?.startsWith("accept") ? "Accepted" : "Accept"}
+                                    </button>
+                                </>
+                            ) : outgoingRequests[user._id] ? (
+                                <button className="add-friend-button" disabled>
+                                    Pending
                                 </button>
+                            ) : (
                                 <button
                                     className="add-friend-button"
-                                    onClick={() => handleRespondToRequest(user._id, actionableRequests[user._id].requestId, "accept")}
-                                    disabled={["declining", "accepting", "accepted", "declined"].includes(incomingRequestStatus[user._id])}
+                                    onClick={() => handleAddFriend(user._id)}
+                                    disabled={friendRequests[user._id] === "pending" || friendRequests[user._id] === "sent"}
                                 >
-                                    {incomingRequestStatus[user._id]?.startsWith("accept") ? "Accepted" : "Accept"}
+                                    {friendRequests[user._id] === "sent" ? "Request sent" : "Add Friend"}
                                 </button>
-                            </div>
-                        ) : outgoingRequests[user._id] ? (
-                            <button className="add-friend-button" disabled>
-                                Pending
-                            </button>
-                        ) : (
-                            <button
-                                className="add-friend-button"
-                                onClick={() => handleAddFriend(user._id)}
-                                disabled={friendRequests[user._id] === "pending" || friendRequests[user._id] === "sent"}
-                            >
-                                {friendRequests[user._id] === "sent" ? "Request sent" : "Add Friend"}
-                            </button>
-                        )}
+                            )}
+                        </div>
                     </div>
                 ))}
 

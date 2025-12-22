@@ -67,7 +67,8 @@
     flex: 1;
     min-height: 0;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(240px, 280px));
+    justify-content: center;
     gap: 16px;
     height: 100%;
     overflow-y: auto;
@@ -80,8 +81,9 @@
     border-radius: 16px;
     padding: 16px;
     display: flex;
-    align-items: center;
+    flex-direction: column;
     gap: 12px;
+    width: 100%;
     box-shadow: 0 12px 28px rgba(31, 41, 55, 0.06);
     transition: transform 150ms ease, box-shadow 150ms ease;
 }
@@ -89,6 +91,13 @@
 .friend-card:hover {
     transform: translateY(-3px);
     box-shadow: 0 16px 32px rgba(31, 41, 55, 0.08);
+}
+
+.friend-main {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
 }
 
 .friend-avatar img {
@@ -112,7 +121,6 @@
 }
 
 .add-friend-button {
-    margin-left: auto;
     background: linear-gradient(90deg, #ff7eb3 0%, #ff758c 50%, #ff6b6b 100%);
     border: none;
     color: #fff;
@@ -135,6 +143,16 @@
     box-shadow: none;
 }
 
+.friend-actions {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+}
+
+.friend-actions button {
+    flex: 1;
+}
+
 .list-footer {
     grid-column: 1 / -1;
     text-align: center;
@@ -148,9 +166,4 @@
 
 .status.error {
     color: #ef4444;
-}
-.friend-request-actions {
-    display: flex;
-    gap: 8px;
-    margin-left: auto;
 }
