@@ -7,9 +7,18 @@
   background-color: #F7F7F8;
   border-radius: 60px;
   padding: 20px;
-  max-height: 80vh;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
+}
+
+.list-container.editable {
+    max-height: 80vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.list-container.view-only {
+    max-height: none;
+    overflow: visible;
 }
 
 .list-container.scrollable {

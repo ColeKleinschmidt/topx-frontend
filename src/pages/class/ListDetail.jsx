@@ -43,6 +43,9 @@ const ListDetail = () => {
             try {
                 const response = await getListAPI(listId);
                 const listData = response?.list || response?.data || response;
+                if (!listData || Object.keys(listData).length === 0) {
+                    throw new Error("LIST_NOT_FOUND");
+                }
                 const items = listData?.items || listData?.listItems || [];
                 setList({
                     title: listData?.title || listData?.name || "Untitled list",
@@ -50,7 +53,8 @@ const ListDetail = () => {
                 });
             } catch (err) {
                 console.error("Failed to load list", err);
-                setError("Unable to load this list right now.");
+                setList(null);
+                setError("Sorry, this list couldn't be found.");
             } finally {
                 setLoading(false);
             }
@@ -66,10 +70,14 @@ const ListDetail = () => {
             <NavigationBar setPage={handleNavigate} page={page} onNotificationsUpdated={refreshNotifications} />
             <div className="home-content list-detail-content">
                 {loading && <p className="list-detail-status">Loading list...</p>}
-                {error && !loading && <p className="list-detail-status error">{error}</p>}
+                {error && !loading && (
+                    <div className="list-detail-error">
+                        <h2>Sorry, this list couldn&apos;t be found.</h2>
+                        <p>Please check the link and try again.</p>
+                    </div>
+                )}
                 {!loading && !error && list && (
                     <div className="list-detail-wrapper">
-                        <h2 className="list-detail-title">{list.title}</h2>
                         <List list={list} />
                     </div>
                 )}

@@ -185,7 +185,8 @@ const List = ({ list, setList, editable = false }) => {
 
     useEffect(() => {
         const current = containerRef.current;
-        if (!current) {
+        if (!current || !editable) {
+            setIsScrollable(false);
             return undefined;
         }
 
@@ -208,8 +209,14 @@ const List = ({ list, setList, editable = false }) => {
         };
     }, [newList, list, editable]);
 
+    const containerClasses = [
+        "list-container",
+        editable ? "editable" : "view-only",
+        isScrollable ? "scrollable" : "",
+    ].filter(Boolean).join(" ");
+
     return (
-        <div ref={containerRef} className={`list-container${isScrollable ? " scrollable" : ""}`}>
+        <div ref={containerRef} className={containerClasses}>
             {editable ? (
                 <input
                     value={newList.title}

@@ -13,12 +13,11 @@
     border-radius: 18px;
     padding: 24px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
-}
-
-.list-detail-title {
-    margin: 0 0 16px 0;
-    color: #111827;
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    margin: 0 auto;
 }
 
 .list-detail-status {
@@ -28,6 +27,22 @@
     margin-top: 40px;
 }
 
-.list-detail-status.error {
-    color: #ef4444;
+.list-detail-error {
+    width: 100%;
+    max-width: 640px;
+    background: #fff1f2;
+    border: 1px solid #fecdd3;
+    color: #be123c;
+    padding: 24px;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 12px 30px rgba(190, 18, 60, 0.15);
+}
+
+.list-detail-error h2 {
+    margin: 0 0 8px 0;
+}
+
+.list-detail-error p {
+    margin: 0;
 }
