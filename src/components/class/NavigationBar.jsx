@@ -70,17 +70,13 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
     };
 
     const getNotificationUser = (notification) =>
-        notification?.sender || notification?.user || notification?.from || notification?.fromUser || notification?.actor || {};
+        notification.sender;
 
     const getNotificationRequestId = (notification) =>
-        notification?.requestId || notification?._id || notification?.id;
+        notification._id;
 
     const getNotificationListId = (notification) =>
-        notification?.listId
-        || notification?.list?.id
-        || notification?.list?._id
-        || notification?.list?._id
-        || notification?.list?.listId;
+        notification.listId;
 
     const getListTitle = (notification) =>
         notification?.listTitle
@@ -90,14 +86,8 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
 
     const isForLoggedInUser = useCallback((notification) => {
         if (!loggedInUserId) return false;
-        const receiverId = normalizeId(
-            notification?.receiver?._id
-            || notification?.receiverId
-            || notification?.to
-            || notification?.toUserId
-            || notification?.user?._id
-            || notification?.userId
-        );
+        const receiverId = notification.receiver;
+        console.log("checking if notification is for logged in user", receiverId, loggedInUserId);
         return receiverId && receiverId.toString() === normalizeId(loggedInUserId)?.toString();
     }, [loggedInUserId]);
 
