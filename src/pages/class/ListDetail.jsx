@@ -1,13 +1,14 @@
 import "../css/ListDetail.css";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import NavigationBar from "../../components/class/NavigationBar.jsx";
 import List from "../../components/class/List.jsx";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setNotifications } from "../../store/notificationsSlice.js";
 import { setBlockedUsers } from "../../store/blockedUsersSlice.js";
-import { getAllNotificationsAPI, getBlockedUsersAPI, getListAPI, getUserByIdAPI } from "../../backend/apis.js";
+import { getAllNotificationsAPI, getBlockedUsersAPI, getFriendsAPI, getListAPI, getUserByIdAPI, shareListAPI } from "../../backend/apis.js";
 import defaultAvatar from "../../assets/icons/User Icon.png";
+import { IoIosSend } from "react-icons/io";
 
 const ListDetail = () => {
     const { listId } = useParams();
@@ -17,6 +18,13 @@ const ListDetail = () => {
     const [page, setPage] = useState(null);
     const [owner, setOwner] = useState(null);
     const [ownerLoading, setOwnerLoading] = useState(false);
+    const [shareOpen, setShareOpen] = useState(false);
+    const [friends, setFriends] = useState([]);
+    const [friendsLoading, setFriendsLoading] = useState(false);
+    const [friendsError, setFriendsError] = useState(null);
+    const [selectedFriends, setSelectedFriends] = useState({});
+    const [shareStatus, setShareStatus] = useState({ state: "idle", message: "" });
+    const shareRef = useRef(null);
     const location = useLocation();
     const navigationOwner = location.state?.owner;
     const navigationOwnerId = location.state?.ownerId || navigationOwner?._id || navigationOwner?.id;
@@ -65,9 +73,44 @@ const ListDetail = () => {
         return ownerCandidate || null;
     }, [navigationOwnerId]);
 
+    const fetchFriends = useCallback(async () => {
+        setFriendsLoading(true);
+        setFriendsError(null);
+        try {
+            const response = await getFriendsAPI();
+            const rawFriends = response?.friends || response?.data || [];
+            const normalizedFriends = rawFriends
+                .map((friend) => {
+                    if (!friend) return null;
+                    if (typeof friend === "string") {
+                        return { _id: friend };
+                    }
+                    return { ...friend, _id: friend._id || friend.id };
+                })
+                .filter(Boolean);
+            setFriends(normalizedFriends);
+        } catch (err) {
+            console.error("Failed to load friends", err);
+            setFriendsError("Unable to load friends right now.");
+        } finally {
+            setFriendsLoading(false);
+        }
+    }, []);
+
     useEffect(() => {
         refreshNotifications();
     }, [refreshNotifications]);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (shareRef.current && !shareRef.current.contains(event.target)) {
+                setShareOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     useEffect(() => {
         const fetchList = async () => {
@@ -127,6 +170,49 @@ const ListDetail = () => {
         }
     }, [listId, resolveOwnerId, navigationOwner]);
 
+    const toggleShareDropdown = () => {
+        setShareStatus({ state: "idle", message: "" });
+        setShareOpen((prev) => {
+            const nextOpen = !prev;
+            if (nextOpen && !friendsLoading && friends.length === 0 && !friendsError) {
+                fetchFriends();
+            }
+            return nextOpen;
+        });
+    };
+
+    const toggleFriendSelection = (friendId) => {
+        setSelectedFriends((prev) => ({ ...prev, [friendId]: !prev[friendId] }));
+    };
+
+    const handleShareList = async () => {
+        if (!list?._id) return;
+        const chosenFriends = Object.entries(selectedFriends)
+            .filter(([, isSelected]) => isSelected)
+            .map(([friendId]) => friendId);
+
+        if (chosenFriends.length === 0) {
+            setShareStatus({ state: "error", message: "Select at least one friend." });
+            return;
+        }
+
+        setShareStatus({ state: "pending", message: "" });
+        try {
+            const results = await Promise.allSettled(chosenFriends.map((friendId) => shareListAPI(friendId, list._id)));
+            const failures = results.filter((result) => result.status === "rejected");
+            if (failures.length === 0) {
+                setShareStatus({ state: "success", message: "Shared with selected friends." });
+            } else if (failures.length < chosenFriends.length) {
+                setShareStatus({ state: "partial", message: "Shared with some friends. Please try again for the rest." });
+            } else {
+                setShareStatus({ state: "error", message: "Unable to share the list right now." });
+            }
+        } catch (error) {
+            console.error("Failed to share list", error);
+            setShareStatus({ state: "error", message: "Unable to share the list right now." });
+        }
+    };
+
     return (
         <div className="home-container">
             <NavigationBar setPage={handleNavigate} page={page} onNotificationsUpdated={refreshNotifications} />
@@ -156,7 +242,65 @@ const ListDetail = () => {
                                 </div>
                             </button>
                         )}
-                        <List list={list} />
+                        <div className="list-share-card" ref={shareRef}>
+                            <List list={list} />
+                            <div className="share-dropdown-wrapper">
+                                <button type="button" className="share-list-button" onClick={toggleShareDropdown} aria-expanded={shareOpen} aria-haspopup="true">
+                                    <IoIosSend size={20} color="#7c3aed" />
+                                </button>
+                                {shareOpen && (
+                                    <div className="share-dropdown">
+                                        <div className="share-dropdown-header">
+                                            <p>Share this list</p>
+                                        </div>
+                                        {friendsLoading && <p className="share-dropdown-status">Loading friends...</p>}
+                                        {!friendsLoading && friendsError && <p className="share-dropdown-status error">{friendsError}</p>}
+                                        {!friendsLoading && !friendsError && friends.length === 0 && (
+                                            <p className="share-dropdown-status">No friends available to share with yet.</p>
+                                        )}
+                                        {!friendsLoading && !friendsError && friends.length > 0 && (
+                                            <div className="share-friends-list">
+                                                {friends.map((friend) => {
+                                                    const friendId = friend?._id || friend?.id;
+                                                    const isSelected = Boolean(friendId && selectedFriends[friendId]);
+                                                    return (
+                                                        <label key={friendId || friend?.username} className={`share-friend-option ${isSelected ? "selected" : ""}`}>
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={isSelected}
+                                                                onChange={() => toggleFriendSelection(friendId)}
+                                                            />
+                                                            <div className="share-friend-avatar">
+                                                                <img src={friend?.profilePic || friend?.profilePicture || defaultAvatar} alt={friend?.username || "Friend"} />
+                                                            </div>
+                                                            <div className="share-friend-meta">
+                                                                <p className="share-friend-name">{friend?.username || friend?.name || "Friend"}</p>
+                                                                {friend?.email && <span className="share-friend-subtext">{friend.email}</span>}
+                                                            </div>
+                                                        </label>
+                                                    );
+                                                })}
+                                            </div>
+                                        )}
+                                        <div className="share-dropdown-footer">
+                                            <button
+                                                type="button"
+                                                className="share-action"
+                                                onClick={handleShareList}
+                                                disabled={shareStatus.state === "pending" || friends.length === 0 || friendsLoading}
+                                            >
+                                                {shareStatus.state === "pending" ? "Sharing..." : "Share"}
+                                            </button>
+                                            {shareStatus.message && (
+                                                <p className={`share-dropdown-status ${shareStatus.state}`}>
+                                                    {shareStatus.message}
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     </div>
                 )}
             </div>

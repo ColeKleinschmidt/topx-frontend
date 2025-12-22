@@ -308,7 +308,7 @@ export const getListAPI = async (listId) => {
     return response;
 }
 
-const getFriendsAPI = async (listId) => {
+export const getFriendsAPI = async (listId) => {
     const backend_query = await fetch(`${ENDPOINT}getFriends`, {
         method: 'GET',
         credentials: 'include',
@@ -343,7 +343,7 @@ const getUserByUsernameAPI = async (username) => {
     return response;
 }
 
-const shareListAPI = async (userId, listId) => {
+export const shareListAPI = async (userId, listId) => {
     data = {
         userId: userId,
         listId: listId
