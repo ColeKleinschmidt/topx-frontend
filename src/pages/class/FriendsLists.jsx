@@ -28,9 +28,9 @@ const FriendsLists = ({ onFindFriends = () => {} }) => {
         })
     }
 
-    const handleOpenList = (listId) => {
+    const handleOpenList = (listId, ownerId) => {
         if (!listId) return;
-        navigate(`/list/${listId}`);
+        navigate(`/list/${listId}`, { state: { ownerId } });
     };
     
     return (
@@ -43,7 +43,11 @@ const FriendsLists = ({ onFindFriends = () => {} }) => {
             </div>
             <div className="lists">
                 {lists.map((list, index) => (
-                    <List key={list._id || list.id || index} list={list} onClick={() => handleOpenList(list._id || list.id)} />
+                    <List
+                        key={list._id || list.id || index}
+                        list={list}
+                        onClick={() => handleOpenList(list._id || list.id, list.userId || list.ownerId)}
+                    />
                 ))}
             </div>
             {loadingLists && <h2 className="loading-lists">Loading...</h2>}

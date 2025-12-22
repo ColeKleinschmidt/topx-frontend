@@ -256,7 +256,7 @@ const Profile = () => {
 
     const handleOpenList = (listId) => {
         if (!listId) return;
-        navigate(`/list/${listId}`);
+        navigate(`/list/${listId}`, { state: { owner: user, ownerId: targetUserId } });
     };
 
     return (

@@ -34,7 +34,7 @@ const MyLists = () => {
 
     const handleOpenList = (listId) => {
         if (!listId) return;
-        navigate(`/list/${listId}`);
+        navigate(`/list/${listId}`, { state: { ownerId: userId } });
     };
     
     return (

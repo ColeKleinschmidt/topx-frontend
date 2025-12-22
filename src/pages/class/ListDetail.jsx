@@ -2,7 +2,7 @@ import "../css/ListDetail.css";
 import { useCallback, useEffect, useState } from "react";
 import NavigationBar from "../../components/class/NavigationBar.jsx";
 import List from "../../components/class/List.jsx";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setNotifications } from "../../store/notificationsSlice.js";
 import { getAllNotificationsAPI, getListAPI, getUserByIdAPI } from "../../backend/apis.js";
@@ -16,6 +16,9 @@ const ListDetail = () => {
     const [page, setPage] = useState(null);
     const [owner, setOwner] = useState(null);
     const [ownerLoading, setOwnerLoading] = useState(false);
+    const location = useLocation();
+    const navigationOwner = location.state?.owner;
+    const navigationOwnerId = location.state?.ownerId || navigationOwner?._id || navigationOwner?.id;
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -46,13 +49,14 @@ const ListDetail = () => {
             listData?.owner?.id,
             listData?.owner,
             listData?.creatorId,
+            navigationOwnerId,
         ];
         const ownerCandidate = candidates.find(Boolean);
         if (ownerCandidate && typeof ownerCandidate === "object") {
             return ownerCandidate._id || ownerCandidate.id || null;
         }
         return ownerCandidate || null;
-    }, []);
+    }, [navigationOwnerId]);
 
     useEffect(() => {
         refreshNotifications();
@@ -85,7 +89,9 @@ const ListDetail = () => {
                     items,
                 });
 
-                if (ownerId) {
+                if (navigationOwner) {
+                    setOwner(navigationOwner);
+                } else if (ownerId) {
                     setOwnerLoading(true);
                     try {
                         const ownerResponse = await getUserByIdAPI(ownerId);
@@ -112,7 +118,7 @@ const ListDetail = () => {
         if (listId) {
             fetchList();
         }
-    }, [listId, resolveOwnerId]);
+    }, [listId, resolveOwnerId, navigationOwner]);
 
     return (
         <div className="home-container">
