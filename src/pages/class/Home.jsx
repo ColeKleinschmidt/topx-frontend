@@ -6,7 +6,7 @@ import FriendsLists from "./FriendsLists.jsx";
 import Profile from "./Profile.jsx";
 import List from "../../components/class/List.jsx";
 import FindFriends from "./FindFriends.jsx";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setNotifications } from "../../store/notificationsSlice.js";
 import { getAllNotificationsAPI } from "../../backend/apis.js";
@@ -17,6 +17,7 @@ const Home = ({ route }) => {
     const [showNewList, setShowNewList] = useState(false);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         if (page !== "myLists" && showNewList) {
@@ -25,10 +26,13 @@ const Home = ({ route }) => {
     }, [page, showNewList]);
 
     useEffect(() => {
-        if (page) {
-            navigate(`/${page}`, { replace: true });
+        if (!page) return;
+        const targetBase = `/${page}`;
+        const isOnTargetBase = location.pathname === targetBase || location.pathname.startsWith(`${targetBase}/`);
+        if (!isOnTargetBase) {
+            navigate(targetBase, { replace: true });
         }
-    }, [page, navigate]);
+    }, [page, navigate, location.pathname]);
 
     const refreshNotifications = useCallback(async () => {
         try {
