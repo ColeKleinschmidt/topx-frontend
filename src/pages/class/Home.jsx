@@ -1,19 +1,30 @@
 import "../css/Home.css";
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import NavigationBar from "../../components/class/NavigationBar.jsx";
-import { authStatusAPI } from "../../backend/apis.js";
-import { useNavigate } from 'react-router-dom';
 import MyLists from "./MyLists.jsx";
 import FriendsLists from "./FriendsLists.jsx";
 import Profile from "./Profile.jsx";
 import List from "../../components/class/List.jsx";
+import FindFriends from "./FindFriends.jsx";
+import { useNavigate } from "react-router-dom";
 
 const Home = ({ route }) => {
 
     const [page, setPage] = useState(route);
     const [showNewList, setShowNewList] = useState(false);
-
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (page !== "myLists" && showNewList) {
+            setShowNewList(false);
+        }
+    }, [page, showNewList]);
+
+    useEffect(() => {
+        if (page) {
+            navigate(`/${page}`, { replace: true });
+        }
+    }, [page, navigate]);
     
     return (
         <div className="home-container">
@@ -22,16 +33,22 @@ const Home = ({ route }) => {
                 {page === "myLists" ? (
                     <MyLists />
                 ) : page === "friendsLists" ? (
-                    <FriendsLists />
+                    <FriendsLists onFindFriends={() => setPage("findFriends")} />
+                ) : page === "findFriends" ? (
+                    <FindFriends onBackToFriends={() => setPage("friendsLists")} />
                 ) : page === "profile" && (
                     <Profile />
                 )}
 
             </div>
-            <div className={`newListContainer ${showNewList && "animate"}`}>
-                <List editable={true} />
-            </div>
-            <div className={`newList ${showNewList ? "active" : ""}`} onClick={() => {setShowNewList(!showNewList)}}>+</div>
+            {page === "myLists" && (
+                <>
+                    <div className={`newListContainer ${showNewList && "animate"}`}>
+                        <List editable={true} />
+                    </div>
+                    <div className={`newList ${showNewList ? "active" : ""}`} onClick={() => {setShowNewList(!showNewList)}}>+</div>
+                </>
+            )}
         </div>
     )
 }

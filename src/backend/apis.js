@@ -117,8 +117,8 @@ const getAllUsersAPI = async () => {
     return response;
 }
 
-const getUsersAPI = async () => {
-    const backend_query = await fetch(`${ENDPOINT}getUsers`, {
+export const getUsersAPI = async (page = 1, limit = 12) => {
+    const backend_query = await fetch(`${ENDPOINT}getUsers?page=${page}&limit=${limit}`, {
         method: 'GET',
         credentials: 'include',
         headers: {
@@ -155,10 +155,10 @@ const uploadProfilePictureAPI = async (file) => {
     }
 }
 
-const sendFriendRequestAPI = async (recipientID) => {
-    data = {
+export const sendFriendRequestAPI = async (recipientID) => {
+    const data = {
         receiver: recipientID
-    }
+    };
     const backend_query = await fetch(`${ENDPOINT}sendFriendRequest`, {
         method: 'POST',
         credentials: 'include',
