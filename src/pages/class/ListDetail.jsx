@@ -73,6 +73,12 @@ const ListDetail = () => {
         return ownerCandidate || null;
     }, [navigationOwnerId]);
 
+    const normalizeFriendId = useCallback((friend) => {
+        if (!friend) return null;
+        if (typeof friend === "string") return friend;
+        return friend._id || friend.id || friend.userId || null;
+    }, []);
+
     const fetchFriends = useCallback(async () => {
         setFriendsLoading(true);
         setFriendsError(null);
@@ -81,11 +87,9 @@ const ListDetail = () => {
             const rawFriends = response?.friends || response?.data || [];
             const normalizedFriends = rawFriends
                 .map((friend) => {
-                    if (!friend) return null;
-                    if (typeof friend === "string") {
-                        return { _id: friend };
-                    }
-                    return { ...friend, _id: friend._id || friend.id };
+                    const friendId = normalizeFriendId(friend);
+                    if (!friendId) return null;
+                    return { ...friend, _id: friendId };
                 })
                 .filter(Boolean);
             setFriends(normalizedFriends);
@@ -95,7 +99,7 @@ const ListDetail = () => {
         } finally {
             setFriendsLoading(false);
         }
-    }, []);
+    }, [normalizeFriendId]);
 
     useEffect(() => {
         refreshNotifications();
@@ -182,14 +186,17 @@ const ListDetail = () => {
     };
 
     const toggleFriendSelection = (friendId) => {
+        if (!friendId) return;
         setSelectedFriends((prev) => ({ ...prev, [friendId]: !prev[friendId] }));
     };
 
     const handleShareList = async () => {
-        if (!list?._id) return;
+        const listIdentifier = list?._id || list?.id || listId;
+        if (!listIdentifier) return;
         const chosenFriends = Object.entries(selectedFriends)
             .filter(([, isSelected]) => isSelected)
-            .map(([friendId]) => friendId);
+            .map(([friendId]) => friendId)
+            .filter(Boolean);
 
         if (chosenFriends.length === 0) {
             setShareStatus({ state: "error", message: "Select at least one friend." });
@@ -198,7 +205,14 @@ const ListDetail = () => {
 
         setShareStatus({ state: "pending", message: "" });
         try {
-            const results = await Promise.allSettled(chosenFriends.map((friendId) => shareListAPI(friendId, list._id)));
+            const results = await Promise.allSettled(chosenFriends.map(async (friendId) => {
+                const response = await shareListAPI(friendId, listIdentifier);
+                const errorMessage = response?.error || response?.message;
+                if (response === null || response === undefined || (typeof errorMessage === "string" && errorMessage.toLowerCase().includes("error"))) {
+                    throw new Error(errorMessage || "Share failed");
+                }
+                return response;
+            }));
             const failures = results.filter((result) => result.status === "rejected");
             if (failures.length === 0) {
                 setShareStatus({ state: "success", message: "Shared with selected friends." });
@@ -246,7 +260,7 @@ const ListDetail = () => {
                             <List list={list} />
                             <div className="share-dropdown-wrapper">
                                 <button type="button" className="share-list-button" onClick={toggleShareDropdown} aria-expanded={shareOpen} aria-haspopup="true">
-                                    <IoIosSend size={20} color="#7c3aed" />
+                                    <IoIosSend size={20} />
                                 </button>
                                 {shareOpen && (
                                     <div className="share-dropdown">
