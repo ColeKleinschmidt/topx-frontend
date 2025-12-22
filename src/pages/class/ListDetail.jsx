@@ -42,6 +42,14 @@ const ListDetail = () => {
             setError(null);
             try {
                 const response = await getListAPI(listId);
+                const notFoundMessage =
+                    typeof response?.message === "string" &&
+                    response.message.toLowerCase().includes("could not find list");
+
+                if (notFoundMessage) {
+                    throw new Error("LIST_NOT_FOUND");
+                }
+
                 const listData = response?.list || response?.data || response;
                 if (!listData || Object.keys(listData).length === 0) {
                     throw new Error("LIST_NOT_FOUND");
