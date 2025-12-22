@@ -1,5 +1,5 @@
 import "../css/Profile.css";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
     acceptFriendRequestAPI,
     declineFriendRequestAPI,
@@ -54,6 +54,8 @@ const Profile = () => {
     const [friendAction, setFriendAction] = useState("idle");
     const [blocking, setBlocking] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
+    const menuRef = useRef(null);
+    const friendsMenuRef = useRef(null);
 
     const refreshNotifications = useCallback(async () => {
         try {
@@ -262,6 +264,26 @@ const Profile = () => {
         }
     };
 
+    const handleOpenFriendProfile = (friendId) => {
+        if (!friendId) return;
+        setFriendsOpen(false);
+        navigate(`/profile/${friendId}`);
+    };
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (menuOpen && menuRef.current && !menuRef.current.contains(event.target)) {
+                setMenuOpen(false);
+            }
+            if (friendsOpen && friendsMenuRef.current && !friendsMenuRef.current.contains(event.target)) {
+                setFriendsOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [menuOpen, friendsOpen]);
+
     const renderFriendButton = () => {
         if (friendStatus === "self") return null;
         if (friendStatus === "friends") {
@@ -325,7 +347,7 @@ const Profile = () => {
                     </div>
                 </div>
                 {!viewingOwnProfile && (
-                    <div className="profile-menu">
+                    <div className="profile-menu" ref={menuRef}>
                         <button
                             className="menu-button"
                             aria-label="More actions"
@@ -348,28 +370,31 @@ const Profile = () => {
                 )}
             </div>
 
-            <div className="friends-section">
-                <div className="friends-header">
-                    <div>
-                        <p className="eyebrow">Friends</p>
-                        <h3>{friends.length} {friends.length === 1 ? "friend" : "friends"}</h3>
-                    </div>
-                    <button className="secondary-button compact" onClick={() => setFriendsOpen((prev) => !prev)}>
-                        {friendsOpen ? "Hide" : "Show"}
-                    </button>
-                </div>
+            <div className="friends-indicator-wrapper" ref={friendsMenuRef}>
+                <button className="friends-indicator" onClick={() => setFriendsOpen((prev) => !prev)}>
+                    {friends.length} {friends.length === 1 ? "friend" : "friends"}
+                    {friendsOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
+                </button>
                 {friendsOpen && (
-                    <div className="friends-grid">
-                        {friends.map((friend) => (
-                            <div className="friend-card" key={friend._id}>
-                                <div className="friend-avatar">
-                                    <img src={friend.profilePic || friend.profilePicture || defaultAvatar} alt={`${friend.username} avatar`} />
-                                </div>
-                                <div className="friend-name">{friend.username}</div>
+                    <div className="friends-dropdown">
+                        {friends.length > 0 && (
+                            <div className="friends-dropdown-list">
+                                {friends.map((friend) => (
+                                    <button
+                                        className="friend-dropdown-item"
+                                        key={friend._id}
+                                        onClick={() => handleOpenFriendProfile(friend._id || friend.id)}
+                                    >
+                                        <div className="friend-avatar small">
+                                            <img src={friend.profilePic || friend.profilePicture || defaultAvatar} alt={`${friend.username} avatar`} />
+                                        </div>
+                                        <span className="friend-name">{friend.username}</span>
+                                    </button>
+                                ))}
                             </div>
-                        ))}
-                        {friends.length === 0 && !loading && <p className="muted">No friends yet.</p>}
-                        {friends.length === 0 && loading && <p className="muted">Loading friends...</p>}
+                        )}
+                        {friends.length === 0 && !loading && <p className="muted no-friends">No friends yet.</p>}
+                        {friends.length === 0 && loading && <p className="muted no-friends">Loading friends...</p>}
                     </div>
                 )}
             </div>
