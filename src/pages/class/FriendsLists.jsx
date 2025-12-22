@@ -2,9 +2,8 @@ import "../css/FriendsLists.css";
 import { useState, useEffect } from 'react';
 import { getListsAPI } from "../../backend/apis.js";
 import List from "../../components/class/List.jsx";
-//import { } from "../../backend/apis.js";
 
-const FriendsLists = () => {
+const FriendsLists = ({ onFindFriends = () => {} }) => {
     const [loadingLists, setLoadingLists] = useState(true);
     const [lists, setLists] = useState([]);
     const [page, setPage] = useState(1);
@@ -30,7 +29,10 @@ const FriendsLists = () => {
     return (
         <div className="friends-lists-container">
             <div className="friends-lists-top-bar">
-                <h2 className="friends-lists-header">Friend Lists</h2>
+                <h2 className="friends-lists-header">Friends Lists</h2>
+                <button className="find-new-friends-button" onClick={onFindFriends}>
+                    Find new Friends
+                </button>
             </div>
             <div className="lists">
                 {lists.map((list, index) => (

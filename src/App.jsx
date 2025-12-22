@@ -10,6 +10,7 @@ function App() {
         <Route index path="/" element={<LandingPage />} />
         <Route path="/myLists" element={<Home route="myLists" />} />
         <Route path="/friendsLists" element={<Home route="friendsLists" />} />
+        <Route path="/findFriends" element={<Home route="findFriends" />} />
         <Route path="/profile" element={<Home route="profile" />} />
       </Routes>
     </BrowserRouter>
