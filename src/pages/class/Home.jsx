@@ -1,5 +1,5 @@
 import "../css/Home.css";
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import NavigationBar from "../../components/class/NavigationBar.jsx";
 import MyLists from "./MyLists.jsx";
 import FriendsLists from "./FriendsLists.jsx";
@@ -7,13 +7,15 @@ import Profile from "./Profile.jsx";
 import List from "../../components/class/List.jsx";
 import FindFriends from "./FindFriends.jsx";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setNotifications } from "../../store/notificationsSlice.js";
 import { getAllNotificationsAPI } from "../../backend/apis.js";
 
 const Home = ({ route }) => {
 
     const [page, setPage] = useState(route);
     const [showNewList, setShowNewList] = useState(false);
-    const [notifications, setNotifications] = useState([]);
+    const dispatch = useDispatch();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -28,33 +30,22 @@ const Home = ({ route }) => {
         }
     }, [page, navigate]);
 
-    useEffect(() => {
-        const fetchNotifications = async () => {
-            try {
-                const response = await getAllNotificationsAPI();
-                if (response?.notifications) {
-                    setNotifications(response.notifications);
-                }
-            } catch (error) {
-                console.error("Failed to load notifications", error);
-            }
-        };
-
-        if (document.cookie || localStorage.getItem("user")) {
-            fetchNotifications();
-        }
-    }, []);
-
-    const refreshNotifications = async () => {
+    const refreshNotifications = useCallback(async () => {
         try {
             const response = await getAllNotificationsAPI();
             if (response?.notifications) {
-                setNotifications(response.notifications);
+                dispatch(setNotifications(response.notifications));
             }
         } catch (error) {
             console.error("Failed to refresh notifications", error);
         }
-    };
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (document.cookie || localStorage.getItem("user")) {
+            refreshNotifications();
+        }
+    }, [refreshNotifications]);
     
     return (
         <div className="home-container">
@@ -65,11 +56,7 @@ const Home = ({ route }) => {
                 ) : page === "friendsLists" ? (
                     <FriendsLists onFindFriends={() => setPage("findFriends")} />
                 ) : page === "findFriends" ? (
-                    <FindFriends
-                        onBackToFriends={() => setPage("friendsLists")}
-                        notifications={notifications}
-                        onNotificationsUpdated={refreshNotifications}
-                    />
+                    <FindFriends onBackToFriends={() => setPage("friendsLists")} onNotificationsUpdated={refreshNotifications} />
                 ) : page === "profile" && (
                     <Profile />
                 )}

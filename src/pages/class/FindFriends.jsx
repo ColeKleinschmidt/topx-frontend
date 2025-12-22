@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "../css/FindFriends.css";
-import { acceptFriendRequestAPI, declineFriendRequestAPI, getUsersAPI, sendFriendRequestAPI } from "../../backend/apis.js";
+import { acceptFriendRequestAPI, declineFriendRequestAPI, getAllNotificationsAPI, getUsersAPI, sendFriendRequestAPI, getUserId } from "../../backend/apis.js";
 import defaultAvatar from "../../assets/icons/User Icon.png";
+import { useDispatch, useSelector } from "react-redux";
+import { setNotifications } from "../../store/notificationsSlice.js";
 
 const PAGE_SIZE = 12;
 
-const FindFriends = ({ onBackToFriends = () => {}, notifications = [], onNotificationsUpdated = () => {} }) => {
+const FindFriends = ({ onBackToFriends = () => {}, onNotificationsUpdated = async () => {} }) => {
     const [users, setUsers] = useState([]);
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
@@ -13,6 +15,9 @@ const FindFriends = ({ onBackToFriends = () => {}, notifications = [], onNotific
     const [error, setError] = useState(null);
     const [friendRequests, setFriendRequests] = useState({});
     const [incomingRequestStatus, setIncomingRequestStatus] = useState({});
+    const notifications = useSelector((state) => state.notifications.items);
+    const dispatch = useDispatch();
+    const loggedInUserId = getUserId();
 
     const listContainerRef = useRef(null);
     const loadMoreRef = useRef(null);
@@ -78,24 +83,65 @@ const FindFriends = ({ onBackToFriends = () => {}, notifications = [], onNotific
         }
     };
 
-    const incomingFriendRequests = useMemo(() => {
-        const requestsBySender = {};
+    const refreshNotifications = useCallback(async () => {
+        try {
+            const response = await getAllNotificationsAPI();
+            if (response?.notifications) {
+                dispatch(setNotifications(response.notifications));
+            }
+        } catch (error) {
+            console.error("Failed to refresh notifications", error);
+        }
+    }, [dispatch]);
+
+    const normalizeId = useCallback((value) => {
+        if (!value) return null;
+        if (typeof value === "object") {
+            if (value._id) return String(value._id);
+            if (value.id) return String(value.id);
+        }
+        return String(value);
+    }, []);
+
+    const actionableRequests = useMemo(() => {
+        const requestsByTarget = {};
         notifications.forEach((notification) => {
             if (notification?.type !== "friendRequest") return;
-            const senderId = notification?.sender?._id
+            const senderId = normalizeId(
+                notification?.sender?._id
                 || notification?.senderId
-                || notification?.user?._id
-                || notification?.userId
                 || notification?.fromUserId
-                || notification?.from;
-            const requestId = notification?.requestId || notification?._id || notification?.id;
+                || notification?.from
+                || notification?.sender
+            );
+            const receiverId = normalizeId(
+                notification?.receiver?._id
+                || notification?.receiverId
+                || notification?.toUserId
+                || notification?.to
+                || notification?.receiver
+            );
+            const targetId = normalizeId(
+                notification?.user?._id
+                || notification?.userId
+                || notification?.targetUserId
+                || notification?.targetId
+            );
+            const requestId = normalizeId(notification?.requestId || notification?._id || notification?.id);
 
-            if (senderId && requestId) {
-                requestsBySender[senderId] = { requestId, notification };
+            const counterpartId = receiverId || targetId;
+
+            if (
+                senderId
+                && counterpartId
+                && loggedInUserId
+                && senderId.toString() === loggedInUserId.toString()
+            ) {
+                requestsByTarget[counterpartId] = { requestId, notification };
             }
         });
-        return requestsBySender;
-    }, [notifications]);
+        return requestsByTarget;
+    }, [normalizeId, notifications, loggedInUserId]);
 
     const handleRespondToRequest = async (senderId, requestId, action) => {
         if (!requestId) return;
@@ -107,7 +153,8 @@ const FindFriends = ({ onBackToFriends = () => {}, notifications = [], onNotific
             } else {
                 await declineFriendRequestAPI(requestId);
             }
-            onNotificationsUpdated();
+            await refreshNotifications();
+            await onNotificationsUpdated();
             setIncomingRequestStatus((prev) => ({ ...prev, [senderId]: `${action}ed` }));
         } catch (err) {
             console.error(`Error trying to ${action} friend request`, err);
@@ -138,18 +185,18 @@ const FindFriends = ({ onBackToFriends = () => {}, notifications = [], onNotific
                             <h3>{user.username}</h3>
                             <p className="muted">@{user.username?.toLowerCase()}</p>
                         </div>
-                        {incomingFriendRequests[user._id] ? (
+                        {actionableRequests[user._id] ? (
                             <div className="friend-request-actions">
                                 <button
                                     className="secondary-button"
-                                    onClick={() => handleRespondToRequest(user._id, incomingFriendRequests[user._id].requestId, "decline")}
+                                    onClick={() => handleRespondToRequest(user._id, actionableRequests[user._id].requestId, "decline")}
                                     disabled={["declining", "accepting", "accepted", "declined"].includes(incomingRequestStatus[user._id])}
                                 >
                                     {incomingRequestStatus[user._id]?.startsWith("declin") ? "Declined" : "Decline"}
                                 </button>
                                 <button
                                     className="add-friend-button"
-                                    onClick={() => handleRespondToRequest(user._id, incomingFriendRequests[user._id].requestId, "accept")}
+                                    onClick={() => handleRespondToRequest(user._id, actionableRequests[user._id].requestId, "accept")}
                                     disabled={["declining", "accepting", "accepted", "declined"].includes(incomingRequestStatus[user._id])}
                                 >
                                     {incomingRequestStatus[user._id]?.startsWith("accept") ? "Accepted" : "Accept"}
