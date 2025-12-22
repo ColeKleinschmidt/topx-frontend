@@ -303,7 +303,15 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
                         </div>
                     )}
                 </div>
-                <div onClick={() => alert("profile")} className="profile-button">
+                <div
+                    onClick={() => {
+                        setShowFriendRequests(false);
+                        setShowShares(false);
+                        setPage("profile");
+                        navigate("/profile");
+                    }}
+                    className="profile-button"
+                >
                     <MdAccountCircle color="white" size={25}/>
                 </div>
             </div>

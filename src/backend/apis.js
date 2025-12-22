@@ -84,7 +84,11 @@ export const authStatusAPI = async () =>
             return { message: 'nr' };
         }
     };
-const logoutAPI = async () => {
+export const deleteCookie = (name) => {
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+};
+
+export const logoutAPI = async () => {
     const backend_query = await fetch(`${ENDPOINT}logout`, {
         method: 'GET',
         credentials: 'include',
@@ -227,7 +231,7 @@ export const declineFriendRequestAPI = async (requestId) => {
     return response;
 }
 
-const removeFriendAPI = async (userId) => {
+export const removeFriendAPI = async (userId) => {
     const data = {
         user: userId
     }
