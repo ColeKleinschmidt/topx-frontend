@@ -345,6 +345,34 @@ const Profile = () => {
                             </button>
                         )}
                     </div>
+                    <div className="friends-indicator-wrapper" ref={friendsMenuRef}>
+                        <button className="friends-indicator" onClick={() => setFriendsOpen((prev) => !prev)}>
+                            {friends.length} {friends.length === 1 ? "friend" : "friends"}
+                            {friendsOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
+                        </button>
+                        {friendsOpen && (
+                            <div className="friends-dropdown">
+                                {friends.length > 0 && (
+                                    <div className="friends-dropdown-list">
+                                        {friends.map((friend) => (
+                                            <button
+                                                className="friend-dropdown-item"
+                                                key={friend._id}
+                                                onClick={() => handleOpenFriendProfile(friend._id || friend.id)}
+                                            >
+                                                <div className="friend-avatar small">
+                                                    <img src={friend.profilePic || friend.profilePicture || defaultAvatar} alt={`${friend.username} avatar`} />
+                                                </div>
+                                                <span className="friend-name">{friend.username}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                                {friends.length === 0 && !loading && <p className="muted no-friends">No friends yet.</p>}
+                                {friends.length === 0 && loading && <p className="muted no-friends">Loading friends...</p>}
+                            </div>
+                        )}
+                    </div>
                 </div>
                 {!viewingOwnProfile && (
                     <div className="profile-menu" ref={menuRef}>
@@ -366,35 +394,6 @@ const Profile = () => {
                                 </button>
                             </div>
                         )}
-                    </div>
-                )}
-            </div>
-
-            <div className="friends-indicator-wrapper" ref={friendsMenuRef}>
-                <button className="friends-indicator" onClick={() => setFriendsOpen((prev) => !prev)}>
-                    {friends.length} {friends.length === 1 ? "friend" : "friends"}
-                    {friendsOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
-                </button>
-                {friendsOpen && (
-                    <div className="friends-dropdown">
-                        {friends.length > 0 && (
-                            <div className="friends-dropdown-list">
-                                {friends.map((friend) => (
-                                    <button
-                                        className="friend-dropdown-item"
-                                        key={friend._id}
-                                        onClick={() => handleOpenFriendProfile(friend._id || friend.id)}
-                                    >
-                                        <div className="friend-avatar small">
-                                            <img src={friend.profilePic || friend.profilePicture || defaultAvatar} alt={`${friend.username} avatar`} />
-                                        </div>
-                                        <span className="friend-name">{friend.username}</span>
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-                        {friends.length === 0 && !loading && <p className="muted no-friends">No friends yet.</p>}
-                        {friends.length === 0 && loading && <p className="muted no-friends">Loading friends...</p>}
                     </div>
                 )}
             </div>
