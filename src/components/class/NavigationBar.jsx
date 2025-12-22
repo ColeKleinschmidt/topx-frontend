@@ -7,7 +7,8 @@ import { IoIosSend, IoIosSearch } from "react-icons/io";
 import { MdAccountCircle } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { setNotifications } from "../../store/notificationsSlice.js";
-import { acceptFriendRequestAPI, declineFriendRequestAPI, getAllNotificationsAPI, getListAPI, getUserByIdAPI } from "../../backend/apis.js";
+import { setBlockedUsers } from "../../store/blockedUsersSlice.js";
+import { acceptFriendRequestAPI, declineFriendRequestAPI, getAllNotificationsAPI, getBlockedUsersAPI, getListAPI, getUserByIdAPI } from "../../backend/apis.js";
 import { useNavigate } from "react-router-dom";
 import { getUserId } from "../../backend/apis.js";
 
@@ -16,6 +17,7 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
     const [showFriendRequests, setShowFriendRequests] = useState(false);
     const [showShares, setShowShares] = useState(false);
     const notifications = useSelector((state) => state.notifications.items);
+    const blockedUsers = useSelector((state) => state.blockedUsers.items);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const dropdownRef = useRef(null);
@@ -32,23 +34,57 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
             return;
         }
         try {
-            const response = await getAllNotificationsAPI();
-            if (response?.notifications) {
-                dispatch(setNotifications(response.notifications));
+            const [notificationsResponse, blockedResponse] = await Promise.all([
+                getAllNotificationsAPI(),
+                getBlockedUsersAPI(),
+            ]);
+            if (notificationsResponse?.notifications) {
+                dispatch(setNotifications(notificationsResponse.notifications));
+            }
+            if (blockedResponse?.blockedUsers) {
+                dispatch(setBlockedUsers(blockedResponse.blockedUsers));
             }
         } catch (error) {
             console.error("Failed to refresh notifications", error);
         }
     }, [dispatch, onNotificationsUpdated]);
 
+    const blockedSet = useMemo(() => new Set((blockedUsers || []).map((u) => {
+        if (!u) return null;
+        if (typeof u === "object") {
+            return String(u._id || u.id);
+        }
+        return String(u);
+    }).filter(Boolean)), [blockedUsers]);
+
     const friendRequestNotifications = useMemo(
-        () => notifications.filter((notification) => notification?.type === "friendRequest"),
-        [notifications]
+        () => notifications.filter((notification) => {
+            if (notification?.type !== "friendRequest") return false;
+            const senderId = normalizeId(
+                notification?.sender?._id
+                || notification?.senderId
+                || notification?.fromUserId
+                || notification?.from
+                || notification?.sender
+            );
+            return senderId && !blockedSet.has(senderId);
+        }),
+        [notifications, blockedSet]
     );
 
     const shareNotifications = useMemo(
-        () => notifications.filter((notification) => notification?.type === "share"),
-        [notifications]
+        () => notifications.filter((notification) => {
+            if (notification?.type !== "share") return false;
+            const senderId = normalizeId(
+                notification?.sender?._id
+                || notification?.senderId
+                || notification?.fromUserId
+                || notification?.from
+                || notification?.sender
+            );
+            return senderId && !blockedSet.has(senderId);
+        }),
+        [notifications, blockedSet]
     );
 
     useEffect(() => {

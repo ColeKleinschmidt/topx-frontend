@@ -5,7 +5,8 @@ import List from "../../components/class/List.jsx";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setNotifications } from "../../store/notificationsSlice.js";
-import { getAllNotificationsAPI, getListAPI, getUserByIdAPI } from "../../backend/apis.js";
+import { setBlockedUsers } from "../../store/blockedUsersSlice.js";
+import { getAllNotificationsAPI, getBlockedUsersAPI, getListAPI, getUserByIdAPI } from "../../backend/apis.js";
 import defaultAvatar from "../../assets/icons/User Icon.png";
 
 const ListDetail = () => {
@@ -29,12 +30,18 @@ const ListDetail = () => {
 
     const refreshNotifications = useCallback(async () => {
         try {
-            const response = await getAllNotificationsAPI();
-            if (response?.notifications) {
-                dispatch(setNotifications(response.notifications));
+            const [notificationsResponse, blockedResponse] = await Promise.all([
+                getAllNotificationsAPI(),
+                getBlockedUsersAPI(),
+            ]);
+            if (notificationsResponse?.notifications) {
+                dispatch(setNotifications(notificationsResponse.notifications));
+            }
+            if (blockedResponse?.blockedUsers) {
+                dispatch(setBlockedUsers(blockedResponse.blockedUsers));
             }
         } catch (err) {
-            console.error("Failed to refresh notifications", err);
+            console.error("Failed to refresh notifications or blocked users", err);
         }
     }, [dispatch]);
 

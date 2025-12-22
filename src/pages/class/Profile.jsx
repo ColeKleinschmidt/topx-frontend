@@ -5,19 +5,23 @@ import {
     declineFriendRequestAPI,
     deleteCookie,
     getAllNotificationsAPI,
+    getBlockedUsersAPI,
     getUserByIdAPI,
     getUserId,
     getUserListsAPI,
     logoutAPI,
     removeFriendAPI,
-    sendFriendRequestAPI
+    sendFriendRequestAPI,
+    toggleBlockUserAPI
 } from "../../backend/apis.js";
 import List from "../../components/class/List.jsx";
 import defaultAvatar from "../../assets/icons/User Icon.png";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
+import { FiMoreVertical } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import { setNotifications } from "../../store/notificationsSlice.js";
+import { setBlockedUsers } from "../../store/blockedUsersSlice.js";
 
 const Profile = () => {
     const navigate = useNavigate();
@@ -26,6 +30,7 @@ const Profile = () => {
 
     const dispatch = useDispatch();
     const notifications = useSelector((state) => state.notifications.items);
+    const blockedUsers = useSelector((state) => state.blockedUsers.items);
     const loggedInUserId = getUserId();
     const viewingOwnProfile = useMemo(() => {
         if (routeUserId) return routeUserId === loggedInUserId;
@@ -47,15 +52,23 @@ const Profile = () => {
     const [loading, setLoading] = useState(true);
     const [listsLoading, setListsLoading] = useState(true);
     const [friendAction, setFriendAction] = useState("idle");
+    const [blocking, setBlocking] = useState(false);
+    const [menuOpen, setMenuOpen] = useState(false);
 
     const refreshNotifications = useCallback(async () => {
         try {
-            const response = await getAllNotificationsAPI();
-            if (response?.notifications) {
-                dispatch(setNotifications(response.notifications));
+            const [notificationsResponse, blockedResponse] = await Promise.all([
+                getAllNotificationsAPI(),
+                getBlockedUsersAPI(),
+            ]);
+            if (notificationsResponse?.notifications) {
+                dispatch(setNotifications(notificationsResponse.notifications));
+            }
+            if (blockedResponse?.blockedUsers) {
+                dispatch(setBlockedUsers(blockedResponse.blockedUsers));
             }
         } catch (error) {
-            console.error("Failed to refresh notifications", error);
+            console.error("Failed to refresh notifications or blocked users", error);
         }
     }, [dispatch]);
 
@@ -218,6 +231,37 @@ const Profile = () => {
         }
     };
 
+    const blockedSet = useMemo(() => new Set((blockedUsers || []).map((u) => {
+        if (!u) return null;
+        if (typeof u === "object") return String(u._id || u.id);
+        return String(u);
+    }).filter(Boolean)), [blockedUsers]);
+
+    const isBlocked = useMemo(() => blockedSet.has(String(targetUserId)), [blockedSet, targetUserId]);
+
+    const handleToggleBlock = async () => {
+        if (!targetUserId || !loggedInUserId) return;
+        setBlocking(true);
+        try {
+            const response = await toggleBlockUserAPI(loggedInUserId, targetUserId);
+            if (response?.blockedUsers) {
+                dispatch(setBlockedUsers(response.blockedUsers));
+            } else {
+                const current = Array.isArray(blockedUsers) ? blockedUsers : [];
+                if (isBlocked) {
+                    dispatch(setBlockedUsers(current.filter((id) => String(id) !== String(targetUserId))));
+                } else {
+                    dispatch(setBlockedUsers([...current, targetUserId]));
+                }
+            }
+        } catch (error) {
+            console.error("Failed to toggle block status", error);
+        } finally {
+            setBlocking(false);
+            setMenuOpen(false);
+        }
+    };
+
     const renderFriendButton = () => {
         if (friendStatus === "self") return null;
         if (friendStatus === "friends") {
@@ -262,36 +306,62 @@ const Profile = () => {
     return (
         <div className="profile-page">
             <div className="profile-header">
-                <div className="avatar hero-avatar">
-                    <img src={user?.profilePic || user?.profilePicture || defaultAvatar} alt={`${user?.username || "User"} avatar`} />
+                <div className="profile-header-inner">
+                    <div className="avatar hero-avatar">
+                        <img src={user?.profilePic || user?.profilePicture || defaultAvatar} alt={`${user?.username || "User"} avatar`} />
+                    </div>
+                    <div className="user-meta hero-meta">
+                        <h2>{user?.username || "User"}</h2>
+                        <p className="muted">@{(user?.username || "user").toLowerCase()}</p>
+                        {loading && <p className="muted small">Loading profile...</p>}
+                    </div>
+                    <div className="profile-actions">
+                        {!viewingOwnProfile && renderFriendButton()}
+                        {viewingOwnProfile && (
+                            <button className="secondary-button" onClick={handleLogout}>
+                                Logout
+                            </button>
+                        )}
+                    </div>
                 </div>
-                <div className="user-meta hero-meta">
-                    <h2>{user?.username || "User"}</h2>
-                    <p className="muted">@{(user?.username || "user").toLowerCase()}</p>
-                    {loading && <p className="muted small">Loading profile...</p>}
-                </div>
-                <div className="profile-actions">
-                    {!viewingOwnProfile && renderFriendButton()}
-                    {viewingOwnProfile && (
-                        <button className="secondary-button" onClick={handleLogout}>
-                            Logout
+                {!viewingOwnProfile && (
+                    <div className="profile-menu">
+                        <button
+                            className="menu-button"
+                            aria-label="More actions"
+                            onClick={() => setMenuOpen((prev) => !prev)}
+                        >
+                            <FiMoreVertical size={20} />
                         </button>
-                    )}
-                </div>
+                        {menuOpen && (
+                            <div className="menu-dropdown">
+                                <button
+                                    className="menu-item"
+                                    onClick={handleToggleBlock}
+                                    disabled={blocking}
+                                >
+                                    {blocking ? "Processing..." : isBlocked ? "Unblock user" : "Block user"}
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
 
             <div className="friends-section">
-                <button className="friends-toggle" onClick={() => setFriendsOpen((prev) => !prev)}>
+                <div className="friends-header">
                     <div>
                         <p className="eyebrow">Friends</p>
                         <h3>{friends.length} {friends.length === 1 ? "friend" : "friends"}</h3>
                     </div>
-                    {friendsOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
-                </button>
+                    <button className="secondary-button compact" onClick={() => setFriendsOpen((prev) => !prev)}>
+                        {friendsOpen ? "Hide" : "Show"}
+                    </button>
+                </div>
                 {friendsOpen && (
-                    <div className="friends-list">
+                    <div className="friends-grid">
                         {friends.map((friend) => (
-                            <div className="friend-row" key={friend._id}>
+                            <div className="friend-card" key={friend._id}>
                                 <div className="friend-avatar">
                                     <img src={friend.profilePic || friend.profilePicture || defaultAvatar} alt={`${friend.username} avatar`} />
                                 </div>

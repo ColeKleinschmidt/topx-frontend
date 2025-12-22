@@ -451,11 +451,11 @@ async function ignoreUser(userId, ignoredUserId)
     }
 }
 
-async function toggleBlockUser(userId, blockedUserId) 
+export const toggleBlockUserAPI = async (userId, blockedUserId) => 
 {
     try 
     {
-        const response = await fetch(`${ENDPOINT}/toggleBlockUser`, 
+        const response = await fetch(`${ENDPOINT}toggleBlockUser`, 
         {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -471,13 +471,13 @@ async function toggleBlockUser(userId, blockedUserId)
         console.error("Error toggling block status:", error);
         return { message: "Error" };
     }
-}
+};
 
-async function getBlockedUsers() 
+export const getBlockedUsersAPI = async () => 
 {
     try 
     {
-        const response = await fetch(`${ENDPOINT}/getBlockedUsers`, 
+        const response = await fetch(`${ENDPOINT}getBlockedUsers`, 
         { 
             method: "GET", 
             headers: { "Content-Type": "application/json" } 
@@ -490,7 +490,7 @@ async function getBlockedUsers()
         console.error("Error fetching blocked users:", error);
         return { blockedUsers: [] }; // Return an empty array to prevent crashes
     }
-}
+};
 
 //------------------TEMPLATE API CALL------------------//
 /*

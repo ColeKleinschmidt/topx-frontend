@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "../css/FindFriends.css";
-import { acceptFriendRequestAPI, declineFriendRequestAPI, getAllNotificationsAPI, getUsersAPI, sendFriendRequestAPI, getUserId } from "../../backend/apis.js";
+import { acceptFriendRequestAPI, declineFriendRequestAPI, getAllNotificationsAPI, getBlockedUsersAPI, getUsersAPI, sendFriendRequestAPI, getUserId } from "../../backend/apis.js";
 import defaultAvatar from "../../assets/icons/User Icon.png";
 import { useDispatch, useSelector } from "react-redux";
 import { setNotifications } from "../../store/notificationsSlice.js";
+import { setBlockedUsers } from "../../store/blockedUsersSlice.js";
 import { useNavigate } from "react-router-dom";
 
 const PAGE_SIZE = 12;
@@ -17,6 +18,7 @@ const FindFriends = ({ onBackToFriends = () => {}, onNotificationsUpdated = asyn
     const [friendRequests, setFriendRequests] = useState({});
     const [incomingRequestStatus, setIncomingRequestStatus] = useState({});
     const notifications = useSelector((state) => state.notifications.items);
+    const blockedUsers = useSelector((state) => state.blockedUsers.items);
     const dispatch = useDispatch();
     const loggedInUserId = getUserId();
     const navigate = useNavigate();
@@ -87,12 +89,18 @@ const FindFriends = ({ onBackToFriends = () => {}, onNotificationsUpdated = asyn
 
     const refreshNotifications = useCallback(async () => {
         try {
-            const response = await getAllNotificationsAPI();
-            if (response?.notifications) {
-                dispatch(setNotifications(response.notifications));
+            const [notificationsResponse, blockedResponse] = await Promise.all([
+                getAllNotificationsAPI(),
+                getBlockedUsersAPI(),
+            ]);
+            if (notificationsResponse?.notifications) {
+                dispatch(setNotifications(notificationsResponse.notifications));
+            }
+            if (blockedResponse?.blockedUsers) {
+                dispatch(setBlockedUsers(blockedResponse.blockedUsers));
             }
         } catch (error) {
-            console.error("Failed to refresh notifications", error);
+            console.error("Failed to refresh notifications or blocked users", error);
         }
     }, [dispatch]);
 
@@ -104,6 +112,14 @@ const FindFriends = ({ onBackToFriends = () => {}, onNotificationsUpdated = asyn
         }
         return String(value);
     }, []);
+
+    const blockedSet = useMemo(() => new Set((blockedUsers || []).map((u) => {
+        if (!u) return null;
+        if (typeof u === "object") {
+            return String(u._id || u.id);
+        }
+        return String(u);
+    }).filter(Boolean)), [blockedUsers]);
 
     const actionableRequests = useMemo(() => {
         const requestsByTarget = {};
@@ -131,8 +147,7 @@ const FindFriends = ({ onBackToFriends = () => {}, onNotificationsUpdated = asyn
             );
             const requestId = normalizeId(notification?.requestId || notification?._id || notification?.id);
 
-            const counterpartId = receiverId || targetId;
-
+            if (senderId && blockedSet.has(senderId)) return;
             if (
                 senderId
                 && receiverId
@@ -143,7 +158,7 @@ const FindFriends = ({ onBackToFriends = () => {}, onNotificationsUpdated = asyn
             }
         });
         return requestsByTarget;
-    }, [normalizeId, notifications, loggedInUserId]);
+    }, [normalizeId, notifications, loggedInUserId, blockedSet]);
 
     const outgoingRequests = useMemo(() => {
         const requestsByReceiver = {};
@@ -164,12 +179,13 @@ const FindFriends = ({ onBackToFriends = () => {}, onNotificationsUpdated = asyn
                 || notification?.receiver
             );
 
+            if (senderId && blockedSet.has(receiverId)) return;
             if (senderId && receiverId && loggedInUserId && senderId.toString() === normalizeId(loggedInUserId)?.toString()) {
                 requestsByReceiver[receiverId] = true;
             }
         });
         return requestsByReceiver;
-    }, [notifications, normalizeId, loggedInUserId]);
+    }, [notifications, normalizeId, loggedInUserId, blockedSet]);
 
     const handleOpenProfile = useCallback((userId) => {
         if (!userId) return;
@@ -195,6 +211,14 @@ const FindFriends = ({ onBackToFriends = () => {}, onNotificationsUpdated = asyn
         }
     };
 
+    const visibleUsers = useMemo(
+        () => users.filter((user) => {
+            const id = user?._id || user?.id;
+            return id && !blockedSet.has(String(id));
+        }),
+        [users, blockedSet]
+    );
+
     return (
         <div className="find-friends-container">
             <div className="find-friends-top-bar">
@@ -209,7 +233,7 @@ const FindFriends = ({ onBackToFriends = () => {}, onNotificationsUpdated = asyn
             </div>
 
             <div className="find-friends-list" ref={listContainerRef}>
-                {users.map((user) => (
+                {visibleUsers.map((user) => (
                     <div className="friend-card" key={user._id ?? user.username}>
                         <div
                             className="friend-main"

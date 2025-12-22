@@ -9,7 +9,8 @@ import FindFriends from "./FindFriends.jsx";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setNotifications } from "../../store/notificationsSlice.js";
-import { getAllNotificationsAPI } from "../../backend/apis.js";
+import { setBlockedUsers } from "../../store/blockedUsersSlice.js";
+import { getAllNotificationsAPI, getBlockedUsersAPI } from "../../backend/apis.js";
 
 const Home = ({ route }) => {
 
@@ -36,12 +37,18 @@ const Home = ({ route }) => {
 
     const refreshNotifications = useCallback(async () => {
         try {
-            const response = await getAllNotificationsAPI();
-            if (response?.notifications) {
-                dispatch(setNotifications(response.notifications));
+            const [notificationsResponse, blockedResponse] = await Promise.all([
+                getAllNotificationsAPI(),
+                getBlockedUsersAPI(),
+            ]);
+            if (notificationsResponse?.notifications) {
+                dispatch(setNotifications(notificationsResponse.notifications));
+            }
+            if (blockedResponse?.blockedUsers) {
+                dispatch(setBlockedUsers(blockedResponse.blockedUsers));
             }
         } catch (error) {
-            console.error("Failed to refresh notifications", error);
+            console.error("Failed to refresh notifications or blocked users", error);
         }
     }, [dispatch]);
 
