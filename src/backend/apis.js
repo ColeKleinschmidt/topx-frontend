@@ -174,7 +174,7 @@ export const sendFriendRequestAPI = async (recipientID) => {
     return response;
 }
 
-const getAllNotificationsAPI = async () => {
+export const getAllNotificationsAPI = async () => {
     const backend_query = await fetch(`${ENDPOINT}getAllNotifications`, {
         method: 'GET',
         credentials: 'include',
@@ -189,8 +189,8 @@ const getAllNotificationsAPI = async () => {
     return response;
 }
 
-const acceptFriendRequestAPI = async (requestId) => {
-    data = {
+export const acceptFriendRequestAPI = async (requestId) => {
+    const data = {
         requestId: requestId
     }
     const backend_query = await fetch(`${ENDPOINT}acceptFriendRequest`, {
@@ -208,8 +208,8 @@ const acceptFriendRequestAPI = async (requestId) => {
     return response;
 }
 
-const declineFriendRequestAPI = async (requestId) => {
-    data = {
+export const declineFriendRequestAPI = async (requestId) => {
+    const data = {
         requestId: requestId
     }
     const backend_query = await fetch(`${ENDPOINT}declineFriendRequest`, {
@@ -228,7 +228,7 @@ const declineFriendRequestAPI = async (requestId) => {
 }
 
 const removeFriendAPI = async (userId) => {
-    data = {
+    const data = {
         user: userId
     }
     const backend_query = await fetch(`${ENDPOINT}removeFriend`, {
