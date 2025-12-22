@@ -76,21 +76,69 @@ const ListDetail = () => {
     const normalizeFriendId = useCallback((friend) => {
         if (!friend) return null;
         if (typeof friend === "string") return friend;
-        return friend._id || friend.id || friend.userId || null;
+        return (
+            friend._id ||
+            friend.id ||
+            friend.userId ||
+            friend.friendId ||
+            friend?.friend?._id ||
+            friend?.friend?.id ||
+            friend?.friend?.userId ||
+            friend?.user?._id ||
+            friend?.user?.id ||
+            friend?.user?.userId ||
+            null
+        );
     }, []);
+
+    const normalizeFriendData = useCallback((friend) => {
+        const friendId = normalizeFriendId(friend);
+        if (!friendId) return null;
+        const base = typeof friend === "object" ? friend : {};
+        const candidateUser =
+            base.user ||
+            base.friend ||
+            base.profile ||
+            base.owner ||
+            null;
+
+        const username =
+            base.username ||
+            base.name ||
+            candidateUser?.username ||
+            candidateUser?.name ||
+            base.displayName ||
+            null;
+
+        const profilePicture =
+            base.profilePic ||
+            base.profilePicture ||
+            candidateUser?.profilePic ||
+            candidateUser?.profilePicture ||
+            candidateUser?.avatar ||
+            base.avatar ||
+            null;
+
+        const email = base.email || candidateUser?.email || null;
+
+        return {
+            ...base,
+            _id: friendId,
+            username,
+            profilePic: profilePicture,
+            email,
+        };
+    }, [normalizeFriendId]);
 
     const fetchFriends = useCallback(async () => {
         setFriendsLoading(true);
         setFriendsError(null);
         try {
             const response = await getFriendsAPI();
-            const rawFriends = response?.friends || response?.data || [];
-            const normalizedFriends = rawFriends
-                .map((friend) => {
-                    const friendId = normalizeFriendId(friend);
-                    if (!friendId) return null;
-                    return { ...friend, _id: friendId };
-                })
+            const rawFriends = response?.friends || response?.data || response || [];
+            const friendArray = Array.isArray(rawFriends) ? rawFriends : rawFriends?.friends || [];
+            const normalizedFriends = friendArray
+                .map((friend) => normalizeFriendData(friend))
                 .filter(Boolean);
             setFriends(normalizedFriends);
         } catch (err) {
@@ -99,7 +147,7 @@ const ListDetail = () => {
         } finally {
             setFriendsLoading(false);
         }
-    }, [normalizeFriendId]);
+    }, [normalizeFriendData]);
 
     useEffect(() => {
         refreshNotifications();
