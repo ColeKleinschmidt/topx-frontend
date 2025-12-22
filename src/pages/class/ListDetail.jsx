@@ -254,6 +254,7 @@ const ListDetail = () => {
         setShareStatus({ state: "pending", message: "" });
         try {
             const results = await Promise.allSettled(chosenFriends.map(async (friendId) => {
+                console.log("Sharing list with friend:", friendId);
                 const response = await shareListAPI(friendId, listIdentifier);
                 const errorMessage = response?.error || response?.message;
                 if (response === null || response === undefined || (typeof errorMessage === "string" && errorMessage.toLowerCase().includes("error"))) {
@@ -262,6 +263,7 @@ const ListDetail = () => {
                 return response;
             }));
             const failures = results.filter((result) => result.status === "rejected");
+            console.log("Share results:", results, "Failures:", failures);
             if (failures.length === 0) {
                 setShareStatus({ state: "success", message: "Shared with selected friends." });
             } else if (failures.length < chosenFriends.length) {
@@ -307,9 +309,9 @@ const ListDetail = () => {
                         <div className="list-share-card" ref={shareRef}>
                             <List list={list} />
                             <div className="share-dropdown-wrapper">
-                                <button type="button" className="share-list-button" onClick={toggleShareDropdown} aria-expanded={shareOpen} aria-haspopup="true">
-                                    <IoIosSend size={20} />
-                                </button>
+                                <div type="button" className="share-list-button" onClick={toggleShareDropdown} aria-expanded={shareOpen} aria-haspopup="true">
+                                    <IoIosSend size={30} color="black"/>
+                                </div>
                                 {shareOpen && (
                                     <div className="share-dropdown">
                                         <div className="share-dropdown-header">

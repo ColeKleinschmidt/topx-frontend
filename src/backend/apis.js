@@ -344,10 +344,11 @@ const getUserByUsernameAPI = async (username) => {
 }
 
 export const shareListAPI = async (userId, listId) => {
-    data = {
+    const data = {
         userId: userId,
         listId: listId
     }
+    console.log("Sharing list with user ID:", userId);
     const backend_query = await fetch(`${ENDPOINT}shareList`, {
         method: 'POST',
         credentials: 'include',
@@ -480,7 +481,12 @@ export const getBlockedUsersAPI = async () =>
         const response = await fetch(`${ENDPOINT}getBlockedUsers`, 
         { 
             method: "GET", 
-            headers: { "Content-Type": "application/json" } 
+            headers: { 
+                "Content-Type": "application/json",
+                'Accept': 'application/json',
+                'Accept-encoding': 'gzip, deflate',
+            },
+            credentials: "include"
         });
 
         return await response.json();

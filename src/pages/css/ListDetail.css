@@ -35,17 +35,7 @@
 }
 
 .share-list-button {
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
-    border: none;
-    background: #111827;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: transform 120ms ease, box-shadow 120ms ease, opacity 120ms ease;
-    color: #ffffff;
+
 }
 
 .share-list-button:hover {
