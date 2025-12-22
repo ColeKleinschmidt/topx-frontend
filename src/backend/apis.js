@@ -174,7 +174,7 @@ export const sendFriendRequestAPI = async (recipientID) => {
     return response;
 }
 
-const getAllNotificationsAPI = async () => {
+export const getAllNotificationsAPI = async () => {
     const backend_query = await fetch(`${ENDPOINT}getAllNotifications`, {
         method: 'GET',
         credentials: 'include',
@@ -189,8 +189,8 @@ const getAllNotificationsAPI = async () => {
     return response;
 }
 
-const acceptFriendRequestAPI = async (requestId) => {
-    data = {
+export const acceptFriendRequestAPI = async (requestId) => {
+    const data = {
         requestId: requestId
     }
     const backend_query = await fetch(`${ENDPOINT}acceptFriendRequest`, {
@@ -208,8 +208,8 @@ const acceptFriendRequestAPI = async (requestId) => {
     return response;
 }
 
-const declineFriendRequestAPI = async (requestId) => {
-    data = {
+export const declineFriendRequestAPI = async (requestId) => {
+    const data = {
         requestId: requestId
     }
     const backend_query = await fetch(`${ENDPOINT}declineFriendRequest`, {
@@ -228,7 +228,7 @@ const declineFriendRequestAPI = async (requestId) => {
 }
 
 const removeFriendAPI = async (userId) => {
-    data = {
+    const data = {
         user: userId
     }
     const backend_query = await fetch(`${ENDPOINT}removeFriend`, {
@@ -285,10 +285,10 @@ export const getListsAPI = async (page, limit) => {
     return response;
 }
 
-const getListAPI = async (listId) => {
-    data = {
+export const getListAPI = async (listId) => {
+    const data = {
         listId
-    }
+    };
     const backend_query = await fetch(`${ENDPOINT}getList`, {
         method: 'POST',
         credentials: 'include',
@@ -359,10 +359,10 @@ const shareListAPI = async (userId, listId) => {
     return response;
 }
 
-const getUserByIdAPI = async (id) => {
-    data = {
+export const getUserByIdAPI = async (id) => {
+    const data = {
         id: id
-    }
+    };
     const backend_query = await fetch(`${ENDPOINT}getUserById`, {
         method: 'POST',
         credentials: 'include',

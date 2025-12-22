@@ -149,3 +149,8 @@
 .status.error {
     color: #ef4444;
 }
+.friend-request-actions {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+}

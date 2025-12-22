@@ -1,12 +1,201 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import "../css/NavigationBar.css"; 
 import { IoIosCheckmarkCircle } from "react-icons/io";
 import { BsLink } from "react-icons/bs";
 import { FaBell } from "react-icons/fa";
 import { IoIosSend, IoIosSearch } from "react-icons/io";
 import { MdAccountCircle } from "react-icons/md";
+import { useDispatch, useSelector } from "react-redux";
+import { setNotifications } from "../../store/notificationsSlice.js";
+import { acceptFriendRequestAPI, declineFriendRequestAPI, getAllNotificationsAPI, getListAPI, getUserByIdAPI } from "../../backend/apis.js";
+import { useNavigate } from "react-router-dom";
+import { getUserId } from "../../backend/apis.js";
 
-const NavigationBar = ({ setPage, page }) => {
+const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} }) => {
+
+    const [showFriendRequests, setShowFriendRequests] = useState(false);
+    const [showShares, setShowShares] = useState(false);
+    const notifications = useSelector((state) => state.notifications.items);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const dropdownRef = useRef(null);
+    const sharesRef = useRef(null);
+    const loggedInUserId = getUserId();
+    const [userDetails, setUserDetails] = useState({});
+    const [listDetails, setListDetails] = useState({});
+    const [loadingUsers, setLoadingUsers] = useState({});
+    const [loadingLists, setLoadingLists] = useState({});
+
+    const refreshNotifications = useCallback(async () => {
+        if (onNotificationsUpdated) {
+            await onNotificationsUpdated();
+            return;
+        }
+        try {
+            const response = await getAllNotificationsAPI();
+            if (response?.notifications) {
+                dispatch(setNotifications(response.notifications));
+            }
+        } catch (error) {
+            console.error("Failed to refresh notifications", error);
+        }
+    }, [dispatch, onNotificationsUpdated]);
+
+    const friendRequestNotifications = useMemo(
+        () => notifications.filter((notification) => notification?.type === "friendRequest"),
+        [notifications]
+    );
+
+    const shareNotifications = useMemo(
+        () => notifications.filter((notification) => notification?.type === "share"),
+        [notifications]
+    );
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setShowFriendRequests(false);
+            }
+            if (sharesRef.current && !sharesRef.current.contains(event.target)) {
+                setShowShares(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const normalizeId = (value) => {
+        if (!value) return null;
+        if (typeof value === "object") {
+            if (value._id) return String(value._id);
+            if (value.id) return String(value.id);
+        }
+        return String(value);
+    };
+
+    const getNotificationUser = (notification) =>
+        notification?.sender || notification?.user || notification?.from || notification?.fromUser || notification?.actor || {};
+
+    const getNotificationRequestId = (notification) =>
+        notification?.requestId || notification?._id || notification?.id;
+
+    const getNotificationListId = (notification) =>
+        notification?.listId
+        || notification?.list?.id
+        || notification?.list?._id
+        || notification?.list?._id
+        || notification?.list?.listId;
+
+    const getListTitle = (notification) =>
+        notification?.listTitle
+        || notification?.list?.title
+        || notification?.title
+        || "View list";
+
+    const isForLoggedInUser = useCallback((notification) => {
+        if (!loggedInUserId) return false;
+        const receiverId = normalizeId(
+            notification?.receiver?._id
+            || notification?.receiverId
+            || notification?.to
+            || notification?.toUserId
+            || notification?.user?._id
+            || notification?.userId
+        );
+        return receiverId && receiverId.toString() === normalizeId(loggedInUserId)?.toString();
+    }, [loggedInUserId]);
+
+    const handleFriendRequestAction = async (notification, action) => {
+        const requestId = getNotificationRequestId(notification);
+        if (!requestId) return;
+        try {
+            if (action === "accept") {
+                await acceptFriendRequestAPI(requestId);
+            } else {
+                await declineFriendRequestAPI(requestId);
+            }
+            await refreshNotifications();
+        } catch (error) {
+            console.error(`Failed to ${action} friend request`, error);
+        }
+    };
+
+    const handleNavigateToList = (notification) => {
+        const listId = getNotificationListId(notification);
+        if (!listId) return;
+        navigate(`/list/${listId}`);
+        setShowShares(false);
+    };
+
+    const ensureUserLoaded = useCallback(async (userId) => {
+        if (!userId || userDetails[userId] || loadingUsers[userId]) return;
+        setLoadingUsers((prev) => ({ ...prev, [userId]: true }));
+        try {
+            const response = await getUserByIdAPI(userId);
+            const user = response?.user || response;
+            if (user) {
+                setUserDetails((prev) => ({ ...prev, [userId]: user }));
+            }
+        } catch (error) {
+            console.error("Failed to load user", error);
+        } finally {
+            setLoadingUsers((prev) => ({ ...prev, [userId]: false }));
+        }
+    }, [loadingUsers, userDetails]);
+
+    const ensureListLoaded = useCallback(async (listId) => {
+        if (!listId || listDetails[listId] || loadingLists[listId]) return;
+        setLoadingLists((prev) => ({ ...prev, [listId]: true }));
+        try {
+            const response = await getListAPI(listId);
+            const list = response?.list || response?.data || response;
+            if (list) {
+                setListDetails((prev) => ({ ...prev, [listId]: list }));
+            }
+        } catch (error) {
+            console.error("Failed to load list", error);
+        } finally {
+            setLoadingLists((prev) => ({ ...prev, [listId]: false }));
+        }
+    }, [listDetails, loadingLists]);
+
+    useEffect(() => {
+        if (showFriendRequests) {
+            friendRequestNotifications
+                .filter(isForLoggedInUser)
+                .forEach((notification) => {
+                    const senderId = normalizeId(
+                        notification?.sender?._id
+                        || notification?.senderId
+                        || notification?.fromUserId
+                        || notification?.from
+                        || notification?.sender
+                    );
+                    if (senderId) {
+                        ensureUserLoaded(senderId);
+                    }
+                });
+        }
+    }, [showFriendRequests, friendRequestNotifications, ensureUserLoaded, isForLoggedInUser, normalizeId]);
+
+    useEffect(() => {
+        if (showShares) {
+            shareNotifications
+                .filter(isForLoggedInUser)
+                .forEach((notification) => {
+                    const senderId = normalizeId(
+                        notification?.sender?._id
+                        || notification?.senderId
+                        || notification?.fromUserId
+                        || notification?.from
+                        || notification?.sender
+                    );
+                    const listId = getNotificationListId(notification);
+                    if (senderId) ensureUserLoaded(senderId);
+                    if (listId) ensureListLoaded(listId);
+                });
+        }
+    }, [showShares, shareNotifications, ensureUserLoaded, ensureListLoaded, isForLoggedInUser, normalizeId]);
 
     return (
         <div className="navigation-bar">
@@ -26,11 +215,104 @@ const NavigationBar = ({ setPage, page }) => {
                 <IoIosSearch className="search-lists-icon" size={20} color="#FF6B6B"/>
             </div>
             <div className={'profile-buttons'}> 
-                <div onClick={() => alert("notifications")} className="notifications-button">
-                    <FaBell color="white" size={20}/>
+                <div className="dropdown-wrapper" ref={dropdownRef}>
+                    <div onClick={() => { setShowFriendRequests((prev) => !prev); setShowShares(false); refreshNotifications(); }} className="notifications-button">
+                        <FaBell color="white" size={20}/>
+                        {friendRequestNotifications.filter(isForLoggedInUser).length > 0 && (
+                            <span className="notification-badge">{friendRequestNotifications.filter(isForLoggedInUser).length}</span>
+                        )}
+                    </div>
+                    {showFriendRequests && (
+                        <div className="notification-dropdown">
+                            {friendRequestNotifications.filter(isForLoggedInUser).length === 0 ? (
+                                <p className="notification-empty">No friend requests</p>
+                            ) : (
+                                friendRequestNotifications.filter(isForLoggedInUser).map((notification) => {
+                                    const senderId = normalizeId(
+                                        notification?.sender?._id
+                                        || notification?.senderId
+                                        || notification?.fromUserId
+                                        || notification?.from
+                                        || notification?.sender
+                                    );
+                                    const user = senderId ? userDetails[senderId] : null;
+                                    const loadingUser = senderId ? loadingUsers[senderId] : false;
+                                    const username = user?.username || user?.name || (loadingUser ? "Loading user..." : "Unknown user");
+                                    const avatar = user?.profilePicture || user?.profilePic || user?.avatar;
+                                    const requestId = getNotificationRequestId(notification);
+                                    return (
+                                        <div key={requestId || senderId || username} className="notification-item">
+                                            <div className="notification-user">
+                                                <div className="notification-avatar">
+                                                    {avatar ? <img src={avatar} alt={username} /> : <div className="avatar-placeholder" />}
+                                                </div>
+                                                <div className="notification-meta">
+                                                    <p className="notification-title">{username}</p>
+                                                    <p className="notification-subtitle">sent you a friend request</p>
+                                                </div>
+                                            </div>
+                                            {loadingUser ? (
+                                                <p className="notification-loading">Loading...</p>
+                                            ) : (
+                                                <div className="notification-actions">
+                                                    <button className="secondary-button stacked" onClick={() => handleFriendRequestAction(notification, "accept")}>Accept</button>
+                                                    <button className="decline-button stacked" onClick={() => handleFriendRequestAction(notification, "decline")}>Decline</button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })
+                            )}
+                        </div>
+                    )}
                 </div>
-                <div onClick={() => alert("shared")} className="shared-button">
-                    <IoIosSend color="white" size={25}/>
+                <div className="dropdown-wrapper" ref={sharesRef}>
+                    <div onClick={() => { setShowShares((prev) => !prev); setShowFriendRequests(false); refreshNotifications(); }} className="shared-button">
+                        <IoIosSend color="white" size={25}/>
+                        {shareNotifications.filter(isForLoggedInUser).length > 0 && (
+                            <span className="notification-badge">{shareNotifications.filter(isForLoggedInUser).length}</span>
+                        )}
+                    </div>
+                    {showShares && (
+                        <div className="notification-dropdown">
+                            {shareNotifications.filter(isForLoggedInUser).length === 0 ? (
+                                <p className="notification-empty">No shares yet</p>
+                            ) : (
+                                shareNotifications.filter(isForLoggedInUser).map((notification) => {
+                                    const senderId = normalizeId(
+                                        notification?.sender?._id
+                                        || notification?.senderId
+                                        || notification?.fromUserId
+                                        || notification?.from
+                                        || notification?.sender
+                                    );
+                                    const user = senderId ? userDetails[senderId] : null;
+                                    const avatar = user?.profilePicture || user?.profilePic || user?.avatar;
+                                    const username = user?.username || user?.name || (loadingUsers[senderId] ? "Loading user..." : "Unknown user");
+                                    const listId = getNotificationListId(notification);
+                                    const list = listId ? listDetails[listId] : null;
+                                    const listTitle = list?.title || list?.name || (loadingLists[listId] ? "Loading list..." : getListTitle(notification));
+                                    const notificationId = getNotificationRequestId(notification) || listTitle || listId;
+                                    return (
+                                        <button type="button" key={notificationId} className="notification-item share-item" onClick={() => handleNavigateToList(notification)}>
+                                            <div className="notification-user">
+                                                <div className="notification-avatar">
+                                                    {avatar ? <img src={avatar} alt={username} /> : <div className="avatar-placeholder" />}
+                                                </div>
+                                                <div className="notification-meta">
+                                                    <p className="notification-title">{username}</p>
+                                                    <p className="notification-subtitle">shared “{listTitle}” with you</p>
+                                                </div>
+                                            </div>
+                                            {(loadingUsers[senderId] || loadingLists[listId]) && (
+                                                <p className="notification-loading">Loading...</p>
+                                            )}
+                                        </button>
+                                    );
+                                })
+                            )}
+                        </div>
+                    )}
                 </div>
                 <div onClick={() => alert("profile")} className="profile-button">
                     <MdAccountCircle color="white" size={25}/>
