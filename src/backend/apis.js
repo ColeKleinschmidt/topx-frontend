@@ -285,10 +285,10 @@ export const getListsAPI = async (page, limit) => {
     return response;
 }
 
-const getListAPI = async (listId) => {
-    data = {
+export const getListAPI = async (listId) => {
+    const data = {
         listId
-    }
+    };
     const backend_query = await fetch(`${ENDPOINT}getList`, {
         method: 'POST',
         credentials: 'include',

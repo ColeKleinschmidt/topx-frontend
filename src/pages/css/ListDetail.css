@@ -1,0 +1,33 @@
+.list-detail-content {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 24px;
+    box-sizing: border-box;
+}
+
+.list-detail-wrapper {
+    width: min(960px, 100%);
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+}
+
+.list-detail-title {
+    margin: 0 0 16px 0;
+    color: #111827;
+    text-align: center;
+}
+
+.list-detail-status {
+    color: #6b7280;
+    text-align: center;
+    width: 100%;
+    margin-top: 40px;
+}
+
+.list-detail-status.error {
+    color: #ef4444;
+}

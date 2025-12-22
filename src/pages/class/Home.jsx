@@ -49,7 +49,7 @@ const Home = ({ route }) => {
     
     return (
         <div className="home-container">
-            <NavigationBar setPage={setPage} page={page}/>
+            <NavigationBar setPage={setPage} page={page} onNotificationsUpdated={refreshNotifications}/>
             <div className="home-content">
                 {page === "myLists" ? (
                     <MyLists />
