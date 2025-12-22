@@ -133,15 +133,41 @@ const FindFriends = ({ onBackToFriends = () => {}, onNotificationsUpdated = asyn
 
             if (
                 senderId
-                && counterpartId
+                && receiverId
                 && loggedInUserId
-                && senderId.toString() === loggedInUserId.toString()
+                && receiverId.toString() === loggedInUserId.toString()
             ) {
-                requestsByTarget[counterpartId] = { requestId, notification };
+                requestsByTarget[senderId] = { requestId, notification };
             }
         });
         return requestsByTarget;
     }, [normalizeId, notifications, loggedInUserId]);
+
+    const outgoingRequests = useMemo(() => {
+        const requestsByReceiver = {};
+        notifications.forEach((notification) => {
+            if (notification?.type !== "friendRequest") return;
+            const senderId = normalizeId(
+                notification?.sender?._id
+                || notification?.senderId
+                || notification?.fromUserId
+                || notification?.from
+                || notification?.sender
+            );
+            const receiverId = normalizeId(
+                notification?.receiver?._id
+                || notification?.receiverId
+                || notification?.toUserId
+                || notification?.to
+                || notification?.receiver
+            );
+
+            if (senderId && receiverId && loggedInUserId && senderId.toString() === normalizeId(loggedInUserId)?.toString()) {
+                requestsByReceiver[receiverId] = true;
+            }
+        });
+        return requestsByReceiver;
+    }, [notifications, normalizeId, loggedInUserId]);
 
     const handleRespondToRequest = async (senderId, requestId, action) => {
         if (!requestId) return;
@@ -202,6 +228,10 @@ const FindFriends = ({ onBackToFriends = () => {}, onNotificationsUpdated = asyn
                                     {incomingRequestStatus[user._id]?.startsWith("accept") ? "Accepted" : "Accept"}
                                 </button>
                             </div>
+                        ) : outgoingRequests[user._id] ? (
+                            <button className="add-friend-button" disabled>
+                                Pending
+                            </button>
                         ) : (
                             <button
                                 className="add-friend-button"

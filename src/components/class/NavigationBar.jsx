@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setNotifications } from "../../store/notificationsSlice.js";
 import { acceptFriendRequestAPI, declineFriendRequestAPI, getAllNotificationsAPI } from "../../backend/apis.js";
 import { useNavigate } from "react-router-dom";
+import { getUserId } from "../../backend/apis.js";
 
 const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} }) => {
 
@@ -19,6 +20,7 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
     const navigate = useNavigate();
     const dropdownRef = useRef(null);
     const sharesRef = useRef(null);
+    const loggedInUserId = getUserId();
 
     const refreshNotifications = useCallback(async () => {
         if (onNotificationsUpdated) {
@@ -58,6 +60,15 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
+    const normalizeId = (value) => {
+        if (!value) return null;
+        if (typeof value === "object") {
+            if (value._id) return String(value._id);
+            if (value.id) return String(value.id);
+        }
+        return String(value);
+    };
+
     const getNotificationUser = (notification) =>
         notification?.sender || notification?.user || notification?.from || notification?.fromUser || notification?.actor || {};
 
@@ -76,6 +87,19 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
         || notification?.list?.title
         || notification?.title
         || "View list";
+
+    const isForLoggedInUser = useCallback((notification) => {
+        if (!loggedInUserId) return false;
+        const receiverId = normalizeId(
+            notification?.receiver?._id
+            || notification?.receiverId
+            || notification?.to
+            || notification?.toUserId
+            || notification?.user?._id
+            || notification?.userId
+        );
+        return receiverId && receiverId.toString() === normalizeId(loggedInUserId)?.toString();
+    }, [loggedInUserId]);
 
     const handleFriendRequestAction = async (notification, action) => {
         const requestId = getNotificationRequestId(notification);
@@ -120,16 +144,16 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
                 <div className="dropdown-wrapper" ref={dropdownRef}>
                     <div onClick={() => { setShowFriendRequests((prev) => !prev); setShowShares(false); refreshNotifications(); }} className="notifications-button">
                         <FaBell color="white" size={20}/>
-                        {friendRequestNotifications.length > 0 && (
-                            <span className="notification-badge">{friendRequestNotifications.length}</span>
+                        {friendRequestNotifications.filter(isForLoggedInUser).length > 0 && (
+                            <span className="notification-badge">{friendRequestNotifications.filter(isForLoggedInUser).length}</span>
                         )}
                     </div>
                     {showFriendRequests && (
                         <div className="notification-dropdown">
-                            {friendRequestNotifications.length === 0 ? (
+                            {friendRequestNotifications.filter(isForLoggedInUser).length === 0 ? (
                                 <p className="notification-empty">No friend requests</p>
                             ) : (
-                                friendRequestNotifications.map((notification) => {
+                                friendRequestNotifications.filter(isForLoggedInUser).map((notification) => {
                                     const user = getNotificationUser(notification);
                                     const username = user?.username || user?.name || "Unknown user";
                                     const avatar = user?.profilePicture || user?.profilePic || user?.avatar;
@@ -159,16 +183,16 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
                 <div className="dropdown-wrapper" ref={sharesRef}>
                     <div onClick={() => { setShowShares((prev) => !prev); setShowFriendRequests(false); refreshNotifications(); }} className="shared-button">
                         <IoIosSend color="white" size={25}/>
-                        {shareNotifications.length > 0 && (
-                            <span className="notification-badge">{shareNotifications.length}</span>
+                        {shareNotifications.filter(isForLoggedInUser).length > 0 && (
+                            <span className="notification-badge">{shareNotifications.filter(isForLoggedInUser).length}</span>
                         )}
                     </div>
                     {showShares && (
                         <div className="notification-dropdown">
-                            {shareNotifications.length === 0 ? (
+                            {shareNotifications.filter(isForLoggedInUser).length === 0 ? (
                                 <p className="notification-empty">No shares yet</p>
                             ) : (
-                                shareNotifications.map((notification) => {
+                                shareNotifications.filter(isForLoggedInUser).map((notification) => {
                                     const user = getNotificationUser(notification);
                                     const username = user?.username || user?.name || "Unknown user";
                                     const avatar = user?.profilePicture || user?.profilePic || user?.avatar;
