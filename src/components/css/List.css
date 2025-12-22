@@ -25,6 +25,16 @@
     justify-content: flex-start;
 }
 
+.list-container.clickable {
+    cursor: pointer;
+    transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+.list-container.clickable:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+}
+
 .list-name {
     color: #800080;
     text-align: center;

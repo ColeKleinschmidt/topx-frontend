@@ -2,6 +2,7 @@ import "../css/MyLists.css";
 import { useState, useEffect } from 'react';
 import { getUserListsAPI, getUserId } from "../../backend/apis.js";
 import List from "../../components/class/List.jsx";
+import { useNavigate } from "react-router-dom";
 //import { } from "../../backend/apis.js";
 
 const MyLists = () => {
@@ -9,6 +10,7 @@ const MyLists = () => {
     const [lists, setLists] = useState([]);
     const [page, setPage] = useState(1);
     const [userId, setUserId] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const id = getUserId();
@@ -19,8 +21,8 @@ const MyLists = () => {
     const getLists = (id = userId) => {
         getUserListsAPI(id, page, 10).then((response) => {
             if (response.lists !== undefined && response.lists !== null) {
-                setLists([...lists, ...response.lists]);
-                setPage(page + 1);
+                setLists((prev) => [...prev, ...response.lists]);
+                setPage((prev) => prev + 1);
                 setLoadingLists(false);
             }else {
                 // If unsuccessful, alert the user
@@ -29,6 +31,11 @@ const MyLists = () => {
             }
         })
     }
+
+    const handleOpenList = (listId) => {
+        if (!listId) return;
+        navigate(`/list/${listId}`);
+    };
     
     return (
         <div className="my-lists-container">
@@ -37,7 +44,7 @@ const MyLists = () => {
             </div>
             <div className="lists">
                 {lists.map((list, index) => (
-                    <List key={index} list={list} />
+                    <List key={list._id || list.id || index} list={list} onClick={() => handleOpenList(list._id || list.id)} />
                 ))}
             </div>
             {loadingLists && <h2 className="loading-lists">Loading...</h2>}

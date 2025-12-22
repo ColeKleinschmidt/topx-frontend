@@ -4,6 +4,7 @@ import { acceptFriendRequestAPI, declineFriendRequestAPI, getAllNotificationsAPI
 import defaultAvatar from "../../assets/icons/User Icon.png";
 import { useDispatch, useSelector } from "react-redux";
 import { setNotifications } from "../../store/notificationsSlice.js";
+import { useNavigate } from "react-router-dom";
 
 const PAGE_SIZE = 12;
 
@@ -18,6 +19,7 @@ const FindFriends = ({ onBackToFriends = () => {}, onNotificationsUpdated = asyn
     const notifications = useSelector((state) => state.notifications.items);
     const dispatch = useDispatch();
     const loggedInUserId = getUserId();
+    const navigate = useNavigate();
 
     const listContainerRef = useRef(null);
     const loadMoreRef = useRef(null);
@@ -169,6 +171,11 @@ const FindFriends = ({ onBackToFriends = () => {}, onNotificationsUpdated = asyn
         return requestsByReceiver;
     }, [notifications, normalizeId, loggedInUserId]);
 
+    const handleOpenProfile = useCallback((userId) => {
+        if (!userId) return;
+        navigate(`/profile/${userId}`);
+    }, [navigate]);
+
     const handleRespondToRequest = async (senderId, requestId, action) => {
         if (!requestId) return;
 
@@ -204,7 +211,18 @@ const FindFriends = ({ onBackToFriends = () => {}, onNotificationsUpdated = asyn
             <div className="find-friends-list" ref={listContainerRef}>
                 {users.map((user) => (
                     <div className="friend-card" key={user._id ?? user.username}>
-                        <div className="friend-main">
+                        <div
+                            className="friend-main"
+                            onClick={() => handleOpenProfile(user._id || user.id)}
+                            role="button"
+                            tabIndex={0}
+                            onKeyDown={(event) => {
+                                if (event.key === "Enter" || event.key === " ") {
+                                    event.preventDefault();
+                                    handleOpenProfile(user._id || user.id);
+                                }
+                            }}
+                        >
                             <div className="friend-avatar">
                                 <img src={user.profilePic || user.profilePicture || defaultAvatar} alt={`${user.username}'s profile`} />
                             </div>

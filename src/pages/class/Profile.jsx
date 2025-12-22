@@ -254,6 +254,11 @@ const Profile = () => {
         );
     };
 
+    const handleOpenList = (listId) => {
+        if (!listId) return;
+        navigate(`/list/${listId}`);
+    };
+
     return (
         <div className="profile-page">
             <div className="profile-header">
@@ -308,7 +313,7 @@ const Profile = () => {
                 </div>
                 <div className="lists-grid">
                     {lists.map((list) => (
-                        <List key={list._id || list.title} list={list} />
+                        <List key={list._id || list.title} list={list} onClick={() => handleOpenList(list._id || list.id)} />
                     ))}
                 </div>
                 {!listsLoading && lists.length === 0 && <p className="muted">No lists yet.</p>}

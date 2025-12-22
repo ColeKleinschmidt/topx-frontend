@@ -2,11 +2,13 @@ import "../css/FriendsLists.css";
 import { useState, useEffect } from 'react';
 import { getListsAPI } from "../../backend/apis.js";
 import List from "../../components/class/List.jsx";
+import { useNavigate } from "react-router-dom";
 
 const FriendsLists = ({ onFindFriends = () => {} }) => {
     const [loadingLists, setLoadingLists] = useState(true);
     const [lists, setLists] = useState([]);
     const [page, setPage] = useState(1);
+    const navigate = useNavigate();
 
     useEffect(() => {
         getLists();
@@ -15,8 +17,8 @@ const FriendsLists = ({ onFindFriends = () => {} }) => {
     const getLists = () => {
         getListsAPI(page, 10).then((response) => {
             if (response.lists !== undefined && response.lists !== null) {
-                setLists([...lists, ...response.lists]);
-                setPage(page + 1);
+                setLists((prev) => [...prev, ...response.lists]);
+                setPage((prev) => prev + 1);
                 setLoadingLists(false);
             }else {
                 // If unsuccessful, alert the user
@@ -25,6 +27,11 @@ const FriendsLists = ({ onFindFriends = () => {} }) => {
             }
         })
     }
+
+    const handleOpenList = (listId) => {
+        if (!listId) return;
+        navigate(`/list/${listId}`);
+    };
     
     return (
         <div className="friends-lists-container">
@@ -36,7 +43,7 @@ const FriendsLists = ({ onFindFriends = () => {} }) => {
             </div>
             <div className="lists">
                 {lists.map((list, index) => (
-                    <List key={index} list={list} />
+                    <List key={list._id || list.id || index} list={list} onClick={() => handleOpenList(list._id || list.id)} />
                 ))}
             </div>
             {loadingLists && <h2 className="loading-lists">Loading...</h2>}

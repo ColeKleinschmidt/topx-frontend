@@ -2,7 +2,7 @@ import "../css/List.css";
 import { useEffect, useRef, useState } from "react";
 import { findItemsAPI } from "../../backend/apis.js";
 
-const List = ({ list, setList, editable = false }) => {
+const List = ({ list, setList, editable = false, onClick }) => {
 
     const [newList, setNewList] = useState({ title: "", listItems: [{ title: "", image: "" }] });
     const [searchResults, setSearchResults] = useState({});
@@ -213,10 +213,25 @@ const List = ({ list, setList, editable = false }) => {
         "list-container",
         editable ? "editable" : "view-only",
         isScrollable ? "scrollable" : "",
+        !editable && onClick ? "clickable" : "",
     ].filter(Boolean).join(" ");
 
+    const handleKeyDown = (event) => {
+        if (!editable && onClick && (event.key === "Enter" || event.key === " ")) {
+            event.preventDefault();
+            onClick();
+        }
+    };
+
     return (
-        <div ref={containerRef} className={containerClasses}>
+        <div
+            ref={containerRef}
+            className={containerClasses}
+            onClick={!editable ? onClick : undefined}
+            role={!editable && onClick ? "button" : undefined}
+            tabIndex={!editable && onClick ? 0 : undefined}
+            onKeyDown={handleKeyDown}
+        >
             {editable ? (
                 <input
                     value={newList.title}

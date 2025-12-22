@@ -5,7 +5,8 @@ import List from "../../components/class/List.jsx";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setNotifications } from "../../store/notificationsSlice.js";
-import { getAllNotificationsAPI, getListAPI } from "../../backend/apis.js";
+import { getAllNotificationsAPI, getListAPI, getUserByIdAPI } from "../../backend/apis.js";
+import defaultAvatar from "../../assets/icons/User Icon.png";
 
 const ListDetail = () => {
     const { listId } = useParams();
@@ -13,6 +14,8 @@ const ListDetail = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [page, setPage] = useState(null);
+    const [owner, setOwner] = useState(null);
+    const [ownerLoading, setOwnerLoading] = useState(false);
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -31,6 +34,25 @@ const ListDetail = () => {
             console.error("Failed to refresh notifications", err);
         }
     }, [dispatch]);
+
+    const resolveOwnerId = useCallback((listData) => {
+        const candidates = [
+            listData?.userId,
+            listData?.user?._id,
+            listData?.user?.id,
+            listData?.user,
+            listData?.ownerId,
+            listData?.owner?._id,
+            listData?.owner?.id,
+            listData?.owner,
+            listData?.creatorId,
+        ];
+        const ownerCandidate = candidates.find(Boolean);
+        if (ownerCandidate && typeof ownerCandidate === "object") {
+            return ownerCandidate._id || ownerCandidate.id || null;
+        }
+        return ownerCandidate || null;
+    }, []);
 
     useEffect(() => {
         refreshNotifications();
@@ -55,10 +77,29 @@ const ListDetail = () => {
                     throw new Error("LIST_NOT_FOUND");
                 }
                 const items = listData?.items || listData?.listItems || [];
+                const ownerId = resolveOwnerId(listData);
                 setList({
+                    _id: listData?._id || listData?.id || listId,
                     title: listData?.title || listData?.name || "Untitled list",
+                    ownerId,
                     items,
                 });
+
+                if (ownerId) {
+                    setOwnerLoading(true);
+                    try {
+                        const ownerResponse = await getUserByIdAPI(ownerId);
+                        const ownerData = ownerResponse?.user || ownerResponse;
+                        setOwner(ownerData || null);
+                    } catch (ownerError) {
+                        console.error("Failed to load list owner", ownerError);
+                        setOwner(null);
+                    } finally {
+                        setOwnerLoading(false);
+                    }
+                } else {
+                    setOwner(null);
+                }
             } catch (err) {
                 console.error("Failed to load list", err);
                 setList(null);
@@ -71,7 +112,7 @@ const ListDetail = () => {
         if (listId) {
             fetchList();
         }
-    }, [listId]);
+    }, [listId, resolveOwnerId]);
 
     return (
         <div className="home-container">
@@ -86,6 +127,22 @@ const ListDetail = () => {
                 )}
                 {!loading && !error && list && (
                     <div className="list-detail-wrapper">
+                        {(list.ownerId || owner) && (
+                            <button
+                                type="button"
+                                className="list-owner"
+                                onClick={() => navigate(`/profile/${(owner && owner._id) || list.ownerId}`)}
+                            >
+                                <div className="owner-avatar">
+                                    <img src={owner?.profilePic || owner?.profilePicture || defaultAvatar} alt={`${owner?.username || "User"} avatar`} />
+                                </div>
+                                <div className="owner-meta">
+                                    <p className="owner-label">List by</p>
+                                    <p className="owner-name">{owner?.username || "View profile"}</p>
+                                    {ownerLoading && <span className="owner-loading">Loading user...</span>}
+                                </div>
+                            </button>
+                        )}
                         <List list={list} />
                     </div>
                 )}

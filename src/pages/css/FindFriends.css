@@ -98,6 +98,7 @@
     align-items: center;
     gap: 12px;
     width: 100%;
+    cursor: pointer;
 }
 
 .friend-avatar img {
