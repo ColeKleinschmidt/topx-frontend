@@ -262,17 +262,15 @@ const Profile = () => {
     return (
         <div className="profile-page">
             <div className="profile-header">
-                <div className="user-info">
-                    <div className="avatar">
-                        <img src={user?.profilePic || user?.profilePicture || defaultAvatar} alt={`${user?.username || "User"} avatar`} />
-                    </div>
-                    <div className="user-meta">
-                        <h2>{user?.username || "User"}</h2>
-                        <p className="muted">@{(user?.username || "user").toLowerCase()}</p>
-                        {loading && <p className="muted small">Loading profile...</p>}
-                    </div>
+                <div className="avatar hero-avatar">
+                    <img src={user?.profilePic || user?.profilePicture || defaultAvatar} alt={`${user?.username || "User"} avatar`} />
                 </div>
-                <div className="header-actions">
+                <div className="user-meta hero-meta">
+                    <h2>{user?.username || "User"}</h2>
+                    <p className="muted">@{(user?.username || "user").toLowerCase()}</p>
+                    {loading && <p className="muted small">Loading profile...</p>}
+                </div>
+                <div className="profile-actions">
                     {!viewingOwnProfile && renderFriendButton()}
                     {viewingOwnProfile && (
                         <button className="secondary-button" onClick={handleLogout}>

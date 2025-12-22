@@ -7,28 +7,26 @@
     flex-direction: column;
     gap: 24px;
     box-sizing: border-box;
+    align-items: center;
 }
 
 .profile-header {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
+    gap: 12px;
     background: #ffffff;
     border: 1px solid #e5e7eb;
     border-radius: 16px;
-    padding: 20px 24px;
+    padding: 28px 32px;
     box-shadow: 0 10px 30px rgba(17, 24, 39, 0.05);
+    width: 100%;
+    max-width: 900px;
 }
 
-.user-info {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
-.avatar {
-    width: 72px;
-    height: 72px;
+.avatar.hero-avatar {
+    width: 140px;
+    height: 140px;
     border-radius: 50%;
     overflow: hidden;
     background: linear-gradient(135deg, #fecdd3, #ffe4e6);
@@ -41,9 +39,13 @@
     object-fit: cover;
 }
 
+.user-meta.hero-meta {
+    text-align: center;
+}
+
 .user-meta h2 {
     margin: 0;
-    font-size: 24px;
+    font-size: 28px;
     color: #111827;
 }
 
@@ -56,9 +58,11 @@
     font-size: 12px;
 }
 
-.header-actions {
+.profile-actions {
     display: flex;
     gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 .primary-button, .secondary-button, .remove-friend {
@@ -104,6 +108,8 @@
     border-radius: 16px;
     padding: 18px 20px;
     box-shadow: 0 10px 30px rgba(17, 24, 39, 0.05);
+    width: 100%;
+    max-width: 1000px;
 }
 
 .friends-toggle {
