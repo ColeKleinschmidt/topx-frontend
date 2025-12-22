@@ -57,6 +57,15 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
         return String(u);
     }).filter(Boolean)), [blockedUsers]);
 
+    const normalizeId = useCallback((value) => {
+        if (!value) return null;
+        if (typeof value === "object") {
+            if (value._id) return String(value._id);
+            if (value.id) return String(value.id);
+        }
+        return String(value);
+    }, []);
+
     const friendRequestNotifications = useMemo(
         () => notifications.filter((notification) => {
             if (notification?.type !== "friendRequest") return false;
@@ -100,14 +109,6 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    const normalizeId = (value) => {
-        if (!value) return null;
-        if (typeof value === "object") {
-            if (value._id) return String(value._id);
-            if (value.id) return String(value.id);
-        }
-        return String(value);
-    };
 
     const getNotificationUser = (notification) =>
         notification.sender;
