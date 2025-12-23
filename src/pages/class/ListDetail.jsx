@@ -290,7 +290,7 @@ const ListDetail = () => {
                 )}
                 {!loading && !error && list && (
                     <div className="list-detail-wrapper">
-                        <div className="list-share-card" ref={shareRef}>
+                        <div className="list-share-card">
                             {(list.ownerId || owner) && (
                                 <div
                                     type="button"
@@ -309,7 +309,7 @@ const ListDetail = () => {
                             )}
                             <List list={list} />
                         </div>
-                        <div className="share-dropdown-wrapper">
+                        <div className="share-dropdown-wrapper" ref={shareRef}>
                             <div type="button" className="share-list-button" onClick={toggleShareDropdown} aria-expanded={shareOpen} aria-haspopup="true">
                                 <IoIosSend size={30} color="black"/>
                             </div>
