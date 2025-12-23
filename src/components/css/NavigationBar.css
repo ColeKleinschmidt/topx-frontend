@@ -48,6 +48,12 @@
     transition: 300ms;
 }
 
+.search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
 .search-lists {
     height: 100%;
     background-color: white;
@@ -57,14 +63,29 @@
     width: 250px;
     color: #2D2D2D;
     font-weight: bold;
-    padding: 10px 10px 10px 10px;
+    padding: 10px 44px 10px 14px;
     position: relative;
 }
 
-.search-lists-icon {
+.search-trigger {
     position: absolute;
-    right: 10px;
-    color: #FF6B6B;
+    right: 6px;
+    background: transparent;
+    border: none;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.search-trigger:focus-visible {
+    outline: 2px solid #FF6B6B;
+    border-radius: 50%;
+}
+
+.search-lists-icon {
+    pointer-events: none;
 }
 
 .search-lists::placeholder {

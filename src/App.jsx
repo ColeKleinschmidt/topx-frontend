@@ -16,6 +16,7 @@ function App() {
         <Route path="/findFriends" element={<RequireAuth><Home route="findFriends" /></RequireAuth>} />
         <Route path="/profile" element={<RequireAuth><Home route="profile" /></RequireAuth>} />
         <Route path="/profile/:userId" element={<RequireAuth><Home route="profile" /></RequireAuth>} />
+        <Route path="/search" element={<RequireAuth><Home route="search" /></RequireAuth>} />
         <Route path="/list/:listId" element={<RequireAuth><ListDetail /></RequireAuth>} />
 
         {/* Catch-all: redirect unknown routes to index */}

@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setNotifications } from "../../store/notificationsSlice.js";
 import { setBlockedUsers } from "../../store/blockedUsersSlice.js";
 import { acceptFriendRequestAPI, declineFriendRequestAPI, getAllNotificationsAPI, getBlockedUsersAPI, getListAPI, getUserByIdAPI } from "../../backend/apis.js";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { getUserId } from "../../backend/apis.js";
 
 const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} }) => {
@@ -20,6 +20,7 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
     const blockedUsers = useSelector((state) => state.blockedUsers.items);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const location = useLocation();
     const dropdownRef = useRef(null);
     const sharesRef = useRef(null);
     const loggedInUserId = getUserId();
@@ -27,6 +28,7 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
     const [listDetails, setListDetails] = useState({});
     const [loadingUsers, setLoadingUsers] = useState({});
     const [loadingLists, setLoadingLists] = useState({});
+    const [searchTerm, setSearchTerm] = useState("");
 
     const refreshNotifications = useCallback(async () => {
         if (onNotificationsUpdated) {
@@ -66,6 +68,31 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
         return String(value);
     }, []);
 
+    useEffect(() => {
+        if (location.pathname !== "/search") {
+            setSearchTerm("");
+            return;
+        }
+        const params = new URLSearchParams(location.search);
+        setSearchTerm(params.get("q") || "");
+    }, [location.pathname, location.search]);
+
+    const handleSearchSubmit = useCallback(() => {
+        const trimmed = searchTerm.trim();
+        if (!trimmed) return;
+        if (setPage) {
+            setPage("search");
+        }
+        navigate(`/search?q=${encodeURIComponent(trimmed)}`);
+    }, [navigate, searchTerm, setPage]);
+
+    const handleSearchKeyDown = (event) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            handleSearchSubmit();
+        }
+    };
+
     const friendRequestNotifications = useMemo(
         () => notifications.filter((notification) => {
             if (notification?.type !== "friendRequest") return false;
@@ -78,7 +105,7 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
             );
             return senderId && !blockedSet.has(senderId);
         }),
-        [notifications, blockedSet]
+        [notifications, blockedSet, normalizeId]
     );
 
     const shareNotifications = useMemo(
@@ -93,7 +120,7 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
             );
             return senderId && !blockedSet.has(senderId);
         }),
-        [notifications, blockedSet]
+        [notifications, blockedSet, normalizeId]
     );
 
     useEffect(() => {
@@ -109,9 +136,6 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-
-    const getNotificationUser = (notification) =>
-        notification.sender;
 
     const getNotificationRequestId = (notification) =>
         notification._id;
@@ -129,7 +153,7 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
         if (!loggedInUserId) return false;
         const receiverId = notification.receiver;
         return receiverId && receiverId.toString() === normalizeId(loggedInUserId)?.toString();
-    }, [loggedInUserId]);
+    }, [loggedInUserId, normalizeId]);
 
     const handleFriendRequestAction = async (notification, action) => {
         const requestId = getNotificationRequestId(notification);
@@ -237,8 +261,24 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
                     <BsLink color="white" size={40} />
                     <h2>Friend lists</h2>
                 </div>
-                <input className="search-lists" placeholder="Search lists" type="text" />
-                <IoIosSearch className="search-lists-icon" size={20} color="#FF6B6B"/>
+                <div className="search-wrapper">
+                    <input
+                        className="search-lists"
+                        placeholder="Search lists"
+                        type="text"
+                        value={searchTerm}
+                        onChange={(event) => setSearchTerm(event.target.value)}
+                        onKeyDown={handleSearchKeyDown}
+                    />
+                    <button
+                        type="button"
+                        className="search-trigger"
+                        aria-label="Search lists"
+                        onClick={handleSearchSubmit}
+                    >
+                        <IoIosSearch className="search-lists-icon" size={20} color="#FF6B6B"/>
+                    </button>
+                </div>
             </div>
             <div className={'profile-buttons'}> 
                 <div className="dropdown-wrapper" ref={dropdownRef}>

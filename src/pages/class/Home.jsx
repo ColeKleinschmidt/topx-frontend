@@ -11,6 +11,7 @@ import { useDispatch } from "react-redux";
 import { setNotifications } from "../../store/notificationsSlice.js";
 import { setBlockedUsers } from "../../store/blockedUsersSlice.js";
 import { getAllNotificationsAPI, getBlockedUsersAPI } from "../../backend/apis.js";
+import SearchResults from "./SearchResults.jsx";
 
 const Home = ({ route }) => {
 
@@ -68,6 +69,8 @@ const Home = ({ route }) => {
                     <FriendsLists onFindFriends={() => setPage("findFriends")} />
                 ) : page === "findFriends" ? (
                     <FindFriends onBackToFriends={() => setPage("friendsLists")} onNotificationsUpdated={refreshNotifications} />
+                ) : page === "search" ? (
+                    <SearchResults />
                 ) : page === "profile" && (
                     <Profile />
                 )}
