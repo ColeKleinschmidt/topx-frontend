@@ -1,32 +1,38 @@
 #content 
 {
-    height: 100vh;
-    width: 100vw;
+    min-height: 100vh;
+    width: 100%;
     position: relative;
     z-index: 2;
     text-align: center;
-    background-size: 85%;
+    background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-color: transparent !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    box-sizing: border-box;
 }
 
 /* Welcome Card */
 .welcome-card 
 {
     background-color: #CAEFD1;
-    width: 400px;
+    width: min(460px, 100%);
+    max-width: 540px;
     border-radius: 20px;
-    padding: 30px;
+    padding: 32px 28px 16px;
     text-align: center;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    position: fixed;
-    top: calc((50vh - (5vh + 4vh)) / 2);
-    left: calc(50% + 30vh);
+    position: relative;
     font-family: Arial, sans-serif;
     overflow: hidden;
-    justify-content: space-between;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 /* Logo Styling */
@@ -71,12 +77,10 @@
 {
     padding: 12px;
     border: 2px solid #ccc;
-    margin-bottom: 20px;
     border-radius: 15px;
     font-size: 16px;
     outline: none;
     width: 100%;
-    max-width: 250px;
     box-sizing: border-box;
 }
 
@@ -90,8 +94,7 @@
     border-radius: 30px;
     font-size: 16px;
     width: 100%;
-    max-width: 250px;
-    margin-bottom: 50px;
+    margin-top: 8px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
@@ -108,10 +111,8 @@
     font-size: 14px;
     color: #777;
     display: block;
-    padding-left: 80px;
     padding-bottom: 5px;
     width: 100%;
-    max-width: 240px;
     text-align: left;
     box-sizing: border-box;
 }
@@ -185,18 +186,17 @@
 .welcome-card-footer 
 {
     background-color: #06402B;
-    height: 50px;
+    min-height: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 14px;
     color: #ffffff;
     bottom: 0;
-    padding-bottom: 0px;
+    padding: 10px 14px;
     left: 0;
     width: 100%;
     margin: 0;
-    position: absolute;
 }
 
 .welcome-card-footer #toggle-link 
@@ -220,7 +220,19 @@
 
 .form-container 
 {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+    width: 100%;
+}
+
+.form-container form 
+{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .hidden 
@@ -228,4 +240,17 @@
     display: none;
 }
 
+@media (max-width: 640px) 
+{
+    #content 
+    {
+        padding: 16px 12px;
+        background-attachment: scroll;
+    }
 
+    .welcome-card 
+    {
+        padding: 24px 20px 12px;
+        gap: 16px;
+    }
+}

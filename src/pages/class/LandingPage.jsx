@@ -1,5 +1,5 @@
 import "../css/LandingPage.css";
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import topXlogo from "../../assets/images/TopXLogo.png";
 import backgroundImage from "../../assets/images/IndexBackground.png";
 import { useNavigate } from 'react-router-dom';
@@ -47,8 +47,6 @@ export default function LandingPage() {
     }
 
     const login = () => {
-        console.log(email);
-        console.log(password);
         if (email.trim() === "" || password === "") {
             alert("Please fill in all fields");
             return;
@@ -67,8 +65,8 @@ export default function LandingPage() {
     }
 
     return (
-        <div id ="content" style={{ backgroundImage: `url('${backgroundImage}')` }}>
-            {"<!-- Welcome Card -->"}
+        <div id="content" style={{ backgroundImage: `url('${backgroundImage}')` }}>
+            {/* Welcome Card */}
             <div className="welcome-card">
                 <img src={topXlogo} alt="TopX Logo" className="welcome-logo" />
                 <h1>Welcome to TopX</h1>
@@ -78,39 +76,39 @@ export default function LandingPage() {
                 <div id="signup-form" className={`form-container ${page !== "register" && "hidden"}`}>
                     <h2 id="form-title">Sign Up</h2>
                     <form>
-                        <label for="signup-username" className="form-label">Username</label>
+                        <label htmlFor="signup-username" className="form-label">Username</label>
                         <input onChange={(e) => {setUsername(e.target.value)}} type="text" id="signup-username" placeholder="Enter your username" className="form-input" />
 
-                        <label for="signup-email" className="form-label">Email</label>
+                        <label htmlFor="signup-email" className="form-label">Email</label>
                         <input onChange={(e) => {setEmail(e.target.value)}} type="email" id="signup-email" placeholder="Enter your email" className="form-input" />
                     
-                        <label for="signup-password" className="form-label">Password</label>
+                        <label htmlFor="signup-password" className="form-label">Password</label>
                         <input onChange={(e) => {setPassword(e.target.value)}} type="password" id="signup-password" placeholder="Create a password" className="form-input" />
                     
                         <button onClick={() => signUp()} type="button" className="form-button" id="signup-button">Continue</button>
                     </form>
                     <div className="welcome-card-footer">
                         <span id="toggle-text">Already a member?</span>
-                    <div onClick={() => setPage("login")} id="toggle-link">Log In</div>
-                </div>
+                        <div onClick={() => setPage("login")} id="toggle-link">Log In</div>
+                    </div>
                 </div>
 
                 {/*<!-- Log In Form -->*/}
                 <div id="login-form" className={`form-container ${page !== "login" && "hidden"}`}>
                     <h2 id="form-title">Log In</h2>
                     <form>
-                        <label for="login-email" className="form-label">Email</label>
+                        <label htmlFor="login-email" className="form-label">Email</label>
                         <input onChange={(e) => setEmail(e.target.value)} type="email" id="login-email" placeholder="Enter your email" className="form-input" />
 
-                        <label for="login-password" className="form-label">Password</label>
+                        <label htmlFor="login-password" className="form-label">Password</label>
                         <input onChange={(e) => setPassword(e.target.value)} type="password" id="login-password" placeholder="Enter your password" className="form-input" />
 
                         <button onClick={() => login()} type="button" className="form-button" id="login-button">Log In</button>
                     </form>
                     <div className="welcome-card-footer">
                         <span id="toggle-text">Don't have an account?</span>
-                    <div onClick={() => setPage("register")} id="toggle-link">Sign Up</div>
-                </div>
+                        <div onClick={() => setPage("register")} id="toggle-link">Sign Up</div>
+                    </div>
                 </div>
             </div>
         </div>
