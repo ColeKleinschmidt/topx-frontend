@@ -262,6 +262,21 @@ const ListDetail = () => {
         setSelectedFriends((prev) => ({ ...prev, [friendId]: !prev[friendId] }));
     };
 
+    const hasUnsavedChanges = useCallback(() => {
+        if (!isEditing || !editedList || !list) return false;
+        const baseline = prepareEditableList(list);
+        const titlesMatch = (baseline.title || "").trim() === (editedList.title || "").trim();
+        const baselineItems = baseline.listItems || [];
+        const editedItems = editedList.listItems || [];
+        if (baselineItems.length !== editedItems.length) return true;
+        const itemsMatch = baselineItems.every((item, idx) => {
+            const candidate = editedItems[idx];
+            return (item.title || "").trim() === (candidate?.title || "").trim()
+                && (item.image || "") === (candidate?.image || "");
+        });
+        return !(titlesMatch && itemsMatch);
+    }, [editedList, isEditing, list, prepareEditableList]);
+
     const enterEditMode = () => {
         if (!list) return;
         setEditedList(prepareEditableList(list));
@@ -270,11 +285,23 @@ const ListDetail = () => {
         setSaveError("");
     };
 
-    const cancelEditMode = () => {
+    const cancelEditMode = useCallback(() => {
         setIsEditing(false);
         setEditedList(null);
         setSaving(false);
         setSaveError("");
+    }, []);
+
+    const handleToggleEdit = () => {
+        if (!isEditing) {
+            enterEditMode();
+            return;
+        }
+        if (hasUnsavedChanges()) {
+            const confirmDiscard = window.confirm("You have unsaved changes. If you exit edit mode now, those changes will be lost. Continue?");
+            if (!confirmDiscard) return;
+        }
+        cancelEditMode();
     };
 
     const hasEmptyItem = editedList?.listItems?.some((item) => !item.title?.trim());
@@ -374,7 +401,7 @@ const ListDetail = () => {
                                 <button
                                     type="button"
                                     className={`edit-list-button ${isEditing ? "active" : ""}`}
-                                    onClick={isEditing ? cancelEditMode : enterEditMode}
+                                    onClick={handleToggleEdit}
                                 >
                                     <FiEdit2 size={16} />
                                     <span>{isEditing ? "Editing" : "Edit list"}</span>

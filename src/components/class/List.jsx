@@ -259,20 +259,14 @@ const List = ({ list, setList, editable = false, onClick }) => {
         return (
             <div
                 className={rowClasses}
+                draggable
+                onDragStart={() => handleDragStart(index)}
                 onDragOver={(event) => handleDragOver(event, index)}
                 onDrop={(event) => handleDrop(event, index)}
+                onDragEnter={() => setDragOverIndex(index)}
                 onDragLeave={() => setDragOverIndex(null)}
+                onDragEnd={handleDragEnd}
             >
-                <button
-                    type="button"
-                    className="drag-handle"
-                    draggable
-                    aria-label="Reorder item"
-                    onDragStart={() => handleDragStart(index)}
-                    onDragEnd={handleDragEnd}
-                >
-                    <span className="drag-dots" aria-hidden="true">⋮⋮</span>
-                </button>
                 <div className="row-number">
                     <h1>{number}</h1>
                 </div>
@@ -392,10 +386,17 @@ const List = ({ list, setList, editable = false, onClick }) => {
             ))}
             {editable && (
                 <div className="list-actions">
-                    {newList.listItems.length < 10 ? (
-                        <button type="button" className="add-item" onClick={handleAddItem} disabled={!canAddNewItem()} title={!canAddNewItem() ? "Select a suggestion to enable adding another item" : ""}>+ Add item</button>
-                    ) : (
-                        <button type="button" className={`submit-list ${isTitleValid ? "active" : ""}`} disabled={!isTitleValid}>Submit</button>
+                    <button
+                        type="button"
+                        className="add-item"
+                        onClick={handleAddItem}
+                        disabled={!canAddNewItem() || newList.listItems.length >= 10}
+                        title={!canAddNewItem() ? "Select a suggestion to enable adding another item" : ""}
+                    >
+                        + Add item
+                    </button>
+                    {newList.listItems.length >= 10 && (
+                        <p className="input-hint">Maximum of 10 items reached.</p>
                     )}
                     {!isTitleValid && (
                         <p className="input-hint">Title must be 1-25 characters</p>
