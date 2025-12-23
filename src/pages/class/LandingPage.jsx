@@ -18,7 +18,7 @@ export default function LandingPage() {
     useEffect(() => {
         authStatusAPI().then((response) => {
             if (response.authenticated) {
-                navigate("/profile");
+                navigate("/friendsLists");
             }
         })
     },[]);
@@ -40,7 +40,7 @@ export default function LandingPage() {
             if (response.user !== undefined && response.user !== null) {
                 // If successful, navigate to the feed page
                 localStorage.setItem("user", JSON.stringify(response.user));
-                navigate("/profile");
+                navigate("/friendsLists");
             }else {
                 // If unsuccessful, alert the user
                 alert(response.message);
@@ -59,7 +59,7 @@ export default function LandingPage() {
                 // If successful, navigate to the feed page
                 localStorage.setItem("user", JSON.stringify(response.user));
                 setErrorMessage("");
-                navigate("/profile");
+                navigate("/friendsLists");
             }else {
                 // If unsuccessful, surface the error message
                 const message = response?.message || "Unable to log in. Please try again.";
