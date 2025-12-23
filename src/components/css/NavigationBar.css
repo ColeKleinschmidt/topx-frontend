@@ -257,6 +257,7 @@
     background: #f8fafc;
     cursor: pointer;
     color: inherit;
+    width: 100%;
 }
 
 .share-notification-header {
@@ -264,6 +265,12 @@
     justify-content: space-between;
     align-items: flex-start;
     gap: 8px;
+    width: 100%;
+}
+
+.notification-user {
+    flex: 1;
+    min-width: 0;
 }
 
 .remove-notification-button {
