@@ -5,7 +5,7 @@ import List from "../../components/class/List.jsx";
 import { useNavigate } from "react-router-dom";
 //import { } from "../../backend/apis.js";
 
-const MyLists = () => {
+const MyLists = ({ onCreateList = () => {} }) => {
     const [loadingLists, setLoadingLists] = useState(true);
     const [lists, setLists] = useState([]);
     const [page, setPage] = useState(1);
@@ -59,6 +59,18 @@ const MyLists = () => {
                 {lists.map((list, index) => (
                     <List key={list._id || list.id || index} list={list} onClick={() => handleOpenList(list._id || list.id)} />
                 ))}
+                {!loadingLists && lists.length === 0 && (
+                    <div className="empty-state">
+                        <div className="empty-icon">📝</div>
+                        <h3 className="empty-title">You don't have any lists yet</h3>
+                        <p className="empty-text">
+                            Start curating your favorites and keep them all in one place. Create your first one here!
+                        </p>
+                        <button className="my-lists-primary-action" onClick={onCreateList}>
+                            Create a list
+                        </button>
+                    </div>
+                )}
             </div>
             {loadingLists && <h2 className="loading-lists">Loading...</h2>}
         </div>

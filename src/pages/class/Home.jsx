@@ -65,7 +65,7 @@ const Home = ({ route }) => {
             <NavigationBar setPage={setPage} page={page} onNotificationsUpdated={refreshNotifications}/>
             <div className="home-content">
                 {page === "myLists" ? (
-                    <MyLists />
+                    <MyLists onCreateList={() => setShowNewList(true)} />
                 ) : page === "friendsLists" ? (
                     <FriendsLists onFindFriends={() => setPage("findFriends")} />
                 ) : page === "findFriends" ? (

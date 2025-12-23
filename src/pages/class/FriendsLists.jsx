@@ -63,6 +63,18 @@ const FriendsLists = ({ onFindFriends = () => {} }) => {
                         onClick={() => handleOpenList(list._id || list.id, list.userId || list.ownerId)}
                     />
                 ))}
+                {!loadingLists && lists.length === 0 && (
+                    <div className="empty-state">
+                        <div className="empty-icon">🌟</div>
+                        <h3 className="empty-title">No friends yet, discover new users</h3>
+                        <p className="empty-text">
+                            Find people with similar tastes and follow their lists to spark new ideas.
+                        </p>
+                        <button className="friends-primary-action" onClick={onFindFriends}>
+                            Find friends
+                        </button>
+                    </div>
+                )}
             </div>
             {loadingLists && <h2 className="loading-lists">Loading...</h2>}
         </div>
