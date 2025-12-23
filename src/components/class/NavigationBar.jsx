@@ -6,11 +6,12 @@ import { FaBell } from "react-icons/fa";
 import { IoIosSend, IoIosSearch } from "react-icons/io";
 import { MdAccountCircle } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
-import { setNotifications } from "../../store/notificationsSlice.js";
+import { removeNotification, setNotifications } from "../../store/notificationsSlice.js";
 import { setBlockedUsers } from "../../store/blockedUsersSlice.js";
 import { acceptFriendRequestAPI, declineFriendRequestAPI, getAllNotificationsAPI, getBlockedUsersAPI, getListAPI, getUserByIdAPI } from "../../backend/apis.js";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getUserId } from "../../backend/apis.js";
+import { removeNotificationAPI } from "../../backend/apis.js";
 
 const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} }) => {
 
@@ -175,6 +176,30 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
         if (!listId) return;
         navigate(`/list/${listId}`);
         setShowShares(false);
+    };
+
+    const handleRemoveShareNotification = async (event, notification) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const notificationId = getNotificationRequestId(notification);
+        if (!notificationId) return;
+
+        try {
+            const response = await removeNotificationAPI(notificationId);
+            if (response?.success !== false) {
+                dispatch(removeNotification(notificationId));
+            }
+        } catch (error) {
+            console.error("Failed to remove share notification", error);
+        }
+    };
+
+    const handleShareKeyDown = (event, notification) => {
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            handleNavigateToList(notification);
+        }
     };
 
     const ensureUserLoaded = useCallback(async (userId) => {
@@ -360,20 +385,37 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
                                     const listTitle = list?.title || list?.name || (loadingLists[listId] ? "Loading list..." : getListTitle(notification));
                                     const notificationId = getNotificationRequestId(notification) || listTitle || listId;
                                     return (
-                                        <button type="button" key={notificationId} className="notification-item share-item" onClick={() => handleNavigateToList(notification)}>
-                                            <div className="notification-user">
-                                                <div className="notification-avatar">
-                                                    {avatar ? <img src={avatar} alt={username} /> : <div className="avatar-placeholder" />}
+                                        <div
+                                            role="button"
+                                            tabIndex={0}
+                                            key={notificationId}
+                                            className="notification-item share-item"
+                                            onClick={() => handleNavigateToList(notification)}
+                                            onKeyDown={(event) => handleShareKeyDown(event, notification)}
+                                        >
+                                            <div className="share-notification-header">
+                                                <div className="notification-user">
+                                                    <div className="notification-avatar">
+                                                        {avatar ? <img src={avatar} alt={username} /> : <div className="avatar-placeholder" />}
+                                                    </div>
+                                                    <div className="notification-meta">
+                                                        <p className="notification-title">{username}</p>
+                                                        <p className="notification-subtitle">shared “{listTitle}” with you</p>
+                                                    </div>
                                                 </div>
-                                                <div className="notification-meta">
-                                                    <p className="notification-title">{username}</p>
-                                                    <p className="notification-subtitle">shared “{listTitle}” with you</p>
-                                                </div>
+                                                <button
+                                                    type="button"
+                                                    className="remove-notification-button"
+                                                    aria-label="Remove share notification"
+                                                    onClick={(event) => handleRemoveShareNotification(event, notification)}
+                                                >
+                                                    ×
+                                                </button>
                                             </div>
                                             {(loadingUsers[senderId] || loadingLists[listId]) && (
                                                 <p className="notification-loading">Loading...</p>
                                             )}
-                                        </button>
+                                        </div>
                                     );
                                 })
                             )}

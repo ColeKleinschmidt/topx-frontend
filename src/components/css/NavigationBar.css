@@ -259,6 +259,32 @@
     color: inherit;
 }
 
+.share-notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.remove-notification-button {
+    background: transparent;
+    border: none;
+    color: #9ca3af;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 6px;
+}
+
+.remove-notification-button:hover,
+.remove-notification-button:focus-visible {
+    color: #ef4444;
+    background-color: #f3f4f6;
+    outline: none;
+}
+
 .notification-loading {
     margin: 0;
     color: #6b7280;
