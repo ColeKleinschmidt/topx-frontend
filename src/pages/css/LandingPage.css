@@ -24,7 +24,7 @@
     width: min(460px, 100%);
     max-width: 540px;
     border-radius: 20px;
-    padding: 32px 28px 16px;
+    padding: 16px 28px 8px;
     text-align: center;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     position: relative;
@@ -32,7 +32,7 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 0px;
 }
 
 /* Logo Styling */
@@ -185,17 +185,14 @@
 /* Welcome Card Footer */
 .welcome-card-footer 
 {
-    background-color: #06402B;
-    min-height: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 14px;
-    color: #ffffff;
+    color: #06402B;
     bottom: 0;
     padding: 10px 14px;
     left: 0;
-    width: 100%;
     margin: 0;
 }
 
