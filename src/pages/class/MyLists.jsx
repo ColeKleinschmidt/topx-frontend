@@ -72,9 +72,6 @@ const MyLists = ({ onCreateList = () => {}, onEmptyChange = () => {} }) => {
                         <p className="empty-text">
                             Start curating your favorites and keep them all in one place. Create your first one here!
                         </p>
-                        <button className="my-lists-primary-action" onClick={onCreateList}>
-                            Create a list
-                        </button>
                     </div>
                 )}
             </div>

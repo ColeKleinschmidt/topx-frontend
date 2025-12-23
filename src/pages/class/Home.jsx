@@ -68,12 +68,6 @@ const Home = ({ route }) => {
                 {page === "myLists" ? (
                     <MyLists
                         onCreateList={() => setShowNewList(true)}
-                        onEmptyChange={(isEmpty) => {
-                            setShowQuickCreate(!isEmpty);
-                            if (isEmpty) {
-                                setShowNewList(false);
-                            }
-                        }}
                     />
                 ) : page === "friendsLists" ? (
                     <FriendsLists onFindFriends={() => setPage("findFriends")} />
