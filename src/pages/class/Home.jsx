@@ -86,12 +86,14 @@ const Home = ({ route }) => {
                 )}
 
             </div>
-            {page === "myLists" && showQuickCreate && (
+            {page === "myLists" && (
                 <>
                     <div className={`newListContainer ${showNewList && "animate"}`}>
                         <List editable={true} showSubmitButton />
                     </div>
-                    <div className={`newList ${showNewList ? "active" : ""}`} onClick={() => {setShowNewList(!showNewList)}}>+</div>
+                    {showQuickCreate && (
+                        <div className={`newList ${showNewList ? "active" : ""}`} onClick={() => {setShowNewList(!showNewList)}}>+</div>
+                    )}
                 </>
             )}
         </div>
