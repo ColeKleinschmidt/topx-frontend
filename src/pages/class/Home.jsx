@@ -3,6 +3,7 @@ import { useEffect, useState, useCallback } from 'react';
 import NavigationBar from "../../components/class/NavigationBar.jsx";
 import MyLists from "./MyLists.jsx";
 import FriendsLists from "./FriendsLists.jsx";
+import DiscoverLists from "./DiscoverLists.jsx";
 import Profile from "./Profile.jsx";
 import List from "../../components/class/List.jsx";
 import FindFriends from "./FindFriends.jsx";
@@ -69,6 +70,8 @@ const Home = ({ route }) => {
                     <MyLists
                         onCreateList={() => setShowNewList(true)}
                     />
+                ) : page === "discoverLists" ? (
+                    <DiscoverLists />
                 ) : page === "friendsLists" ? (
                     <FriendsLists onFindFriends={() => setPage("findFriends")} />
                 ) : page === "findFriends" ? (

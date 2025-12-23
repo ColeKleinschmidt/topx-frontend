@@ -12,6 +12,7 @@ function App() {
         <Route path="/" element={<RedirectIfAuth><LandingPage /></RedirectIfAuth>} />
 
         <Route path="/myLists" element={<RequireAuth><Home route="myLists" /></RequireAuth>} />
+        <Route path="/discoverLists" element={<RequireAuth><Home route="discoverLists" /></RequireAuth>} />
         <Route path="/friendsLists" element={<RequireAuth><Home route="friendsLists" /></RequireAuth>} />
         <Route path="/findFriends" element={<RequireAuth><Home route="findFriends" /></RequireAuth>} />
         <Route path="/profile" element={<RequireAuth><Home route="profile" /></RequireAuth>} />
