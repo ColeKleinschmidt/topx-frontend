@@ -1,5 +1,5 @@
 import "../css/FriendsLists.css";
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 import { getFriendsListsAPI } from "../../backend/apis.js";
 import List from "../../components/class/List.jsx";
 import { useNavigate } from "react-router-dom";
@@ -9,37 +9,55 @@ const FriendsLists = ({ onFindFriends = () => {} }) => {
     const [lists, setLists] = useState([]);
     const [page, setPage] = useState(1);
     const hasFetchedLists = useRef(false);
+    const loadingRef = useRef(false);
+    const [hasMore, setHasMore] = useState(true);
     const navigate = useNavigate();
 
     useEffect(() => {
         if (hasFetchedLists.current) return;
         hasFetchedLists.current = true;
-        getLists();
-    },[])
+        getLists(1);
+    }, [])
 
-    const getLists = () => {
-        getFriendsListsAPI(page, 10).then((response) => {
-            if (response.lists !== undefined && response.lists !== null) {
-                setLists((prev) => {
-                    const combinedLists = [...prev, ...response.lists];
-                    const seenIds = new Set();
+    const getLists = async (pageToLoad) => {
+        if (loadingRef.current || !hasMore) return;
 
-                    return combinedLists.filter((list) => {
-                        const key = list._id || list.id;
-                        if (!key) return true;
-                        if (seenIds.has(key)) return false;
-                        seenIds.add(key);
-                        return true;
-                    });
+        loadingRef.current = true;
+        setLoadingLists(true);
+
+        try {
+            const response = await getFriendsListsAPI(pageToLoad, 10);
+            const incomingLists = response?.lists ?? [];
+            let newItemsCount = 0;
+
+            setLists((prev) => {
+                const baseList = pageToLoad === 1 ? [] : [...prev];
+                const seenIds = new Set(baseList.map((list) => list._id || list.id));
+
+                incomingLists.forEach((list) => {
+                    const key = list._id || list.id;
+                    if (key && seenIds.has(key)) return;
+
+                    seenIds.add(key);
+                    baseList.push(list);
+                    newItemsCount += 1;
                 });
-                setPage((prev) => prev + 1);
-                setLoadingLists(false);
-            }else {
-                // If unsuccessful, alert the user
-                alert(response.message);
-                setLoadingLists(false);
+
+                return baseList;
+            });
+
+            if (newItemsCount > 0) {
+                setPage(pageToLoad + 1);
+            } else {
+                setHasMore(false);
             }
-        })
+        } catch (error) {
+            console.error("Failed to fetch friends lists", error);
+            alert("Unable to load friends lists right now. Please try again later.");
+        } finally {
+            loadingRef.current = false;
+            setLoadingLists(false);
+        }
     }
 
     const handleOpenList = (listId, ownerId) => {
