@@ -211,8 +211,14 @@ const List = ({ list, setList, editable = false, onClick }) => {
         });
     };
 
-    const handleDragStart = (index) => {
+    const handleDragStart = (event, index) => {
+        if (event?.dataTransfer) {
+            event.dataTransfer.effectAllowed = "move";
+            // Some browsers require data to begin a drag operation
+            event.dataTransfer.setData("text/plain", String(index));
+        }
         setDragIndex(index);
+        setDragOverIndex(index);
     };
 
     const handleDragOver = (event, index) => {
@@ -260,13 +266,22 @@ const List = ({ list, setList, editable = false, onClick }) => {
             <div
                 className={rowClasses}
                 draggable
-                onDragStart={() => handleDragStart(index)}
+                onDragStart={(event) => handleDragStart(event, index)}
                 onDragOver={(event) => handleDragOver(event, index)}
                 onDrop={(event) => handleDrop(event, index)}
                 onDragEnter={() => setDragOverIndex(index)}
                 onDragLeave={() => setDragOverIndex(null)}
                 onDragEnd={handleDragEnd}
             >
+                <button
+                    type="button"
+                    className="drag-handle"
+                    aria-label="Reorder item"
+                    onMouseDown={(event) => event.stopPropagation()}
+                    onClick={(event) => event.preventDefault()}
+                >
+                    <span className="drag-dots" aria-hidden="true">⋮⋮</span>
+                </button>
                 <div className="row-number">
                     <h1>{number}</h1>
                 </div>

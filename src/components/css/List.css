@@ -99,6 +99,29 @@
     cursor: grab;
 }
 
+.drag-handle {
+    border: 1px solid #E0CFFC;
+    background: #f4e9ff;
+    color: #800080;
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    flex-shrink: 0;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}
+
+.drag-dots {
+    font-size: 16px;
+    line-height: 1;
+}
+
 .row-number {
     background-color: #E0CFFC;
     display: flex;
