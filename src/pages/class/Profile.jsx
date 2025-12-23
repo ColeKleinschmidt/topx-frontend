@@ -471,18 +471,15 @@ const Profile = () => {
             <div className="lists-section">
                 <div className="section-header">
                     <h3>{viewingOwnProfile ? "My Lists" : `${user?.username || "User"}'s Lists`}</h3>
-                    <div className="list-actions">
-                        {listsLoading && <p className="muted">Loading...</p>}
-                        {viewingOwnProfile && (
-                            <button
-                                type="button"
-                                className="my-lists-primary-action"
-                                onClick={() => setShowNewList((prev) => !prev)}
-                            >
-                                {showNewList ? "Close" : "Create list"}
-                            </button>
-                        )}
-                    </div>
+                    {viewingOwnProfile && (
+                        <button
+                            type="button"
+                            className="my-lists-primary-action"
+                            onClick={() => setShowNewList((prev) => !prev)}
+                        >
+                            {showNewList ? "Close" : "Create list"}
+                        </button>
+                    )}
                 </div>
                 {viewingOwnProfile && showNewList && (
                     <div className="profile-new-list-container">
@@ -504,13 +501,6 @@ const Profile = () => {
                             <p className="empty-text">
                                 Start curating your favorites and keep them all in one place. Create your first one here!
                             </p>
-                            <button
-                                type="button"
-                                className="my-lists-primary-action"
-                                onClick={() => setShowNewList(true)}
-                            >
-                                Create your first list
-                            </button>
                         </div>
                     ) : <p className="muted">No lists yet.</p>
                 )}
