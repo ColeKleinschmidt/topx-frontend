@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import "../css/NavigationBar.css"; 
-import { IoIosCheckmarkCircle, IoIosCompass } from "react-icons/io";
+import { IoIosCompass } from "react-icons/io";
 import { BsLink } from "react-icons/bs";
 import { FaBell } from "react-icons/fa";
 import { IoIosSend, IoIosSearch } from "react-icons/io";
@@ -278,10 +278,6 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
                 <h2>Topx</h2>
             </div>
             <div className="navigation-container">
-                <div onClick={() => setPage("myLists")} className={`navigation-element ${page === "myLists" ? "underline" : ""}`}>
-                    <IoIosCheckmarkCircle color="white" size={25} />
-                    <h2>My lists</h2>
-                </div>
                 <div onClick={() => setPage("discoverLists")} className={`navigation-element ${page === "discoverLists" ? "underline" : ""}`}>
                     <IoIosCompass color="white" size={28} />
                     <h2>Discover lists</h2>

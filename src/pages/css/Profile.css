@@ -222,6 +222,14 @@
     align-items: center;
     gap: 12px;
     margin-bottom: 12px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.list-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
 .lists-grid {
@@ -229,6 +237,24 @@
     flex-wrap: wrap;
     gap: 16px;
     justify-content: center;
+}
+
+.profile-new-list-container {
+    display: flex;
+    justify-content: center;
+    margin: 12px 0 20px;
+}
+
+.profile-new-list-card {
+    position: static;
+    width: 100%;
+    max-width: 540px;
+    opacity: 1;
+    transform: none;
+    top: auto;
+    left: auto;
+    right: auto;
+    box-shadow: 0px 2px 50px 4px gray;
 }
 
 .friends-indicator-wrapper {

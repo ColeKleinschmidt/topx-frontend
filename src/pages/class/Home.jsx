@@ -1,11 +1,9 @@
 import "../css/Home.css";
 import { useEffect, useState, useCallback } from 'react';
 import NavigationBar from "../../components/class/NavigationBar.jsx";
-import MyLists from "./MyLists.jsx";
 import FriendsLists from "./FriendsLists.jsx";
 import DiscoverLists from "./DiscoverLists.jsx";
 import Profile from "./Profile.jsx";
-import List from "../../components/class/List.jsx";
 import FindFriends from "./FindFriends.jsx";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -17,17 +15,9 @@ import SearchResults from "./SearchResults.jsx";
 const Home = ({ route }) => {
 
     const [page, setPage] = useState(route);
-    const [showNewList, setShowNewList] = useState(false);
-    const [showQuickCreate, setShowQuickCreate] = useState(true);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const location = useLocation();
-
-    useEffect(() => {
-        if (page !== "myLists" && showNewList) {
-            setShowNewList(false);
-        }
-    }, [page, showNewList]);
 
     useEffect(() => {
         if (!page) return;
@@ -66,11 +56,7 @@ const Home = ({ route }) => {
         <div className="home-container">
             <NavigationBar setPage={setPage} page={page} onNotificationsUpdated={refreshNotifications}/>
             <div className="home-content">
-                {page === "myLists" ? (
-                    <MyLists
-                        onCreateList={() => setShowNewList(true)}
-                    />
-                ) : page === "discoverLists" ? (
+                {page === "discoverLists" ? (
                     <DiscoverLists />
                 ) : page === "friendsLists" ? (
                     <FriendsLists onFindFriends={() => setPage("findFriends")} />
@@ -83,16 +69,6 @@ const Home = ({ route }) => {
                 )}
 
             </div>
-            {page === "myLists" && (
-                <>
-                    <div className={`newListContainer ${showNewList && "animate"}`}>
-                        <List editable={true} showSubmitButton />
-                    </div>
-                    {showQuickCreate && (
-                        <div className={`newList ${showNewList ? "active" : ""}`} onClick={() => {setShowNewList(!showNewList)}}>+</div>
-                    )}
-                </>
-            )}
         </div>
     )
 }

@@ -52,6 +52,7 @@ const Profile = () => {
     const [lists, setLists] = useState([]);
     const [loading, setLoading] = useState(true);
     const [listsLoading, setListsLoading] = useState(true);
+    const [showNewList, setShowNewList] = useState(false);
     const [friendAction, setFriendAction] = useState("idle");
     const [blocking, setBlocking] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
@@ -121,6 +122,12 @@ const Profile = () => {
             refreshNotifications();
         }
     }, [targetUserId, refreshNotifications]);
+
+    useEffect(() => {
+        if (!viewingOwnProfile && showNewList) {
+            setShowNewList(false);
+        }
+    }, [viewingOwnProfile, showNewList]);
 
     const normalizeId = useCallback((value) => {
         if (!value) return null;
@@ -464,14 +471,49 @@ const Profile = () => {
             <div className="lists-section">
                 <div className="section-header">
                     <h3>{viewingOwnProfile ? "My Lists" : `${user?.username || "User"}'s Lists`}</h3>
-                    {listsLoading && <p className="muted">Loading...</p>}
+                    <div className="list-actions">
+                        {listsLoading && <p className="muted">Loading...</p>}
+                        {viewingOwnProfile && (
+                            <button
+                                type="button"
+                                className="my-lists-primary-action"
+                                onClick={() => setShowNewList((prev) => !prev)}
+                            >
+                                {showNewList ? "Close" : "Create list"}
+                            </button>
+                        )}
+                    </div>
                 </div>
+                {viewingOwnProfile && showNewList && (
+                    <div className="profile-new-list-container">
+                        <div className="newListContainer animate profile-new-list-card">
+                            <List editable={true} showSubmitButton />
+                        </div>
+                    </div>
+                )}
                 <div className="lists-grid">
                     {lists.map((list) => (
                         <List key={list._id || list.title} list={list} onClick={() => handleOpenList(list._id || list.id)} />
                     ))}
                 </div>
-                {!listsLoading && lists.length === 0 && <p className="muted">No lists yet.</p>}
+                {!listsLoading && lists.length === 0 && (
+                    viewingOwnProfile ? (
+                        <div className="empty-state">
+                            <div className="empty-icon">📝</div>
+                            <h3 className="empty-title">You don't have any lists yet</h3>
+                            <p className="empty-text">
+                                Start curating your favorites and keep them all in one place. Create your first one here!
+                            </p>
+                            <button
+                                type="button"
+                                className="my-lists-primary-action"
+                                onClick={() => setShowNewList(true)}
+                            >
+                                Create your first list
+                            </button>
+                        </div>
+                    ) : <p className="muted">No lists yet.</p>
+                )}
             </div>
         </div>
     );

@@ -23,7 +23,7 @@ export function RequireAuth({ children }) {
   return children;
 }
 
-export function RedirectIfAuth({ children, redirectTo = "/myLists" }) {
+export function RedirectIfAuth({ children, redirectTo = "/profile" }) {
   const [loading, setLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
 
