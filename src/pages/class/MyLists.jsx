@@ -5,7 +5,7 @@ import List from "../../components/class/List.jsx";
 import { useNavigate } from "react-router-dom";
 //import { } from "../../backend/apis.js";
 
-const MyLists = ({ onCreateList = () => {} }) => {
+const MyLists = ({ onCreateList = () => {}, onEmptyChange = () => {} }) => {
     const [loadingLists, setLoadingLists] = useState(true);
     const [lists, setLists] = useState([]);
     const [page, setPage] = useState(1);
@@ -20,6 +20,11 @@ const MyLists = ({ onCreateList = () => {} }) => {
         hasFetchedLists.current = true;
         getLists(id);
     },[])
+
+    useEffect(() => {
+        const isEmpty = !loadingLists && lists.length === 0;
+        onEmptyChange(isEmpty);
+    }, [lists, loadingLists, onEmptyChange]);
 
     const getLists = (id = userId) => {
         getUserListsAPI(id, page, 10).then((response) => {
@@ -49,7 +54,8 @@ const MyLists = ({ onCreateList = () => {} }) => {
         if (!listId) return;
         navigate(`/list/${listId}`, { state: { ownerId: userId } });
     };
-    
+    const isEmpty = !loadingLists && lists.length === 0;
+
     return (
         <div className="my-lists-container">
             <div className="my-lists-top-bar">
@@ -59,7 +65,7 @@ const MyLists = ({ onCreateList = () => {} }) => {
                 {lists.map((list, index) => (
                     <List key={list._id || list.id || index} list={list} onClick={() => handleOpenList(list._id || list.id)} />
                 ))}
-                {!loadingLists && lists.length === 0 && (
+                {isEmpty && (
                     <div className="empty-state">
                         <div className="empty-icon">📝</div>
                         <h3 className="empty-title">You don't have any lists yet</h3>

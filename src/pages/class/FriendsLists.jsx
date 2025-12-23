@@ -46,14 +46,17 @@ const FriendsLists = ({ onFindFriends = () => {} }) => {
         if (!listId) return;
         navigate(`/list/${listId}`, { state: { ownerId } });
     };
-    
+    const isEmpty = !loadingLists && lists.length === 0;
+
     return (
         <div className="friends-lists-container">
             <div className="friends-lists-top-bar">
                 <h2 className="friends-lists-header">Friends Lists</h2>
-                <button className="find-new-friends-button" onClick={onFindFriends}>
-                    Find new Friends
-                </button>
+                {!isEmpty && (
+                    <button className="find-new-friends-button" onClick={onFindFriends}>
+                        Find new Friends
+                    </button>
+                )}
             </div>
             <div className="lists">
                 {lists.map((list, index) => (

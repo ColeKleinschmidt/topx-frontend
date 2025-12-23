@@ -17,6 +17,7 @@ const Home = ({ route }) => {
 
     const [page, setPage] = useState(route);
     const [showNewList, setShowNewList] = useState(false);
+    const [showQuickCreate, setShowQuickCreate] = useState(true);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const location = useLocation();
@@ -65,7 +66,15 @@ const Home = ({ route }) => {
             <NavigationBar setPage={setPage} page={page} onNotificationsUpdated={refreshNotifications}/>
             <div className="home-content">
                 {page === "myLists" ? (
-                    <MyLists onCreateList={() => setShowNewList(true)} />
+                    <MyLists
+                        onCreateList={() => setShowNewList(true)}
+                        onEmptyChange={(isEmpty) => {
+                            setShowQuickCreate(!isEmpty);
+                            if (isEmpty) {
+                                setShowNewList(false);
+                            }
+                        }}
+                    />
                 ) : page === "friendsLists" ? (
                     <FriendsLists onFindFriends={() => setPage("findFriends")} />
                 ) : page === "findFriends" ? (
@@ -77,7 +86,7 @@ const Home = ({ route }) => {
                 )}
 
             </div>
-            {page === "myLists" && (
+            {page === "myLists" && showQuickCreate && (
                 <>
                     <div className={`newListContainer ${showNewList && "animate"}`}>
                         <List editable={true} showSubmitButton />
