@@ -51,27 +51,9 @@ export const loginAPI = async (email, password) => {
         },
         body: JSON.stringify(data),
     });
-    if (backend_query.ok) {
-        const response = await backend_query.json();
-        console.log(response);
-
-        // Emit a custom event with the user's data
-        window.dispatchEvent(new CustomEvent("userLoggedIn", { detail: { user: response.user } }));
-        return response;
-    } else {
-        let message = "Unable to log in.";
-
-        try {
-            const errorResponse = await backend_query.json();
-            if (errorResponse?.message) {
-                message = errorResponse.message;
-            }
-        } catch (error) {
-            console.error("Error reading login failure response:", error);
-        }
-
-        return { message, status: backend_query.status };
-    }
+    const response = await backend_query.json();
+    console.log(response);
+    return response;
 };
 
 export const authStatusAPI = async () => 
@@ -266,6 +248,25 @@ export const findItemsAPI = async (title) => {
         title: title
     }
     const backend_query = await fetch(`${ENDPOINT}findItems`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Accept': 'application/json',
+            'Accept-encoding': 'gzip, deflate',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data),
+    });
+    const response = await backend_query.json();
+    console.log(response);
+    return response;
+}
+
+export const searchListAPI = async (title) => {
+    const data = {
+        query: title
+    }
+    const backend_query = await fetch(`${ENDPOINT}searchList`, {
         method: 'POST',
         credentials: 'include',
         headers: {
