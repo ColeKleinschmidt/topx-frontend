@@ -28,9 +28,28 @@ const DiscoverLists = () => {
             const response = await getListsAPI(pageToLoad, PAGE_SIZE);
             const incomingLists = response?.lists ?? [];
 
-            setLists((prev) => (pageToLoad === 1 ? incomingLists : [...prev, ...incomingLists]));
-            setHasMore(incomingLists.length === PAGE_SIZE);
-            setPage(pageToLoad + 1);
+            let newItemsCount = 0;
+
+            setLists((prev) => {
+                const baseList = pageToLoad === 1 ? [] : [...prev];
+                const seenIds = new Set(baseList.map((list) => list._id || list.id));
+
+                incomingLists.forEach((list) => {
+                    const key = list._id || list.id;
+                    if (key && seenIds.has(key)) return;
+
+                    seenIds.add(key);
+                    baseList.push(list);
+                    newItemsCount += 1;
+                });
+
+                return baseList;
+            });
+
+            setHasMore(newItemsCount === PAGE_SIZE);
+            if (newItemsCount > 0) {
+                setPage(pageToLoad + 1);
+            }
         } catch (err) {
             console.error("Error fetching discover lists", err);
             setError("Unable to load lists right now. Please try again.");
