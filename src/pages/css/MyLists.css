@@ -28,6 +28,11 @@
     flex-wrap: wrap;
     gap: 24px;
     justify-content: center;
+    align-content: center;
+}
+
+.my-lists-container .lists .empty-state {
+    margin: auto;
 }
 
 .empty-state {

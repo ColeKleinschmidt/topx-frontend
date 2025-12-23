@@ -50,6 +50,11 @@
     flex-wrap: wrap;
     gap: 24px;
     justify-content: center;
+    align-content: center;
+}
+
+.friends-lists-container .lists .empty-state {
+    margin: auto;
 }
 
 .empty-state {

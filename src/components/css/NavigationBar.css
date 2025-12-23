@@ -44,7 +44,7 @@
 }
 
 .navigation-element.underline {
-    border-bottom: 2px solid turquoise;
+    border-bottom: 2px solid white;
     transition: 300ms;
 }
 
