@@ -32,6 +32,7 @@ const Home = ({ route }) => {
         const targetBase = `/${page}`;
         const isOnTargetBase = location.pathname === targetBase || location.pathname.startsWith(`${targetBase}/`);
         if (!isOnTargetBase) {
+            if (page === "search") return;
             navigate(targetBase, { replace: true });
         }
     }, [page, navigate, location.pathname]);
