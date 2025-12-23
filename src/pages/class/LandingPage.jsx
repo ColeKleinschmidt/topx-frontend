@@ -17,7 +17,7 @@ export default function LandingPage() {
     useEffect(() => {
         authStatusAPI().then((response) => {
             if (response.authenticated) {
-                navigate("/feed");
+                navigate("/myLists");
             }
         })
     },[]);
