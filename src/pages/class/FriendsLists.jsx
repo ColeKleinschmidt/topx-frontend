@@ -1,5 +1,5 @@
 import "../css/FriendsLists.css";
-import { useState, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getListsAPI } from "../../backend/apis.js";
 import List from "../../components/class/List.jsx";
 import { useNavigate } from "react-router-dom";
@@ -8,16 +8,30 @@ const FriendsLists = ({ onFindFriends = () => {} }) => {
     const [loadingLists, setLoadingLists] = useState(true);
     const [lists, setLists] = useState([]);
     const [page, setPage] = useState(1);
+    const hasFetchedLists = useRef(false);
     const navigate = useNavigate();
 
     useEffect(() => {
+        if (hasFetchedLists.current) return;
+        hasFetchedLists.current = true;
         getLists();
     },[])
 
     const getLists = () => {
         getListsAPI(page, 10).then((response) => {
             if (response.lists !== undefined && response.lists !== null) {
-                setLists((prev) => [...prev, ...response.lists]);
+                setLists((prev) => {
+                    const combinedLists = [...prev, ...response.lists];
+                    const seenIds = new Set();
+
+                    return combinedLists.filter((list) => {
+                        const key = list._id || list.id;
+                        if (!key) return true;
+                        if (seenIds.has(key)) return false;
+                        seenIds.add(key);
+                        return true;
+                    });
+                });
                 setPage((prev) => prev + 1);
                 setLoadingLists(false);
             }else {
