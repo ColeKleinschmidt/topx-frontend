@@ -364,6 +364,28 @@ export const shareListAPI = async (userId, listId) => {
     return response;
 }
 
+export const updateListAPI = async (listId, list) => {
+    const payload = {
+        listId,
+        title: list?.title,
+        items: list?.items || list?.listItems || [],
+    };
+
+    const backend_query = await fetch(`${ENDPOINT}updateList`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Accept': 'application/json',
+            'Accept-encoding': 'gzip, deflate',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload),
+    });
+    const response = await backend_query.json();
+    console.log(response);
+    return response;
+};
+
 export const getUserByIdAPI = async (id) => {
     const data = {
         id: id

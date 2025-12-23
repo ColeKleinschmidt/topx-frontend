@@ -90,6 +90,12 @@
 
 .row-item.editable {
     gap: 12px;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    padding: 6px 10px;
+    border-radius: 16px;
+    transition: border-color 120ms ease, background-color 120ms ease;
 }
 
 .row-number {
@@ -137,6 +143,38 @@
 .item-editor {
     flex: 1;
     position: relative;
+}
+
+.drag-handle {
+    border: 1px solid #E0CFFC;
+    background: #f4e9ff;
+    color: #800080;
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    flex-shrink: 0;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}
+
+.drag-dots {
+    font-size: 16px;
+    line-height: 1;
+}
+
+.row-item.drag-over {
+    border: 1px dashed #c084fc;
+    background-color: #f9f5ff;
+}
+
+.row-item.dragging {
+    opacity: 0.7;
 }
 
 .item-input {

@@ -6,9 +6,10 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setNotifications } from "../../store/notificationsSlice.js";
 import { setBlockedUsers } from "../../store/blockedUsersSlice.js";
-import { getAllNotificationsAPI, getBlockedUsersAPI, getFriendsAPI, getListAPI, getUserByIdAPI, shareListAPI } from "../../backend/apis.js";
+import { getAllNotificationsAPI, getBlockedUsersAPI, getFriendsAPI, getListAPI, getUserByIdAPI, shareListAPI, updateListAPI, getUserId } from "../../backend/apis.js";
 import defaultAvatar from "../../assets/icons/User Icon.png";
 import { IoIosSend } from "react-icons/io";
+import { FiEdit2 } from "react-icons/fi";
 
 const ListDetail = () => {
     const { listId } = useParams();
@@ -30,6 +31,13 @@ const ListDetail = () => {
     const navigationOwnerId = location.state?.ownerId || navigationOwner?._id || navigationOwner?.id;
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const [isEditing, setIsEditing] = useState(false);
+    const [editedList, setEditedList] = useState(null);
+    const [saving, setSaving] = useState(false);
+    const [saveError, setSaveError] = useState("");
+    const loggedInUserId = getUserId();
+    const normalizedOwnerId = list?.ownerId || navigationOwnerId || owner?._id || owner?.id;
+    const isOwner = loggedInUserId && normalizedOwnerId && String(normalizedOwnerId) === String(loggedInUserId);
 
     const handleNavigate = (targetPage) => {
         setPage(targetPage);
@@ -129,6 +137,22 @@ const ListDetail = () => {
             email,
         };
     }, [normalizeFriendId]);
+
+    const normalizeEditableItems = useCallback((items = []) => {
+        if (!Array.isArray(items) || items.length === 0) return [{ title: "", image: "" }];
+        return items.map((item) => ({
+            title: item?.title || item?.name || "",
+            image: item?.image || item?.img || item?.url || "",
+        }));
+    }, []);
+
+    const prepareEditableList = useCallback((baseList) => {
+        if (!baseList) return null;
+        return {
+            title: baseList?.title || baseList?.name || "",
+            listItems: normalizeEditableItems(baseList?.items || baseList?.listItems || []),
+        };
+    }, [normalizeEditableItems]);
 
     const fetchFriends = useCallback(async () => {
         setFriendsLoading(true);
@@ -238,6 +262,61 @@ const ListDetail = () => {
         setSelectedFriends((prev) => ({ ...prev, [friendId]: !prev[friendId] }));
     };
 
+    const enterEditMode = () => {
+        if (!list) return;
+        setEditedList(prepareEditableList(list));
+        setIsEditing(true);
+        setShareOpen(false);
+        setSaveError("");
+    };
+
+    const cancelEditMode = () => {
+        setIsEditing(false);
+        setEditedList(null);
+        setSaving(false);
+        setSaveError("");
+    };
+
+    const hasEmptyItem = editedList?.listItems?.some((item) => !item.title?.trim());
+    const canSave = Boolean(
+        isEditing &&
+        editedList &&
+        editedList.title?.trim().length > 0 &&
+        editedList.listItems?.length === 10 &&
+        !hasEmptyItem
+    );
+
+    const handleSaveList = async () => {
+        if (!canSave) return;
+        setSaving(true);
+        setSaveError("");
+        const listIdentifier = list?._id || list?.id || listId;
+        const payload = {
+            title: editedList.title.trim(),
+            items: editedList.listItems,
+        };
+        try {
+            const response = await updateListAPI(listIdentifier, payload);
+            const potentialError = response?.error || response?.message;
+            if (response === null || response === undefined || (typeof potentialError === "string" && potentialError.toLowerCase().includes("error"))) {
+                throw new Error(potentialError || "Unable to save list");
+            }
+            setList((prev) => ({
+                ...(prev || {}),
+                title: payload.title,
+                items: payload.items,
+                ownerId: normalizedOwnerId,
+            }));
+            setIsEditing(false);
+            setEditedList(null);
+        } catch (err) {
+            console.error("Failed to save list", err);
+            setSaveError("Unable to save changes right now.");
+        } finally {
+            setSaving(false);
+        }
+    };
+
     const handleShareList = async () => {
         const listIdentifier = list?._id || list?.id || listId;
         if (!listIdentifier) return;
@@ -290,6 +369,92 @@ const ListDetail = () => {
                 )}
                 {!loading && !error && list && (
                     <div className="list-detail-wrapper">
+                        <div className="list-detail-actions">
+                            {isOwner && (
+                                <button
+                                    type="button"
+                                    className={`edit-list-button ${isEditing ? "active" : ""}`}
+                                    onClick={isEditing ? cancelEditMode : enterEditMode}
+                                >
+                                    <FiEdit2 size={16} />
+                                    <span>{isEditing ? "Editing" : "Edit list"}</span>
+                                </button>
+                            )}
+                            <div className="actions-right">
+                                {isEditing && (
+                                    <div className="save-controls">
+                                        <button
+                                            type="button"
+                                            className={`save-list-button ${canSave ? "ready" : ""}`}
+                                            disabled={!canSave || saving}
+                                            onClick={handleSaveList}
+                                        >
+                                            {saving ? "Saving..." : "Save"}
+                                        </button>
+                                        {!canSave && (
+                                            <p className="save-status muted">Add a title and exactly 10 items to save.</p>
+                                        )}
+                                        {saveError && <p className="save-status error">{saveError}</p>}
+                                    </div>
+                                )}
+                                <div className="share-dropdown-wrapper" ref={shareRef}>
+                                    <div type="button" className="share-list-button" onClick={toggleShareDropdown} aria-expanded={shareOpen} aria-haspopup="true">
+                                        <IoIosSend size={26} color="black"/>
+                                    </div>
+                                    {shareOpen && (
+                                        <div className="share-dropdown">
+                                            <div className="share-dropdown-header">
+                                                <p>Share this list</p>
+                                            </div>
+                                            {friendsLoading && <p className="share-dropdown-status">Loading friends...</p>}
+                                            {!friendsLoading && friendsError && <p className="share-dropdown-status error">{friendsError}</p>}
+                                            {!friendsLoading && !friendsError && friends.length === 0 && (
+                                                <p className="share-dropdown-status">No friends available to share with yet.</p>
+                                            )}
+                                            {!friendsLoading && !friendsError && friends.length > 0 && (
+                                                <div className="share-friends-list">
+                                                    {friends.map((friend) => {
+                                                        const friendId = friend?._id || friend?.id;
+                                                        const isSelected = Boolean(friendId && selectedFriends[friendId]);
+                                                        return (
+                                                            <label key={friendId || friend?.username} className={`share-friend-option ${isSelected ? "selected" : ""}`}>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={isSelected}
+                                                                    onChange={() => toggleFriendSelection(friendId)}
+                                                                />
+                                                                <div className="share-friend-avatar">
+                                                                    <img src={friend?.profilePic || friend?.profilePicture || defaultAvatar} alt={friend?.username || "Friend"} />
+                                                                </div>
+                                                                <div className="share-friend-meta">
+                                                                    <p className="share-friend-name">{friend?.username || friend?.name || "Friend"}</p>
+                                                                    {friend?.email && <span className="share-friend-subtext">{friend.email}</span>}
+                                                                </div>
+                                                            </label>
+                                                        );
+                                                    })}
+                                                </div>
+                                            )}
+                                            <div className="share-dropdown-footer">
+                                                <button
+                                                    type="button"
+                                                    className="share-action"
+                                                    onClick={handleShareList}
+                                                    disabled={shareStatus.state === "pending" || friends.length === 0 || friendsLoading}
+                                                >
+                                                    {shareStatus.state === "pending" ? "Sharing..." : "Share"}
+                                                </button>
+                                                {shareStatus.message && (
+                                                    <p className={`share-dropdown-status ${shareStatus.state}`}>
+                                                        {shareStatus.message}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
                         <div className="list-share-card">
                             {(list.ownerId || owner) && (
                                 <div
@@ -307,63 +472,11 @@ const ListDetail = () => {
                                     </div>
                                 </div>
                             )}
-                            <List list={list} />
-                        </div>
-                        <div className="share-dropdown-wrapper" ref={shareRef}>
-                            <div type="button" className="share-list-button" onClick={toggleShareDropdown} aria-expanded={shareOpen} aria-haspopup="true">
-                                <IoIosSend size={30} color="black"/>
-                            </div>
-                            {shareOpen && (
-                                <div className="share-dropdown">
-                                    <div className="share-dropdown-header">
-                                        <p>Share this list</p>
-                                    </div>
-                                    {friendsLoading && <p className="share-dropdown-status">Loading friends...</p>}
-                                    {!friendsLoading && friendsError && <p className="share-dropdown-status error">{friendsError}</p>}
-                                    {!friendsLoading && !friendsError && friends.length === 0 && (
-                                        <p className="share-dropdown-status">No friends available to share with yet.</p>
-                                    )}
-                                    {!friendsLoading && !friendsError && friends.length > 0 && (
-                                        <div className="share-friends-list">
-                                            {friends.map((friend) => {
-                                                const friendId = friend?._id || friend?.id;
-                                                const isSelected = Boolean(friendId && selectedFriends[friendId]);
-                                                return (
-                                                    <label key={friendId || friend?.username} className={`share-friend-option ${isSelected ? "selected" : ""}`}>
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={isSelected}
-                                                            onChange={() => toggleFriendSelection(friendId)}
-                                                        />
-                                                        <div className="share-friend-avatar">
-                                                            <img src={friend?.profilePic || friend?.profilePicture || defaultAvatar} alt={friend?.username || "Friend"} />
-                                                        </div>
-                                                        <div className="share-friend-meta">
-                                                            <p className="share-friend-name">{friend?.username || friend?.name || "Friend"}</p>
-                                                            {friend?.email && <span className="share-friend-subtext">{friend.email}</span>}
-                                                        </div>
-                                                    </label>
-                                                );
-                                            })}
-                                        </div>
-                                    )}
-                                    <div className="share-dropdown-footer">
-                                        <button
-                                            type="button"
-                                            className="share-action"
-                                            onClick={handleShareList}
-                                            disabled={shareStatus.state === "pending" || friends.length === 0 || friendsLoading}
-                                        >
-                                            {shareStatus.state === "pending" ? "Sharing..." : "Share"}
-                                        </button>
-                                        {shareStatus.message && (
-                                            <p className={`share-dropdown-status ${shareStatus.state}`}>
-                                                {shareStatus.message}
-                                            </p>
-                                        )}
-                                    </div>
-                                </div>
-                            )}
+                            <List
+                                list={list}
+                                editable={isEditing}
+                                setList={isEditing ? setEditedList : undefined}
+                            />
                         </div>
                     </div>
                 )}
