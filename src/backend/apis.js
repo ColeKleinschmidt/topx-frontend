@@ -281,6 +281,25 @@ export const searchListAPI = async (title) => {
     return response;
 }
 
+export const removeNotificationAPI = async (id) => {
+    const data = {
+        notificationId: id
+    }
+    const backend_query = await fetch(`${ENDPOINT}removeNotification`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Accept': 'application/json',
+            'Accept-encoding': 'gzip, deflate',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data),
+    });
+    const response = await backend_query.json();
+    console.log(response);
+    return response;
+}
+
 export const getListsAPI = async (page, limit) => {
     const data = {
         page: page,
