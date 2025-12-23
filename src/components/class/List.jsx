@@ -2,7 +2,7 @@ import "../css/List.css";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { findItemsAPI } from "../../backend/apis.js";
 
-const List = ({ list, setList, editable = false, onClick }) => {
+const List = ({ list, setList, editable = false, onClick, showSubmitButton = false, onSubmit }) => {
 
     const [newList, setNewList] = useState({ title: "", listItems: [{ title: "", image: "" }] });
     const [searchResults, setSearchResults] = useState({});
@@ -368,6 +368,8 @@ const List = ({ list, setList, editable = false, onClick }) => {
         }
     };
 
+    const canSubmitList = isTitleValid && newList.listItems.every((item) => item.title.trim() && item.image);
+
     return (
         <div
             ref={containerRef}
@@ -415,6 +417,16 @@ const List = ({ list, setList, editable = false, onClick }) => {
                     )}
                     {!isTitleValid && (
                         <p className="input-hint">Title must be 1-25 characters</p>
+                    )}
+                    {showSubmitButton && (
+                        <button
+                            type="button"
+                            className={`submit-list ${canSubmitList ? "active" : ""}`}
+                            disabled={!canSubmitList}
+                            onClick={() => onSubmit?.(newList)}
+                        >
+                            Submit
+                        </button>
                     )}
                 </div>
             )}
