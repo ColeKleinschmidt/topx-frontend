@@ -128,7 +128,7 @@ export const getUsersAPI = async (page = 1, limit = 12) => {
     return response;
 }
 
-const uploadProfilePictureAPI = async (file) => {
+export const uploadProfilePictureAPI = async (file) => {
     const formData = new FormData();
     formData.append("image", file);
 

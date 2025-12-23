@@ -6,6 +6,7 @@ import {
     deleteCookie,
     getAllNotificationsAPI,
     getBlockedUsersAPI,
+    uploadProfilePictureAPI,
     getUserByIdAPI,
     getUserId,
     getUserListsAPI,
@@ -18,7 +19,7 @@ import List from "../../components/class/List.jsx";
 import defaultAvatar from "../../assets/icons/User Icon.png";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
-import { FiMoreVertical } from "react-icons/fi";
+import { FiMoreVertical, FiUploadCloud } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import { setNotifications } from "../../store/notificationsSlice.js";
 import { setBlockedUsers } from "../../store/blockedUsersSlice.js";
@@ -56,6 +57,8 @@ const Profile = () => {
     const [menuOpen, setMenuOpen] = useState(false);
     const menuRef = useRef(null);
     const friendsMenuRef = useRef(null);
+    const fileInputRef = useRef(null);
+    const [uploading, setUploading] = useState(false);
 
     const refreshNotifications = useCallback(async () => {
         try {
@@ -325,12 +328,72 @@ const Profile = () => {
         navigate(`/list/${listId}`, { state: { owner: user, ownerId: targetUserId } });
     };
 
+    const handleAvatarClick = () => {
+        if (!viewingOwnProfile) return;
+        fileInputRef.current?.click();
+    };
+
+    const handleFileChange = async (event) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+        setUploading(true);
+        try {
+            const response = await uploadProfilePictureAPI(file);
+            if (response?.imageUrl) {
+                setUser((prev) => {
+                    const nextUser = { ...(prev || {}), profilePic: response.imageUrl, profilePicture: response.imageUrl };
+                    const stored = localStorage.getItem("user");
+                    if (stored) {
+                        try {
+                            const parsed = JSON.parse(stored);
+                            const updated = { ...parsed, profilePic: response.imageUrl, profilePicture: response.imageUrl };
+                            localStorage.setItem("user", JSON.stringify(updated));
+                        } catch (error) {
+                            console.error("Failed to update local user cache", error);
+                        }
+                    }
+                    return nextUser;
+                });
+            } else {
+                console.error("Upload did not return an imageUrl", response);
+            }
+        } catch (error) {
+            console.error("Failed to upload profile picture", error);
+        } finally {
+            setUploading(false);
+            event.target.value = "";
+        }
+    };
+
     return (
         <div className="profile-page">
             <div className="profile-header">
                 <div className="profile-header-inner">
-                    <div className="avatar hero-avatar">
-                        <img src={user?.profilePic || user?.profilePicture || defaultAvatar} alt={`${user?.username || "User"} avatar`} />
+                    <div className="avatar-wrapper">
+                        <div className="avatar hero-avatar">
+                            <img src={user?.profilePic || user?.profilePicture || defaultAvatar} alt={`${user?.username || "User"} avatar`} />
+                        </div>
+                        {viewingOwnProfile && (
+                            <>
+                                <button
+                                    type="button"
+                                    className="upload-indicator"
+                                    onClick={handleAvatarClick}
+                                    disabled={uploading}
+                                    aria-label="Upload profile picture"
+                                >
+                                    <FiUploadCloud size={18} />
+                                    <span>{uploading ? "Uploading..." : "Upload"}</span>
+                                </button>
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden-file-input"
+                                    onChange={handleFileChange}
+                                />
+                            </>
+                        )}
                     </div>
                     <div className="user-meta hero-meta">
                         <h2>{user?.username || "User"}</h2>
