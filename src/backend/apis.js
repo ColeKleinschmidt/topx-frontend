@@ -59,7 +59,18 @@ export const loginAPI = async (email, password) => {
         window.dispatchEvent(new CustomEvent("userLoggedIn", { detail: { user: response.user } }));
         return response;
     } else {
-        return { message: 'nr' };
+        let message = "Unable to log in.";
+
+        try {
+            const errorResponse = await backend_query.json();
+            if (errorResponse?.message) {
+                message = errorResponse.message;
+            }
+        } catch (error) {
+            console.error("Error reading login failure response:", error);
+        }
+
+        return { message, status: backend_query.status };
     }
 };
 

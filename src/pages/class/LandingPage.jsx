@@ -11,6 +11,7 @@ export default function LandingPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [username, setUsername] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
 
     const navigate = useNavigate();
 
@@ -26,6 +27,7 @@ export default function LandingPage() {
         setEmail("");
         setPassword("");
         setUsername("");
+        setErrorMessage("");
     },[page]);
 
     const signUp = () => {
@@ -48,7 +50,7 @@ export default function LandingPage() {
 
     const login = () => {
         if (email.trim() === "" || password === "") {
-            alert("Please fill in all fields");
+            setErrorMessage("Please fill in all fields");
             return;
         }
 
@@ -56,10 +58,12 @@ export default function LandingPage() {
             if (response.user !== undefined && response.user !== null) {
                 // If successful, navigate to the feed page
                 localStorage.setItem("user", JSON.stringify(response.user));
+                setErrorMessage("");
                 navigate("/myLists");
             }else {
-                // If unsuccessful, alert the user
-                alert(response.message);
+                // If unsuccessful, surface the error message
+                const message = response?.message || "Unable to log in. Please try again.";
+                setErrorMessage(message);
             }
         })
     }
@@ -98,10 +102,12 @@ export default function LandingPage() {
                     <h2 id="form-title">Log In</h2>
                     <form>
                         <label htmlFor="login-email" className="form-label">Email</label>
-                        <input onChange={(e) => setEmail(e.target.value)} type="email" id="login-email" placeholder="Enter your email" className="form-input" />
+                        <input onChange={(e) => {setEmail(e.target.value); setErrorMessage("");}} type="email" id="login-email" placeholder="Enter your email" className="form-input" />
 
                         <label htmlFor="login-password" className="form-label">Password</label>
-                        <input onChange={(e) => setPassword(e.target.value)} type="password" id="login-password" placeholder="Enter your password" className="form-input" />
+                        <input onChange={(e) => {setPassword(e.target.value); setErrorMessage("");}} type="password" id="login-password" placeholder="Enter your password" className="form-input" />
+
+                        {errorMessage && <div className="error-banner">{errorMessage}</div>}
 
                         <button onClick={() => login()} type="button" className="form-button" id="login-button">Log In</button>
                     </form>
