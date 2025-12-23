@@ -456,7 +456,7 @@ export const getUserByIdAPI = async (id) => {
     return response;
 }
 
-const createListAPI = async (list) => {
+export const createListAPI = async (list) => {
     const backend_query = await fetch(`${ENDPOINT}createList`, {
         method: 'POST',
         credentials: 'include',

@@ -2,6 +2,7 @@ import "../css/Profile.css";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
     acceptFriendRequestAPI,
+    createListAPI,
     declineFriendRequestAPI,
     deleteCookie,
     getAllNotificationsAPI,
@@ -335,6 +336,28 @@ const Profile = () => {
         navigate(`/list/${listId}`, { state: { owner: user, ownerId: targetUserId } });
     };
 
+    const normalizeList = useCallback((createdList) => {
+        if (!createdList) return null;
+        const items = createdList.items || createdList.listItems || [];
+        return { ...createdList, items };
+    }, []);
+
+    const handleCreateList = async (newList) => {
+        if (!newList) return;
+        try {
+            const response = await createListAPI(newList);
+            if (response?.list) {
+                const normalizedList = normalizeList(response.list);
+                setLists((prev) => [normalizedList, ...prev]);
+                setShowNewList(false);
+            } else if (response?.message) {
+                alert(response.message);
+            }
+        } catch (error) {
+            console.error("Failed to create list", error);
+        }
+    };
+
     const handleAvatarClick = () => {
         if (!viewingOwnProfile) return;
         fileInputRef.current?.click();
@@ -484,7 +507,7 @@ const Profile = () => {
                 {viewingOwnProfile && showNewList && (
                     <div className="profile-new-list-container">
                         <div className="newListContainer animate profile-new-list-card">
-                            <List editable={true} showSubmitButton />
+                            <List editable={true} showSubmitButton onSubmit={handleCreateList} />
                         </div>
                     </div>
                 )}
