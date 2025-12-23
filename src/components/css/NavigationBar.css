@@ -158,7 +158,7 @@
 }
 
 .notification-item {
-    width: 100%;
+    width: calc(100% - 20px);
     background: #f9fafb;
     border: 1px solid #e5e7eb;
     border-radius: 10px;
@@ -257,7 +257,7 @@
     background: #f8fafc;
     cursor: pointer;
     color: inherit;
-    width: 100%;
+    width: calc(100% - 20px);
 }
 
 .share-notification-header {
