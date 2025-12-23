@@ -320,6 +320,26 @@ export const getListsAPI = async (page, limit) => {
     return response;
 }
 
+export const getFriendsListsAPI = async (page, limit) => {
+    const data = {
+        page: page,
+        limit: limit
+    }
+    const backend_query = await fetch(`${ENDPOINT}getFriendsLists`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Accept': 'application/json',
+            'Accept-encoding': 'gzip, deflate',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data),
+    });
+    const response = await backend_query.json();
+    console.log(response);
+    return response;
+}
+
 export const getListAPI = async (listId) => {
     const data = {
         listId

@@ -1,6 +1,6 @@
 import "../css/FriendsLists.css";
 import { useEffect, useRef, useState } from 'react';
-import { getListsAPI } from "../../backend/apis.js";
+import { getFriendsListsAPI } from "../../backend/apis.js";
 import List from "../../components/class/List.jsx";
 import { useNavigate } from "react-router-dom";
 
@@ -18,7 +18,7 @@ const FriendsLists = ({ onFindFriends = () => {} }) => {
     },[])
 
     const getLists = () => {
-        getListsAPI(page, 10).then((response) => {
+        getFriendsListsAPI(page, 10).then((response) => {
             if (response.lists !== undefined && response.lists !== null) {
                 setLists((prev) => {
                     const combinedLists = [...prev, ...response.lists];
