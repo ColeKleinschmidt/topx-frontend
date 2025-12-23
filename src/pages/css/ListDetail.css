@@ -21,6 +21,95 @@
     position: relative;
 }
 
+.list-detail-actions {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+}
+
+.actions-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+}
+
+.edit-list-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    background: #f7f7f8;
+    cursor: pointer;
+    color: #111827;
+    transition: border-color 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
+}
+
+.edit-list-button:hover {
+    border-color: #c084fc;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.05);
+    background: #f5f3ff;
+}
+
+.edit-list-button.active {
+    border-color: #c084fc;
+    background: linear-gradient(135deg, #f3e8ff, #ede9fe);
+    color: #6b21a8;
+}
+
+.save-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.save-list-button {
+    padding: 8px 14px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    background: #e5e7eb;
+    color: #6b7280;
+    cursor: not-allowed;
+    transition: transform 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
+}
+
+.save-list-button.ready {
+    background: linear-gradient(135deg, #7c3aed, #c084fc);
+    color: #ffffff;
+    border-color: transparent;
+    cursor: pointer;
+}
+
+.save-list-button.ready:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 28px rgba(124, 58, 237, 0.25);
+}
+
+.save-list-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+.save-status {
+    margin: 0;
+    font-size: 12px;
+}
+
+.save-status.error {
+    color: #b91c1c;
+}
+
+.save-status.muted {
+    color: #6b7280;
+}
+
 .list-share-card {
     width: 100%;
     position: relative;
@@ -30,14 +119,21 @@
 }
 
 .share-dropdown-wrapper {
-    position: absolute;
-    top: 30px;
-    right: 30px;
+    position: relative;
     z-index: 10;
 }
 
 .share-list-button {
-
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    background: #f7f7f8;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
 }
 
 .share-list-button:hover {

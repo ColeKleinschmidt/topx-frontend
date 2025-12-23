@@ -1,5 +1,5 @@
 import "../css/List.css";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { findItemsAPI } from "../../backend/apis.js";
 
 const List = ({ list, setList, editable = false, onClick }) => {
@@ -12,8 +12,70 @@ const List = ({ list, setList, editable = false, onClick }) => {
     const searchTimeouts = useRef({});
     const inputRefs = useRef([]);
     const [activeInputIndex, setActiveInputIndex] = useState(null);
+    const [dragIndex, setDragIndex] = useState(null);
+    const [dragOverIndex, setDragOverIndex] = useState(null);
+    const hydratedListIdRef = useRef(null);
 
     const isTitleValid = newList.title.trim().length > 0 && newList.title.trim().length <= 25;
+    const normalizeItems = useCallback((items) => {
+        if (!Array.isArray(items) || items.length === 0) {
+            return [{ title: "", image: "" }];
+        }
+        return items.map((item) => ({
+            title: item?.title || item?.name || "",
+            image: item?.image || item?.img || item?.url || "",
+        }));
+    }, []);
+
+    useEffect(() => {
+        if (!editable) {
+            hydratedListIdRef.current = null;
+            return;
+        }
+        if (!list) return;
+
+        const incomingId = list?._id || list?.id || list?.listId || "editable-list";
+        const normalizedItems = normalizeItems(list.items || list.listItems);
+        const normalizedTitle = list.title || list.name || "";
+        const shouldHydrate = hydratedListIdRef.current !== incomingId;
+
+        if (shouldHydrate) {
+            setNewList({ title: normalizedTitle, listItems: normalizedItems });
+            hydratedListIdRef.current = incomingId;
+        }
+    }, [editable, list, normalizeItems]);
+
+    const reorderIndexMap = (map, from, to) => {
+        const keys = Object.keys(map);
+        if (keys.length === 0) return map;
+        const maxIndex = Math.max(...keys.map((key) => Number(key)), 0);
+        const ordered = Array.from({ length: maxIndex + 1 }, (_, idx) => map[idx]);
+        if (from < 0 || to < 0 || from >= ordered.length || to >= ordered.length) {
+            return map;
+        }
+        const [moved] = ordered.splice(from, 1);
+        ordered.splice(to, 0, moved);
+        const result = {};
+        ordered.forEach((value, idx) => {
+            if (value !== undefined) {
+                result[idx] = value;
+            }
+        });
+        return result;
+    };
+
+    const shiftIndexMapAfterRemoval = (map, removedIndex) => {
+        const result = {};
+        Object.keys(map).forEach((key) => {
+            const numericKey = Number(key);
+            if (numericKey < removedIndex) {
+                result[numericKey] = map[numericKey];
+            } else if (numericKey > removedIndex) {
+                result[numericKey - 1] = map[numericKey];
+            }
+        });
+        return result;
+    };
 
     useEffect(() => {
         if (setList) {
@@ -115,17 +177,82 @@ const List = ({ list, setList, editable = false, onClick }) => {
             });
             return { ...prev, listItems: normalizedItems };
         });
-        setSearchResults((prev) => {
-            const next = { ...prev };
-            delete next[index];
-            return next;
+        setSearchResults((prev) => shiftIndexMapAfterRemoval(prev, index));
+        setIsSearching((prev) => shiftIndexMapAfterRemoval(prev, index));
+        setDragIndex(null);
+        setDragOverIndex(null);
+    };
+
+    const handleReorderItems = (fromIndex, toIndex) => {
+        setNewList((prev) => {
+            if (!prev.listItems || prev.listItems.length === 0) return prev;
+            if (fromIndex === toIndex) return prev;
+            if (
+                fromIndex < 0 ||
+                toIndex < 0 ||
+                fromIndex >= prev.listItems.length ||
+                toIndex >= prev.listItems.length
+            ) {
+                return prev;
+            }
+            const items = [...prev.listItems];
+            const [moved] = items.splice(fromIndex, 1);
+            items.splice(toIndex, 0, moved);
+            return { ...prev, listItems: items };
+        });
+        setSearchResults((prev) => reorderIndexMap(prev, fromIndex, toIndex));
+        setIsSearching((prev) => reorderIndexMap(prev, fromIndex, toIndex));
+        setActiveInputIndex((prevIndex) => {
+            if (prevIndex === null) return prevIndex;
+            if (prevIndex === fromIndex) return toIndex;
+            if (fromIndex < toIndex && prevIndex > fromIndex && prevIndex <= toIndex) return prevIndex - 1;
+            if (fromIndex > toIndex && prevIndex < fromIndex && prevIndex >= toIndex) return prevIndex + 1;
+            return prevIndex;
         });
     };
 
+    const handleDragStart = (event, index) => {
+        if (event?.dataTransfer) {
+            event.dataTransfer.effectAllowed = "move";
+            // Some browsers require data to begin a drag operation
+            event.dataTransfer.setData("text/plain", String(index));
+        }
+        setDragIndex(index);
+        setDragOverIndex(index);
+    };
+
+    const handleDragOver = (event, index) => {
+        event.preventDefault();
+        if (dragIndex === null || dragIndex === index) return;
+        setDragOverIndex(index);
+    };
+
+    const handleDrop = (event, index) => {
+        event.preventDefault();
+        if (dragIndex === null) return;
+        if (dragIndex !== index) {
+            handleReorderItems(dragIndex, index);
+        }
+        setDragIndex(null);
+        setDragOverIndex(null);
+    };
+
+    const handleDragEnd = () => {
+        setDragIndex(null);
+        setDragOverIndex(null);
+    };
+
     const RowItem = ({ number, item, index }) => {
+        const rowClasses = [
+            "row-item",
+            editable ? "editable" : "",
+            dragIndex === index ? "dragging" : "",
+            dragOverIndex === index ? "drag-over" : "",
+        ].filter(Boolean).join(" ");
+
         if (!editable) {
             return (
-                <div className="row-item">
+                <div className={rowClasses}>
                     <div className="row-number">
                         <h1>{number}</h1>
                     </div>
@@ -136,7 +263,25 @@ const List = ({ list, setList, editable = false, onClick }) => {
         }
 
         return (
-            <div className="row-item editable">
+            <div
+                className={rowClasses}
+                draggable
+                onDragStart={(event) => handleDragStart(event, index)}
+                onDragOver={(event) => handleDragOver(event, index)}
+                onDrop={(event) => handleDrop(event, index)}
+                onDragEnter={() => setDragOverIndex(index)}
+                onDragLeave={() => setDragOverIndex(null)}
+                onDragEnd={handleDragEnd}
+            >
+                <button
+                    type="button"
+                    className="drag-handle"
+                    aria-label="Reorder item"
+                    onMouseDown={(event) => event.stopPropagation()}
+                    onClick={(event) => event.preventDefault()}
+                >
+                    <span className="drag-dots" aria-hidden="true">⋮⋮</span>
+                </button>
                 <div className="row-number">
                     <h1>{number}</h1>
                 </div>
@@ -256,10 +401,17 @@ const List = ({ list, setList, editable = false, onClick }) => {
             ))}
             {editable && (
                 <div className="list-actions">
-                    {newList.listItems.length < 10 ? (
-                        <button type="button" className="add-item" onClick={handleAddItem} disabled={!canAddNewItem()} title={!canAddNewItem() ? "Select a suggestion to enable adding another item" : ""}>+ Add item</button>
-                    ) : (
-                        <button type="button" className={`submit-list ${isTitleValid ? "active" : ""}`} disabled={!isTitleValid}>Submit</button>
+                    <button
+                        type="button"
+                        className="add-item"
+                        onClick={handleAddItem}
+                        disabled={!canAddNewItem() || newList.listItems.length >= 10}
+                        title={!canAddNewItem() ? "Select a suggestion to enable adding another item" : ""}
+                    >
+                        + Add item
+                    </button>
+                    {newList.listItems.length >= 10 && (
+                        <p className="input-hint">Maximum of 10 items reached.</p>
                     )}
                     {!isTitleValid && (
                         <p className="input-hint">Title must be 1-25 characters</p>
