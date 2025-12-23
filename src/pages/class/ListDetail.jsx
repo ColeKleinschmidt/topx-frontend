@@ -290,80 +290,80 @@ const ListDetail = () => {
                 )}
                 {!loading && !error && list && (
                     <div className="list-detail-wrapper">
-                        {(list.ownerId || owner) && (
-                            <button
-                                type="button"
-                                className="list-owner"
-                                onClick={() => navigate(`/profile/${(owner && owner._id) || list.ownerId}`)}
-                            >
-                                <div className="owner-avatar">
-                                    <img src={owner?.profilePic || owner?.profilePicture || defaultAvatar} alt={`${owner?.username || "User"} avatar`} />
-                                </div>
-                                <div className="owner-meta">
-                                    <p className="owner-label">List by</p>
-                                    <p className="owner-name">{owner?.username || "View profile"}</p>
-                                    {ownerLoading && <span className="owner-loading">Loading user...</span>}
-                                </div>
-                            </button>
-                        )}
                         <div className="list-share-card" ref={shareRef}>
-                            <List list={list} />
-                            <div className="share-dropdown-wrapper">
-                                <div type="button" className="share-list-button" onClick={toggleShareDropdown} aria-expanded={shareOpen} aria-haspopup="true">
-                                    <IoIosSend size={30} color="black"/>
-                                </div>
-                                {shareOpen && (
-                                    <div className="share-dropdown">
-                                        <div className="share-dropdown-header">
-                                            <p>Share this list</p>
-                                        </div>
-                                        {friendsLoading && <p className="share-dropdown-status">Loading friends...</p>}
-                                        {!friendsLoading && friendsError && <p className="share-dropdown-status error">{friendsError}</p>}
-                                        {!friendsLoading && !friendsError && friends.length === 0 && (
-                                            <p className="share-dropdown-status">No friends available to share with yet.</p>
-                                        )}
-                                        {!friendsLoading && !friendsError && friends.length > 0 && (
-                                            <div className="share-friends-list">
-                                                {friends.map((friend) => {
-                                                    const friendId = friend?._id || friend?.id;
-                                                    const isSelected = Boolean(friendId && selectedFriends[friendId]);
-                                                    return (
-                                                        <label key={friendId || friend?.username} className={`share-friend-option ${isSelected ? "selected" : ""}`}>
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={isSelected}
-                                                                onChange={() => toggleFriendSelection(friendId)}
-                                                            />
-                                                            <div className="share-friend-avatar">
-                                                                <img src={friend?.profilePic || friend?.profilePicture || defaultAvatar} alt={friend?.username || "Friend"} />
-                                                            </div>
-                                                            <div className="share-friend-meta">
-                                                                <p className="share-friend-name">{friend?.username || friend?.name || "Friend"}</p>
-                                                                {friend?.email && <span className="share-friend-subtext">{friend.email}</span>}
-                                                            </div>
-                                                        </label>
-                                                    );
-                                                })}
-                                            </div>
-                                        )}
-                                        <div className="share-dropdown-footer">
-                                            <button
-                                                type="button"
-                                                className="share-action"
-                                                onClick={handleShareList}
-                                                disabled={shareStatus.state === "pending" || friends.length === 0 || friendsLoading}
-                                            >
-                                                {shareStatus.state === "pending" ? "Sharing..." : "Share"}
-                                            </button>
-                                            {shareStatus.message && (
-                                                <p className={`share-dropdown-status ${shareStatus.state}`}>
-                                                    {shareStatus.message}
-                                                </p>
-                                            )}
-                                        </div>
+                            {(list.ownerId || owner) && (
+                                <div
+                                    type="button"
+                                    className="list-owner"
+                                    onClick={() => navigate(`/profile/${(owner && owner._id) || list.ownerId}`)}
+                                >
+                                    <div className="owner-avatar">
+                                        <img src={owner?.profilePic || owner?.profilePicture || defaultAvatar} alt={`${owner?.username || "User"} avatar`} />
                                     </div>
-                                )}
+                                    <div className="owner-meta">
+                                        <p className="owner-label">Author</p>
+                                        <p className="owner-name">{owner?.username || "View profile"}</p>
+                                        {ownerLoading && <span className="owner-loading">Loading user...</span>}
+                                    </div>
+                                </div>
+                            )}
+                            <List list={list} />
+                        </div>
+                        <div className="share-dropdown-wrapper">
+                            <div type="button" className="share-list-button" onClick={toggleShareDropdown} aria-expanded={shareOpen} aria-haspopup="true">
+                                <IoIosSend size={30} color="black"/>
                             </div>
+                            {shareOpen && (
+                                <div className="share-dropdown">
+                                    <div className="share-dropdown-header">
+                                        <p>Share this list</p>
+                                    </div>
+                                    {friendsLoading && <p className="share-dropdown-status">Loading friends...</p>}
+                                    {!friendsLoading && friendsError && <p className="share-dropdown-status error">{friendsError}</p>}
+                                    {!friendsLoading && !friendsError && friends.length === 0 && (
+                                        <p className="share-dropdown-status">No friends available to share with yet.</p>
+                                    )}
+                                    {!friendsLoading && !friendsError && friends.length > 0 && (
+                                        <div className="share-friends-list">
+                                            {friends.map((friend) => {
+                                                const friendId = friend?._id || friend?.id;
+                                                const isSelected = Boolean(friendId && selectedFriends[friendId]);
+                                                return (
+                                                    <label key={friendId || friend?.username} className={`share-friend-option ${isSelected ? "selected" : ""}`}>
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={isSelected}
+                                                            onChange={() => toggleFriendSelection(friendId)}
+                                                        />
+                                                        <div className="share-friend-avatar">
+                                                            <img src={friend?.profilePic || friend?.profilePicture || defaultAvatar} alt={friend?.username || "Friend"} />
+                                                        </div>
+                                                        <div className="share-friend-meta">
+                                                            <p className="share-friend-name">{friend?.username || friend?.name || "Friend"}</p>
+                                                            {friend?.email && <span className="share-friend-subtext">{friend.email}</span>}
+                                                        </div>
+                                                    </label>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+                                    <div className="share-dropdown-footer">
+                                        <button
+                                            type="button"
+                                            className="share-action"
+                                            onClick={handleShareList}
+                                            disabled={shareStatus.state === "pending" || friends.length === 0 || friendsLoading}
+                                        >
+                                            {shareStatus.state === "pending" ? "Sharing..." : "Share"}
+                                        </button>
+                                        {shareStatus.message && (
+                                            <p className={`share-dropdown-status ${shareStatus.state}`}>
+                                                {shareStatus.message}
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}

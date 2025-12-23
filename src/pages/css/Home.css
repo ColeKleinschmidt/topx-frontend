@@ -1,6 +1,7 @@
 .home-container {
     width: 100%;
     min-height: 100vh;
+    margin-right: -50px;
 }
 
 .home-content {
@@ -11,6 +12,7 @@
 }
 
 .newList {
+    position: absolute;
     border-radius: 50px;
     background-color: white;
     box-shadow: 0px 2px 10px 5px gray;
@@ -19,8 +21,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    position: absolute;
-    bottom: 30px;
+    top: 130px;
     right: 60px;
     z-index: 100;
     color: #FF6B6B;
@@ -68,7 +69,6 @@
     box-shadow: 0px 2px 50px 4px gray;
 
     /* Hidden/off-screen state */
-    transform: translate(50vw, 50vh) scale(0.3);
     opacity: 0;
 
     transition: transform 200ms ease, opacity 200ms ease;
