@@ -52,11 +52,9 @@ const FriendsLists = ({ onFindFriends = () => {} }) => {
         <div className="friends-lists-container">
             <div className="friends-lists-top-bar">
                 <h2 className="friends-lists-header">Friends Lists</h2>
-                {!isEmpty && (
-                    <button className="find-new-friends-button" onClick={onFindFriends}>
-                        Find new Friends
-                    </button>
-                )}
+                <button className="find-new-friends-button" onClick={onFindFriends}>
+                    Find new Friends
+                </button>
             </div>
             <div className="lists">
                 {lists.map((list, index) => (
@@ -73,9 +71,6 @@ const FriendsLists = ({ onFindFriends = () => {} }) => {
                         <p className="empty-text">
                             Find people with similar tastes and follow their lists to spark new ideas.
                         </p>
-                        <button className="friends-primary-action" onClick={onFindFriends}>
-                            Find friends
-                        </button>
                     </div>
                 )}
             </div>
