@@ -289,12 +289,11 @@ const FindFriends = ({ onBackToFriends = () => {}, onNotificationsUpdated = asyn
                         </div>
                     </div>
                 ))}
-
-                <div ref={loadMoreRef} className="list-footer">
-                    {loading && <p className="status">Loading more users...</p>}
-                    {!hasMore && users.length > 0 && <p className="status">You&apos;ve seen everyone for now.</p>}
-                    {error && <p className="status error">{error}</p>}
-                </div>
+            </div>
+            <div ref={loadMoreRef} className="list-footer">
+                {loading && <p className="status">Loading more users...</p>}
+                {!hasMore && users.length > 0 && <p className="status">You&apos;ve seen everyone for now.</p>}
+                {error && <p className="status error">{error}</p>}
             </div>
         </div>
     );
