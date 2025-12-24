@@ -18,6 +18,7 @@ const DiscoverLists = () => {
     const hasMoreRef = useRef(true);
     const nextPageRef = useRef(1);
     const hasInitialized = useRef(false);
+    const listsRef = useRef([]);
     const navigate = useNavigate();
 
     const loadLists = useCallback(async (pageToLoad) => {
@@ -39,25 +40,24 @@ const DiscoverLists = () => {
             const response = await getListsAPI(targetPage, PAGE_SIZE);
             const incomingLists = response?.lists ?? [];
 
-            let newItemsCount = 0;
+            const baseList = isReset ? [] : [...listsRef.current];
+            const seenIds = new Set(baseList.map((list) => list._id || list.id));
+            const uniqueIncoming = incomingLists.filter((list) => {
+                const key = list._id || list.id;
 
-            setLists((prev) => {
-                const baseList = isReset ? [] : [...prev];
-                const seenIds = new Set(baseList.map((list) => list._id || list.id));
+                if (key && seenIds.has(key)) return false;
 
-                incomingLists.forEach((list) => {
-                    const key = list._id || list.id;
-                    if (key && seenIds.has(key)) return;
-
-                    seenIds.add(key);
-                    baseList.push(list);
-                    newItemsCount += 1;
-                });
-
-                return baseList;
+                seenIds.add(key);
+                return true;
             });
 
-            const moreAvailable = incomingLists.length === PAGE_SIZE;
+            const mergedLists = [...baseList, ...uniqueIncoming];
+            const newItemsCount = uniqueIncoming.length;
+
+            listsRef.current = mergedLists;
+            setLists(mergedLists);
+
+            const moreAvailable = incomingLists.length === PAGE_SIZE && newItemsCount > 0;
             hasMoreRef.current = moreAvailable;
             setHasMore(moreAvailable);
 
