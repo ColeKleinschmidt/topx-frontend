@@ -296,6 +296,24 @@ body[data-theme="dark"] .menu-item:hover {
     border-color: #4c5673;
 }
 
+body[data-theme="dark"] .lists-section {
+    background: #1e1e2e;
+    box-shadow: none;
+    border-color: #1e1e2e;
+}
+
+body[data-theme="dark"] .section-header {
+    color: #e5e7eb;
+    border-bottom-color: #2f3448;
+}
+
+body[data-theme="dark"] .friends-indicator {
+    border-color: #2f3448;
+    background: #25293c;
+    color: #e5e7eb;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
 body[data-theme="dark"] .friends-dropdown,
 body[data-theme="dark"] .friends-dropdown-list {
     background: #1f2333;
@@ -305,6 +323,21 @@ body[data-theme="dark"] .friends-dropdown .friend-dropdown-item,
 body[data-theme="dark"] .pending-actions button,
 body[data-theme="dark"] .remove-friend {
     color: #e5e7eb;
+}
+
+body[data-theme="dark"] .friend-dropdown-item {
+    background: #2f3448;
+    border-color: #3b425c;
+}
+
+body[data-theme="dark"] .friend-dropdown-item:hover {
+    background: #3b425c;
+    border-color: #3b425c;
+}
+
+body[data-theme="dark"] .friend-avatar {
+    background: #1f2333;
+    border-color: #2f3448;
 }
 
 .menu-item {

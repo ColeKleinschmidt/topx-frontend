@@ -89,3 +89,40 @@
     width: 100%;
     height: 24px;
 }
+
+body[data-theme="dark"] .discover-lists-container {
+    background-color: #1e1e2e;
+    color: #e5e7eb;
+}
+
+body[data-theme="dark"] .discover-lists-header {
+    color: #f3f4f6;
+}
+
+body[data-theme="dark"] .discover-lists-subtitle {
+    color: #cbd5e1;
+}
+
+body[data-theme="dark"] .discover-lists-container .empty-state,
+body[data-theme="dark"] .discover-lists-container .error-state {
+    background: #25293c;
+    border-color: #2f3448;
+    color: #e5e7eb;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+body[data-theme="dark"] .discover-lists-container .empty-text {
+    color: #cbd5e1;
+}
+
+body[data-theme="dark"] .discover-lists-container .empty-icon {
+    color: #e5e7eb;
+}
+
+body[data-theme="dark"] .discover-lists-container .error-state p {
+    color: #fca5a5;
+}
+
+body[data-theme="dark"] .discover-lists-container .retry-button {
+    background: #3b82f6;
+}
