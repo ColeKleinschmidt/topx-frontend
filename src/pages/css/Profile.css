@@ -197,6 +197,25 @@
     flex-wrap: wrap;
 }
 
+.profile-delete-button {
+    background: transparent;
+    border: none;
+    color: #b91c1c;
+    font-weight: 600;
+    text-decoration: underline;
+    padding: 6px 10px;
+    cursor: pointer;
+}
+
+.profile-delete-button:hover {
+    color: #991b1b;
+}
+
+.profile-delete-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 .profile-menu {
     position: absolute;
     top: 16px;

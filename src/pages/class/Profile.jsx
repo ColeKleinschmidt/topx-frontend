@@ -4,6 +4,7 @@ import {
     acceptFriendRequestAPI,
     createListAPI,
     declineFriendRequestAPI,
+    deleteProfileAPI,
     deleteCookie,
     getAllNotificationsAPI,
     getBlockedUsersAPI,
@@ -65,6 +66,7 @@ const Profile = () => {
     const friendsMenuRef = useRef(null);
     const fileInputRef = useRef(null);
     const [uploading, setUploading] = useState(false);
+    const [deletingAccount, setDeletingAccount] = useState(false);
 
     const refreshNotifications = useCallback(async () => {
         try {
@@ -251,6 +253,25 @@ const Profile = () => {
             navigate("/");
         } catch (error) {
             console.error("Failed to logout", error);
+        }
+    };
+
+    const handleDeleteAccount = async () => {
+        const confirmation = window.confirm("This will delete your profile and all associated data forever. This action cannot be undone. Do you want to continue?");
+        if (!confirmation) return;
+
+        setDeletingAccount(true);
+        try {
+            await deleteProfileAPI();
+            deleteCookie("user");
+            deleteCookie("userId");
+            localStorage.removeItem("user");
+            dispatch(clearUser());
+            navigate("/");
+        } catch (error) {
+            console.error("Failed to delete account", error);
+        } finally {
+            setDeletingAccount(false);
         }
     };
 
@@ -491,6 +512,15 @@ const Profile = () => {
                         {viewingOwnProfile && (
                             <button className="secondary-button" onClick={handleLogout}>
                                 Logout
+                            </button>
+                        )}
+                        {viewingOwnProfile && (
+                            <button
+                                className="profile-delete-button"
+                                onClick={handleDeleteAccount}
+                                disabled={deletingAccount}
+                            >
+                                {deletingAccount ? "Deleting account..." : "Delete account"}
                             </button>
                         )}
                     </div>
