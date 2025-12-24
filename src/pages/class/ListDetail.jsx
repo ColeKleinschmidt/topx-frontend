@@ -6,7 +6,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setNotifications } from "../../store/notificationsSlice.js";
 import { setBlockedUsers } from "../../store/blockedUsersSlice.js";
-import { getAllNotificationsAPI, getBlockedUsersAPI, getFriendsAPI, getListAPI, getUserByIdAPI, shareListAPI, updateListAPI, getUserId } from "../../backend/apis.js";
+import { deleteCommentAPI, getAllNotificationsAPI, getBlockedUsersAPI, getFriendsAPI, getListAPI, getUserByIdAPI, postCommentAPI as addCommentAPI, shareListAPI, showCommentsAPI, updateListAPI, getUserId } from "../../backend/apis.js";
 import defaultAvatar from "../../assets/icons/User Icon.png";
 import { IoIosSend } from "react-icons/io";
 import { FiEdit2 } from "react-icons/fi";
@@ -25,6 +25,13 @@ const ListDetail = () => {
     const [friendsError, setFriendsError] = useState(null);
     const [selectedFriends, setSelectedFriends] = useState({});
     const [shareStatus, setShareStatus] = useState({ state: "idle", message: "" });
+    const [comments, setComments] = useState([]);
+    const [commentsVisible, setCommentsVisible] = useState(false);
+    const [commentsLoading, setCommentsLoading] = useState(false);
+    const [commentsError, setCommentsError] = useState("");
+    const [newComment, setNewComment] = useState("");
+    const [submittingComment, setSubmittingComment] = useState(false);
+    const [deletingCommentIds, setDeletingCommentIds] = useState({});
     const shareRef = useRef(null);
     const location = useLocation();
     const navigationOwner = location.state?.owner;
@@ -213,6 +220,9 @@ const ListDetail = () => {
                     title: listData?.title || listData?.name || "Untitled list",
                     ownerId,
                     items,
+                    likes: Number(listData?.likes) || 0,
+                    comments: Number(listData?.comments) || 0,
+                    userHasLiked: Boolean(listData?.userHasLiked),
                 });
 
                 if (navigationOwner) {
@@ -383,6 +393,96 @@ const ListDetail = () => {
         }
     };
 
+    const normalizeCommentUserId = (comment) => {
+        if (!comment) return null;
+        const user = comment.user || comment.author || {};
+        return user._id || user.id || comment.userId || null;
+    };
+
+    const normalizeCommentUser = (comment) => {
+        const user = comment?.user || comment?.author || {};
+        return {
+            username: user.username || user.name || "User",
+            profilePic: user.profilePic || user.profilePicture || defaultAvatar,
+        };
+    };
+
+    const fetchComments = useCallback(async () => {
+        if (!listId) return;
+        setCommentsLoading(true);
+        setCommentsError("");
+        try {
+            const response = await showCommentsAPI(listId);
+            const incoming = response?.comments || response || [];
+            const commentsArray = Array.isArray(incoming) ? incoming : [];
+            setComments(commentsArray);
+            setList((prev) => ({ ...(prev || {}), comments: commentsArray.length }));
+        } catch (err) {
+            console.error("Failed to load comments", err);
+            setCommentsError("Unable to load comments right now.");
+        } finally {
+            setCommentsLoading(false);
+        }
+    }, [listId]);
+
+    const handleToggleComments = () => {
+        const nextVisible = !commentsVisible;
+        setCommentsVisible(nextVisible);
+        if (nextVisible && comments.length === 0 && !commentsLoading) {
+            fetchComments();
+        }
+    };
+
+    const handleAddComment = async () => {
+        if (!listId) return;
+        const trimmed = newComment.trim();
+        const wordCount = trimmed ? trimmed.split(/\s+/).filter(Boolean).length : 0;
+        if (!trimmed) {
+            setCommentsError("Please enter a comment before submitting.");
+            return;
+        }
+        if (wordCount > 500) {
+            setCommentsError("Comments are limited to 500 words.");
+            return;
+        }
+        setSubmittingComment(true);
+        setCommentsError("");
+        try {
+            const response = await addCommentAPI(listId, trimmed);
+            const createdComment = response?.comment || response;
+            if (!createdComment || typeof createdComment !== "object") {
+                throw new Error("Unable to add comment");
+            }
+            setComments((prev) => [...prev, createdComment]);
+            setList((prev) => ({ ...(prev || {}), comments: (prev?.comments || 0) + 1 }));
+            setNewComment("");
+        } catch (err) {
+            console.error("Failed to add comment", err);
+            setCommentsError("Unable to add your comment right now.");
+        } finally {
+            setSubmittingComment(false);
+        }
+    };
+
+    const handleDeleteComment = async (commentId) => {
+        if (!listId || !commentId) return;
+        setDeletingCommentIds((prev) => ({ ...prev, [commentId]: true }));
+        setCommentsError("");
+        try {
+            await deleteCommentAPI(listId, commentId);
+            setComments((prev) => prev.filter((comment) => (comment?._id || comment?.id) !== commentId));
+            setList((prev) => ({ ...(prev || {}), comments: Math.max((prev?.comments || 1) - 1, 0) }));
+        } catch (err) {
+            console.error("Failed to delete comment", err);
+            setCommentsError("Unable to delete this comment right now.");
+        } finally {
+            setDeletingCommentIds((prev) => ({ ...prev, [commentId]: false }));
+        }
+    };
+
+    const commentWordCount = newComment.trim() ? newComment.trim().split(/\s+/).filter(Boolean).length : 0;
+    const isCommentTooLong = commentWordCount > 500;
+
     return (
         <div className="home-container">
             <NavigationBar setPage={handleNavigate} page={page} onNotificationsUpdated={refreshNotifications} />
@@ -504,6 +604,92 @@ const ListDetail = () => {
                                 editable={isEditing}
                                 setList={isEditing ? setEditedList : undefined}
                             />
+                        </div>
+                        <div className="comments-section">
+                            <button
+                                type="button"
+                                className="toggle-comments"
+                                onClick={handleToggleComments}
+                            >
+                                {commentsVisible ? "Hide comments" : `Show comments (${list?.comments ?? 0})`}
+                            </button>
+                            {commentsVisible && (
+                                <div className="comments-panel">
+                                    {commentsError && <p className="comment-error">{commentsError}</p>}
+                                    {commentsLoading ? (
+                                        <p className="comment-status">Loading comments...</p>
+                                    ) : (
+                                        <>
+                                            <div className="comment-input-row">
+                                                <img
+                                                    src={defaultAvatar}
+                                                    alt="Your avatar"
+                                                    className="comment-avatar"
+                                                />
+                                                <div className="comment-input-area">
+                                                    <textarea
+                                                        value={newComment}
+                                                        onChange={(event) => setNewComment(event.target.value)}
+                                                        placeholder="Write a comment..."
+                                                        rows={3}
+                                                    />
+                                                    <div className="comment-actions">
+                                                        <span className={`word-count ${isCommentTooLong ? "limit-exceeded" : ""}`}>
+                                                            {commentWordCount}/500 words
+                                                        </span>
+                                                        <button
+                                                            type="button"
+                                                            onClick={handleAddComment}
+                                                            disabled={submittingComment || isCommentTooLong}
+                                                        >
+                                                            {submittingComment ? "Posting..." : "Post"}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="comment-list">
+                                                {comments.length === 0 && (
+                                                    <p className="comment-status">No comments yet. Be the first to join in!</p>
+                                                )}
+                                                {comments.map((comment) => {
+                                                    const commentId = comment?._id || comment?.id;
+                                                    const author = normalizeCommentUser(comment);
+                                                    const commentOwnerId = normalizeCommentUserId(comment);
+                                                    const canDeleteComment =
+                                                        loggedInUserId &&
+                                                        commentOwnerId &&
+                                                        String(loggedInUserId) === String(commentOwnerId);
+                                                    const commentBody = comment?.comment || comment?.text || comment?.content || "";
+                                                    return (
+                                                        <div key={commentId || commentBody} className="comment-item">
+                                                            <div className="comment-author">
+                                                                <img
+                                                                    src={author.profilePic || defaultAvatar}
+                                                                    alt={`${author.username}'s avatar`}
+                                                                />
+                                                                <div className="comment-meta">
+                                                                    <p className="comment-username">{author.username}</p>
+                                                                    <p className="comment-text">{commentBody}</p>
+                                                                </div>
+                                                            </div>
+                                                            {canDeleteComment && (
+                                                                <button
+                                                                    type="button"
+                                                                    className="delete-comment"
+                                                                    onClick={() => handleDeleteComment(commentId)}
+                                                                    disabled={Boolean(commentId && deletingCommentIds[commentId])}
+                                                                >
+                                                                    {commentId && deletingCommentIds[commentId] ? "Deleting..." : "Delete"}
+                                                                </button>
+                                                            )}
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}

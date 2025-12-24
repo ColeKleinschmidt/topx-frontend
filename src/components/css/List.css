@@ -309,3 +309,60 @@
     font-size: 12px;
     margin: 0;
 }
+
+.list-engagement {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 12px;
+}
+
+.like-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid #e0cffc;
+    background: #ffffff;
+    color: #3b1109;
+    cursor: pointer;
+    transition: transform 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
+}
+
+.like-button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+    background: #f7f7f8;
+}
+
+.like-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.like-button.liked {
+    background: linear-gradient(135deg, #f3e8ff, #fde1ff);
+    border-color: #d6a0ff;
+    color: #800080;
+}
+
+.like-icon {
+    color: inherit;
+}
+
+.comment-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: #f7f7f8;
+    color: #3b1109;
+}
+
+.comment-icon {
+    color: #800080;
+}

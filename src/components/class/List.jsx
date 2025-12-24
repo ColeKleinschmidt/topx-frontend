@@ -1,6 +1,7 @@
 import "../css/List.css";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { findItemsAPI } from "../../backend/apis.js";
+import { FaHeart, FaRegHeart, FaRegCommentDots } from "react-icons/fa";
+import { findItemsAPI, likeListAPI, unlikeListAPI } from "../../backend/apis.js";
 
 const List = ({ list, setList, editable = false, onClick, showSubmitButton = false, onSubmit }) => {
 
@@ -15,6 +16,8 @@ const List = ({ list, setList, editable = false, onClick, showSubmitButton = fal
     const [dragIndex, setDragIndex] = useState(null);
     const [dragOverIndex, setDragOverIndex] = useState(null);
     const hydratedListIdRef = useRef(null);
+    const [isUpdatingLike, setIsUpdatingLike] = useState(false);
+    const [engagement, setEngagement] = useState({ likes: 0, comments: 0, userHasLiked: false });
 
     const isTitleValid = newList.title.trim().length > 0 && newList.title.trim().length <= 25;
     const normalizeItems = useCallback((items) => {
@@ -44,6 +47,15 @@ const List = ({ list, setList, editable = false, onClick, showSubmitButton = fal
             hydratedListIdRef.current = incomingId;
         }
     }, [editable, list, normalizeItems]);
+
+    useEffect(() => {
+        if (editable || !list) return;
+        setEngagement({
+            likes: Number(list?.likes) || 0,
+            comments: Number(list?.comments) || 0,
+            userHasLiked: Boolean(list?.userHasLiked),
+        });
+    }, [editable, list]);
 
     const reorderIndexMap = (map, from, to) => {
         const keys = Object.keys(map);
@@ -242,6 +254,45 @@ const List = ({ list, setList, editable = false, onClick, showSubmitButton = fal
         setDragOverIndex(null);
     };
 
+    const handleToggleLike = async (event) => {
+        event?.stopPropagation();
+        if (editable || isUpdatingLike) return;
+
+        const listId = list?._id || list?.id || list?.listId;
+        if (!listId) return;
+
+        setIsUpdatingLike(true);
+        try {
+            if (engagement.userHasLiked) {
+                const response = await unlikeListAPI(listId);
+                const potentialError = response?.error || response?.message;
+                if (typeof potentialError === "string" && potentialError.toLowerCase().includes("error")) {
+                    throw new Error(potentialError);
+                }
+                setEngagement((prev) => ({
+                    ...prev,
+                    userHasLiked: false,
+                    likes: Math.max((prev?.likes || 1) - 1, 0),
+                }));
+            } else {
+                const response = await likeListAPI(listId);
+                const potentialError = response?.error || response?.message;
+                if (typeof potentialError === "string" && potentialError.toLowerCase().includes("error")) {
+                    throw new Error(potentialError);
+                }
+                setEngagement((prev) => ({
+                    ...prev,
+                    userHasLiked: true,
+                    likes: (prev?.likes || 0) + 1,
+                }));
+            }
+        } catch (err) {
+            console.error("Failed to toggle like state", err);
+        } finally {
+            setIsUpdatingLike(false);
+        }
+    };
+
     const RowItem = ({ number, item, index }) => {
         const rowClasses = [
             "row-item",
@@ -369,6 +420,7 @@ const List = ({ list, setList, editable = false, onClick, showSubmitButton = fal
     };
 
     const canSubmitList = isTitleValid && newList.listItems.every((item) => item.title.trim() && item.image);
+    const viewItems = list?.items || list?.listItems || [];
 
     return (
         <div
@@ -395,7 +447,7 @@ const List = ({ list, setList, editable = false, onClick, showSubmitButton = fal
                 <div className="dot" />
                 <div className="line" />
             </div>
-            {!editable && list.items.map((item, index) => (
+            {!editable && viewItems.map((item, index) => (
                 <RowItem key={index} item={item} number={index + 1} />
             ))}
             {editable && newList.listItems.map((item, index) => (
@@ -428,6 +480,24 @@ const List = ({ list, setList, editable = false, onClick, showSubmitButton = fal
                             Submit
                         </button>
                     )}
+                </div>
+            )}
+            {!editable && (
+                <div className="list-engagement">
+                    <button
+                        type="button"
+                        className={`like-button ${engagement.userHasLiked ? "liked" : ""}`}
+                        onClick={handleToggleLike}
+                        disabled={isUpdatingLike}
+                        aria-pressed={engagement.userHasLiked}
+                    >
+                        {engagement.userHasLiked ? <FaHeart className="like-icon" /> : <FaRegHeart className="like-icon" />}
+                        <span>{engagement.likes ?? 0}</span>
+                    </button>
+                    <div className="comment-count" aria-label="Comments">
+                        <FaRegCommentDots className="comment-icon" />
+                        <span>{engagement.comments ?? 0}</span>
+                    </div>
                 </div>
             )}
         </div>
