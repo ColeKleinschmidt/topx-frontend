@@ -456,6 +456,84 @@ export const getUserByIdAPI = async (id) => {
     return response;
 }
 
+export const postComment = async (id, comment) => {
+    const data = {
+        listId: id,
+        comment: comment
+    };
+    const backend_query = await fetch(`${ENDPOINT}postComment`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Accept': 'application/json',
+            'Accept-encoding': 'gzip, deflate',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data),
+    });
+    const response = await backend_query.json();
+    console.log(response);
+    return response;
+}
+
+export const deleteComment = async (id, commentId) => {
+    const data = {
+        listId: id,
+        commentId: commentId
+    };
+    const backend_query = await fetch(`${ENDPOINT}deleteComment`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Accept': 'application/json',
+            'Accept-encoding': 'gzip, deflate',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data),
+    });
+    const response = await backend_query.json();
+    console.log(response);
+    return response;
+}
+
+export const likeList = async (id) => {
+    const data = {
+        listId: id,
+    };
+    const backend_query = await fetch(`${ENDPOINT}likeList`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Accept': 'application/json',
+            'Accept-encoding': 'gzip, deflate',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data),
+    });
+    const response = await backend_query.json();
+    console.log(response);
+    return response;
+}
+
+export const unlikeList = async (id) => {
+    const data = {
+        listId: id,
+    };
+    const backend_query = await fetch(`${ENDPOINT}unlikeList`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Accept': 'application/json',
+            'Accept-encoding': 'gzip, deflate',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data),
+    });
+    const response = await backend_query.json();
+    console.log(response);
+    return response;
+}
+
 export const createListAPI = async (list) => {
     const backend_query = await fetch(`${ENDPOINT}createList`, {
         method: 'POST',
