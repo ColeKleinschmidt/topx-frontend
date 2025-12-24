@@ -366,3 +366,47 @@
 .comment-icon {
     color: #800080;
 }
+
+body[data-theme="dark"] .list-container {
+  background-color: #1f2233;
+  color: #e5e7eb;
+  box-shadow: none;
+}
+
+body[data-theme="dark"] .list-name,
+body[data-theme="dark"] .item-title,
+body[data-theme="dark"] .item-input,
+body[data-theme="dark"] .list-name.input {
+  color: #e5e7eb;
+}
+
+body[data-theme="dark"] .list-name.input,
+body[data-theme="dark"] .item-input,
+body[data-theme="dark"] .row-number,
+body[data-theme="dark"] .item-image,
+body[data-theme="dark"] .separator .line,
+body[data-theme="dark"] .separator .dot,
+body[data-theme="dark"] .drag-handle,
+body[data-theme="dark"] .row-item.drag-over {
+  border-color: #3a3f5c;
+  background-color: #262a40;
+  color: #e5e7eb;
+}
+
+body[data-theme="dark"] .row-number,
+body[data-theme="dark"] .item-image,
+body[data-theme="dark"] .placeholder-image,
+body[data-theme="dark"] .comment-count {
+  background-color: #2f334d;
+  color: #e5e7eb;
+}
+
+body[data-theme="dark"] .like-button,
+body[data-theme="dark"] .like-button.liked {
+  background: #262a40;
+  border-color: #3a3f5c;
+  color: #e5e7eb;
+}
+
+body[data-theme="dark"] .comment-icon,
+body[data-theme="dark"] .like-icon { color: #f9a8d4; }
