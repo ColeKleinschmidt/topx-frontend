@@ -4,7 +4,6 @@ import {
     acceptFriendRequestAPI,
     createListAPI,
     declineFriendRequestAPI,
-    deleteProfileAPI,
     deleteCookie,
     getAllNotificationsAPI,
     getBlockedUsersAPI,
@@ -16,7 +15,8 @@ import {
     removeFriendAPI,
     sendFriendRequestAPI,
     toggleBlockUserAPI,
-    toggleThemeAPI
+    toggleThemeAPI,
+    deleteAccountAPI
 } from "../../backend/apis.js";
 import List from "../../components/class/List.jsx";
 import defaultAvatar from "../../assets/icons/User Icon.png";
@@ -263,7 +263,7 @@ const Profile = () => {
         setShowDeleteModal(false);
         setDeletingAccount(true);
         try {
-            await deleteProfileAPI();
+            await deleteAccountAPI();
             deleteCookie("user");
             deleteCookie("userId");
             localStorage.removeItem("user");
@@ -634,36 +634,35 @@ const Profile = () => {
                     ) : <p className="muted">No lists yet.</p>
                 )}
             </div>
-        </div>
-
-        {showDeleteModal && (
-            <div className="modal-backdrop" role="presentation" onClick={() => !deletingAccount && setShowDeleteModal(false)}>
-                <div className="modal-card" role="dialog" aria-modal="true" aria-label="Delete account confirmation" onClick={(e) => e.stopPropagation()}>
-                    <div className="modal-header">
-                        <h3>Delete your account</h3>
-                        <p className="muted">This will permanently remove your profile, lists, and all associated data. This action cannot be undone.</p>
-                    </div>
-                    <div className="modal-actions">
-                        <button
-                            className="secondary-button"
-                            type="button"
-                            onClick={() => setShowDeleteModal(false)}
-                            disabled={deletingAccount}
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            className="danger-button"
-                            type="button"
-                            onClick={handleDeleteAccount}
-                            disabled={deletingAccount}
-                        >
-                            {deletingAccount ? "Deleting..." : "Yes, delete my account"}
-                        </button>
+            {showDeleteModal && (
+                <div className="modal-backdrop" role="presentation" onClick={() => !deletingAccount && setShowDeleteModal(false)}>
+                    <div className="modal-card" role="dialog" aria-modal="true" aria-label="Delete account confirmation" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h3>Delete your account</h3>
+                            <p className="muted">This will permanently remove your profile, lists, and all associated data. This action cannot be undone.</p>
+                        </div>
+                        <div className="modal-actions">
+                            <button
+                                className="secondary-button"
+                                type="button"
+                                onClick={() => setShowDeleteModal(false)}
+                                disabled={deletingAccount}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                className="danger-button"
+                                type="button"
+                                onClick={handleDeleteAccount}
+                                disabled={deletingAccount}
+                            >
+                                {deletingAccount ? "Deleting..." : "Yes, delete my account"}
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        )}
+            )}
+        </div>
     );
 };
 

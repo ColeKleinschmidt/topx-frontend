@@ -54,24 +54,6 @@ export const deleteAccountAPI = async () => {
     return response;
 }
 
-export const deleteProfileAPI = async () => {
-    const backend_query = await fetch(`${ENDPOINT}deleteProfile`, {
-        method: 'DELETE',
-        credentials: 'include',
-        headers: {
-            'Accept': 'application/json',
-            'Accept-encoding': 'gzip, deflate',
-            'Content-Type': 'application/json'
-        },
-    });
-
-    const response = await backend_query.json();
-    if (backend_query.ok) {
-        deleteCookie("userId");
-    }
-    return response;
-}
-
 export const loginAPI = async (email, password) => {
     const data = {
         email: email,
