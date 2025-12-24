@@ -25,6 +25,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setNotifications } from "../../store/notificationsSlice.js";
 import { setBlockedUsers } from "../../store/blockedUsersSlice.js";
 import { clearUser, setUser as setUserInStore } from "../../store/userSlice.js";
+import { toggleTheme } from "../../store/themeSlice.js";
 
 const Profile = () => {
     const navigate = useNavigate();
@@ -34,6 +35,7 @@ const Profile = () => {
     const dispatch = useDispatch();
     const notifications = useSelector((state) => state.notifications.items);
     const blockedUsers = useSelector((state) => state.blockedUsers.items);
+    const theme = useSelector((state) => state.theme.mode);
     const loggedInUserId = getUserId();
     const viewingOwnProfile = useMemo(() => {
         if (routeUserId) return routeUserId === loggedInUserId;
@@ -249,6 +251,10 @@ const Profile = () => {
         }
     };
 
+    const handleToggleTheme = () => {
+        dispatch(toggleTheme());
+    };
+
     const blockedSet = useMemo(() => new Set((blockedUsers || []).map((u) => {
         if (!u) return null;
         if (typeof u === "object") return String(u._id || u.id);
@@ -435,6 +441,21 @@ const Profile = () => {
                         <h2>{user?.username || "User"}</h2>
                         <p className="muted">@{(user?.username || "user").toLowerCase()}</p>
                         {loading && <p className="muted small">Loading profile...</p>}
+                    </div>
+                    <div className="theme-toggle" aria-label="Theme preference">
+                        <div className="theme-toggle-labels">
+                            <span className="muted small">Theme</span>
+                            <strong>{theme === "dark" ? "Dark" : "Light"} mode</strong>
+                        </div>
+                        <label className="toggle-switch">
+                            <input
+                                type="checkbox"
+                                checked={theme === "dark"}
+                                onChange={handleToggleTheme}
+                                aria-label="Toggle dark mode"
+                            />
+                            <span className="toggle-slider" />
+                        </label>
                     </div>
                     <div className="profile-actions">
                         {!viewingOwnProfile && renderFriendButton()}

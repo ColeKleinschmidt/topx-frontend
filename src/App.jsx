@@ -1,10 +1,22 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import LandingPage from './pages/class/LandingPage.jsx'
 import Home from './pages/class/Home.jsx';
 import ListDetail from './pages/class/ListDetail.jsx';
 import { RequireAuth, RedirectIfAuth } from './components/AuthGuard.jsx'
 
 function App() {
+  const theme = useSelector((state) => state.theme.mode);
+
+  useEffect(() => {
+    document.body.setAttribute('data-theme', theme);
+    try {
+      localStorage.setItem('theme', theme);
+    } catch (error) {
+      console.error('Failed to store theme preference', error);
+    }
+  }, [theme]);
 
   return (
     <BrowserRouter>
