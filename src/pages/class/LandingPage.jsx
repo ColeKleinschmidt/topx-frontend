@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { authStatusAPI, loginAPI, createAccountAPI } from "../../backend/apis.js";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../store/userSlice.js";
+import { setTheme } from "../../store/themeSlice.js";
 
 export default function LandingPage() {
 
@@ -44,6 +45,9 @@ export default function LandingPage() {
                 // If successful, navigate to the feed page
                 localStorage.setItem("user", JSON.stringify(response.user));
                 dispatch(setUser(response.user));
+                if (typeof response.user?.darkTheme === "boolean") {
+                    dispatch(setTheme(response.user.darkTheme ? "dark" : "light"));
+                }
                 setErrorMessage("");
                 navigate("/friendsLists");
             }else {
@@ -65,6 +69,9 @@ export default function LandingPage() {
                 // If successful, navigate to the feed page
                 localStorage.setItem("user", JSON.stringify(response.user));
                 dispatch(setUser(response.user));
+                if (typeof response.user?.darkTheme === "boolean") {
+                    dispatch(setTheme(response.user.darkTheme ? "dark" : "light"));
+                }
                 setErrorMessage("");
                 navigate("/friendsLists");
             }else {

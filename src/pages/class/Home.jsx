@@ -9,7 +9,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setNotifications } from "../../store/notificationsSlice.js";
 import { setBlockedUsers } from "../../store/blockedUsersSlice.js";
-import { getAllNotificationsAPI, getBlockedUsersAPI } from "../../backend/apis.js";
+import { setUser } from "../../store/userSlice.js";
+import { setTheme } from "../../store/themeSlice.js";
+import { authStatusAPI, getAllNotificationsAPI, getBlockedUsersAPI } from "../../backend/apis.js";
 import SearchResults from "./SearchResults.jsx";
 
 const Home = ({ route }) => {
@@ -29,6 +31,22 @@ const Home = ({ route }) => {
         }
     }, [page, navigate, location.pathname]);
 
+    const refreshUserProfile = useCallback(async () => {
+        try {
+            const response = await authStatusAPI();
+            const userProfile = response?.user || response?.profile || null;
+            if (userProfile) {
+                dispatch(setUser(userProfile));
+                localStorage.setItem("user", JSON.stringify(userProfile));
+                if (typeof userProfile.darkTheme === "boolean") {
+                    dispatch(setTheme(userProfile.darkTheme ? "dark" : "light"));
+                }
+            }
+        } catch (error) {
+            console.error("Failed to refresh user profile", error);
+        }
+    }, [dispatch]);
+
     const refreshNotifications = useCallback(async () => {
         try {
             const [notificationsResponse, blockedResponse] = await Promise.all([
@@ -46,11 +64,18 @@ const Home = ({ route }) => {
         }
     }, [dispatch]);
 
+    const refreshAppState = useCallback(async () => {
+        await Promise.all([
+            refreshUserProfile(),
+            refreshNotifications(),
+        ]);
+    }, [refreshNotifications, refreshUserProfile]);
+
     useEffect(() => {
         if (document.cookie || localStorage.getItem("user")) {
-            refreshNotifications();
+            refreshAppState();
         }
-    }, [refreshNotifications]);
+    }, [refreshAppState]);
     
     return (
         <div className="home-container">
