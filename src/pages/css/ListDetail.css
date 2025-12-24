@@ -133,6 +133,7 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    color: #111827;
     transition: background-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
 }
 
@@ -601,6 +602,8 @@ body[data-theme="dark"] .comment-username,
 body[data-theme="dark"] .comment-timestamp,
 body[data-theme="dark"] .comment-text,
 body[data-theme="dark"] .share-dropdown-status,
+body[data-theme="dark"] .share-dropdown-header p,
+body[data-theme="dark"] .share-friend-name,
 body[data-theme="dark"] .share-friend-subtext,
 body[data-theme="dark"] .list-detail-status,
 body[data-theme="dark"] .comment-status,
@@ -622,6 +625,11 @@ body[data-theme="dark"] .decline-button {
     border-color: #2f334d;
     color: #e5e7eb;
     background: #262a40;
+}
+
+body[data-theme="dark"] .share-list-button:hover {
+    background: #2a2f45;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.32);
 }
 
 body[data-theme="dark"] .share-friend-option.selected {
