@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import NavigationBar from "../../components/class/NavigationBar.jsx";
 import List from "../../components/class/List.jsx";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setNotifications } from "../../store/notificationsSlice.js";
 import { setBlockedUsers } from "../../store/blockedUsersSlice.js";
 import { deleteCommentAPI, getAllNotificationsAPI, getBlockedUsersAPI, getFriendsAPI, getListAPI, getUserByIdAPI, postCommentAPI as addCommentAPI, shareListAPI, showCommentsAPI, updateListAPI, getUserId } from "../../backend/apis.js";
@@ -38,6 +38,7 @@ const ListDetail = () => {
     const navigationOwnerId = location.state?.ownerId || navigationOwner?._id || navigationOwner?.id;
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const currentUser = useSelector((state) => state.user.current);
     const [isEditing, setIsEditing] = useState(false);
     const [editedList, setEditedList] = useState(null);
     const [saving, setSaving] = useState(false);
@@ -462,17 +463,35 @@ const ListDetail = () => {
                 throw new Error("Unable to add comment");
             }
             const normalizedUser = normalizeCommentUser(createdComment);
+            const userFromStore = currentUser
+                ? {
+                      _id: currentUser._id || currentUser.id || normalizedUser?._id || loggedInUserId,
+                      username: currentUser.username || currentUser.name || normalizedUser?.username || "You",
+                      profilePic:
+                          currentUser.profilePic ||
+                          currentUser.profilePicture ||
+                          normalizedUser?.profilePic ||
+                          defaultAvatar,
+                  }
+                : null;
+
+            const fallbackUser = {
+                _id: normalizedUser?._id || loggedInUserId,
+                username: normalizedUser?.username || "You",
+                profilePic: normalizedUser?.profilePic || defaultAvatar,
+            };
+
             const normalizedComment = {
                 ...createdComment,
                 comment: createdComment?.comment || createdComment?.text || createdComment?.content || trimmed,
-                user: createdComment?.user || createdComment?.author || {
-                    _id: normalizedUser?._id || loggedInUserId,
-                    username: normalizedUser?.username || "You",
-                    profilePic: normalizedUser?.profilePic || defaultAvatar,
-                },
-                createdAt: createdComment?.createdAt || createdComment?.timestamp || createdComment?.date || new Date().toISOString(),
+                user: userFromStore ? { ...normalizedUser, ...userFromStore } : fallbackUser,
+                createdAt:
+                    createdComment?.createdAt ||
+                    createdComment?.timestamp ||
+                    createdComment?.date ||
+                    new Date().toISOString(),
             };
-            setComments((prev) => [...prev, normalizedComment]);
+            setComments((prev) => [normalizedComment, ...prev]);
             setList((prev) => ({ ...(prev || {}), comments: (prev?.comments || 0) + 1 }));
             setNewComment("");
         } catch (err) {

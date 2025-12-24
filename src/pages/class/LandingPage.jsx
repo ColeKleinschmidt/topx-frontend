@@ -4,6 +4,8 @@ import topXlogo from "../../assets/images/TopXLogo.png";
 import backgroundImage from "../../assets/images/IndexBackground.png";
 import { useNavigate } from 'react-router-dom';
 import { authStatusAPI, loginAPI, createAccountAPI } from "../../backend/apis.js";
+import { useDispatch } from "react-redux";
+import { setUser } from "../../store/userSlice.js";
 
 export default function LandingPage() {
 
@@ -14,6 +16,7 @@ export default function LandingPage() {
     const [errorMessage, setErrorMessage] = useState("");
 
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     useEffect(() => {
         authStatusAPI().then((response) => {
@@ -40,6 +43,7 @@ export default function LandingPage() {
             if (response.user !== undefined && response.user !== null) {
                 // If successful, navigate to the feed page
                 localStorage.setItem("user", JSON.stringify(response.user));
+                dispatch(setUser(response.user));
                 navigate("/friendsLists");
             }else {
                 // If unsuccessful, alert the user
@@ -58,6 +62,7 @@ export default function LandingPage() {
             if (response.user !== undefined && response.user !== null) {
                 // If successful, navigate to the feed page
                 localStorage.setItem("user", JSON.stringify(response.user));
+                dispatch(setUser(response.user));
                 setErrorMessage("");
                 navigate("/friendsLists");
             }else {

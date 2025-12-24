@@ -24,6 +24,7 @@ import { FiMoreVertical, FiUploadCloud } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import { setNotifications } from "../../store/notificationsSlice.js";
 import { setBlockedUsers } from "../../store/blockedUsersSlice.js";
+import { clearUser, setUser as setUserInStore } from "../../store/userSlice.js";
 
 const Profile = () => {
     const navigate = useNavigate();
@@ -86,6 +87,9 @@ const Profile = () => {
                 const response = await getUserByIdAPI(targetUserId);
                 const fetchedUser = response?.user || response;
                 setUser(fetchedUser);
+                if (viewingOwnProfile) {
+                    dispatch(setUserInStore(fetchedUser));
+                }
 
                 const friendIds = fetchedUser?.friends || [];
                 const friendDetails = await Promise.all(friendIds.map(async (id) => {
@@ -238,6 +242,7 @@ const Profile = () => {
             await logoutAPI();
             deleteCookie("user");
             localStorage.removeItem("user");
+            dispatch(clearUser());
             navigate("/");
         } catch (error) {
             console.error("Failed to logout", error);
@@ -372,6 +377,7 @@ const Profile = () => {
             if (response?.imageUrl) {
                 setUser((prev) => {
                     const nextUser = { ...(prev || {}), profilePic: response.imageUrl, profilePicture: response.imageUrl };
+                    dispatch(setUserInStore(nextUser));
                     const stored = localStorage.getItem("user");
                     if (stored) {
                         try {
