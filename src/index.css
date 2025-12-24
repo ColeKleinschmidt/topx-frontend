@@ -23,24 +23,39 @@ html, body
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
-    background-color: #ffffff !important;
-    background-image: none !important;
+    background-color: #ffffff;
+    background-image: none;
     overflow-x: hidden; /* Prevents horizontal scrolling */
 }
 
 body[data-theme="dark"] {
-  background-color: #0b0b0b !important;
-  color: #f3f4f6;
-  filter: invert(1) hue-rotate(180deg);
+  background-color: #1e1e2e;
+  color: #e5e7eb;
+  background-image: none;
 }
 
-body[data-theme="dark"] img,
-body[data-theme="dark"] video,
-body[data-theme="dark"] svg,
-body[data-theme="dark"] canvas,
-body[data-theme="dark"] iframe,
-body[data-theme="dark"] picture {
-  filter: invert(1) hue-rotate(180deg);
+body[data-theme="dark"] #root,
+body[data-theme="dark"] main,
+body[data-theme="dark"] .page-container,
+body[data-theme="dark"] .app-shell {
+  background-color: #1e1e2e;
+  color: #e5e7eb;
+}
+
+body[data-theme="dark"] a { color: #93c5fd; }
+body[data-theme="dark"] a:hover { color: #bfdbfe; }
+
+body[data-theme="dark"] .card,
+body[data-theme="dark"] .container,
+body[data-theme="dark"] .content,
+body[data-theme="dark"] .panel,
+body[data-theme="dark"] .section,
+body[data-theme="dark"] .modal,
+body[data-theme="dark"] .page,
+body[data-theme="dark"] .page-content {
+  background-color: #25293c;
+  color: #e5e7eb;
+  border-color: #2f3448;
 }
 
 h1 {

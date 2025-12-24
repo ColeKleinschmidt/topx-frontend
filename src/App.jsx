@@ -13,6 +13,11 @@ function App() {
     document.body.setAttribute('data-theme', theme);
     try {
       localStorage.setItem('theme', theme);
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        const parsed = JSON.parse(storedUser);
+        localStorage.setItem('user', JSON.stringify({ ...parsed, darkTheme: theme === 'dark' }));
+      }
     } catch (error) {
       console.error('Failed to store theme preference', error);
     }

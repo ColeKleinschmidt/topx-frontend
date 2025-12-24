@@ -14,7 +14,8 @@ import {
     logoutAPI,
     removeFriendAPI,
     sendFriendRequestAPI,
-    toggleBlockUserAPI
+    toggleBlockUserAPI,
+    toggleThemeAPI
 } from "../../backend/apis.js";
 import List from "../../components/class/List.jsx";
 import defaultAvatar from "../../assets/icons/User Icon.png";
@@ -25,7 +26,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setNotifications } from "../../store/notificationsSlice.js";
 import { setBlockedUsers } from "../../store/blockedUsersSlice.js";
 import { clearUser, setUser as setUserInStore } from "../../store/userSlice.js";
-import { toggleTheme } from "../../store/themeSlice.js";
+import { setTheme } from "../../store/themeSlice.js";
 
 const Profile = () => {
     const navigate = useNavigate();
@@ -91,6 +92,8 @@ const Profile = () => {
                 setUser(fetchedUser);
                 if (viewingOwnProfile) {
                     dispatch(setUserInStore(fetchedUser));
+                    const preferredTheme = fetchedUser?.darkTheme ? "dark" : "light";
+                    dispatch(setTheme(preferredTheme));
                 }
 
                 const friendIds = fetchedUser?.friends || [];
@@ -251,8 +254,32 @@ const Profile = () => {
         }
     };
 
-    const handleToggleTheme = () => {
-        dispatch(toggleTheme());
+    const handleToggleTheme = async () => {
+        try {
+            const response = await toggleThemeAPI();
+            const nextIsDark = typeof response?.darkTheme === "boolean"
+                ? response.darkTheme
+                : theme !== "dark";
+            dispatch(setTheme(nextIsDark ? "dark" : "light"));
+            setUser((prev) => prev ? { ...prev, darkTheme: nextIsDark } : prev);
+
+            if (viewingOwnProfile) {
+                dispatch(setUserInStore({ ...(user || {}), darkTheme: nextIsDark }));
+            }
+
+            try {
+                const storedUser = localStorage.getItem("user");
+                if (storedUser) {
+                    const parsedUser = JSON.parse(storedUser);
+                    const updatedUser = { ...parsedUser, darkTheme: nextIsDark };
+                    localStorage.setItem("user", JSON.stringify(updatedUser));
+                }
+            } catch (storageError) {
+                console.error("Failed to persist theme preference", storageError);
+            }
+        } catch (error) {
+            console.error("Failed to toggle theme", error);
+        }
     };
 
     const blockedSet = useMemo(() => new Set((blockedUsers || []).map((u) => {
@@ -410,6 +437,23 @@ const Profile = () => {
     return (
         <div className="profile-page">
             <div className="profile-header">
+                {viewingOwnProfile && (
+                    <div className="theme-toggle theme-toggle-floating" aria-label="Theme preference">
+                        <div className="theme-toggle-labels">
+                            <span className="muted small">Theme</span>
+                            <strong>{theme === "dark" ? "Dark" : "Light"} mode</strong>
+                        </div>
+                        <label className="toggle-switch">
+                            <input
+                                type="checkbox"
+                                checked={theme === "dark"}
+                                onChange={handleToggleTheme}
+                                aria-label="Toggle dark mode"
+                            />
+                            <span className="toggle-slider" />
+                        </label>
+                    </div>
+                )}
                 <div className="profile-header-inner">
                     <div className="avatar-wrapper">
                         <div className="avatar hero-avatar">
@@ -441,21 +485,6 @@ const Profile = () => {
                         <h2>{user?.username || "User"}</h2>
                         <p className="muted">@{(user?.username || "user").toLowerCase()}</p>
                         {loading && <p className="muted small">Loading profile...</p>}
-                    </div>
-                    <div className="theme-toggle" aria-label="Theme preference">
-                        <div className="theme-toggle-labels">
-                            <span className="muted small">Theme</span>
-                            <strong>{theme === "dark" ? "Dark" : "Light"} mode</strong>
-                        </div>
-                        <label className="toggle-switch">
-                            <input
-                                type="checkbox"
-                                checked={theme === "dark"}
-                                onChange={handleToggleTheme}
-                                aria-label="Toggle dark mode"
-                            />
-                            <span className="toggle-slider" />
-                        </label>
                     </div>
                     <div className="profile-actions">
                         {!viewingOwnProfile && renderFriendButton()}

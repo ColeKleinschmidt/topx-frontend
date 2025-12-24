@@ -2,6 +2,14 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const readStoredTheme = () => {
     try {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+            const parsedUser = JSON.parse(storedUser);
+            if (parsedUser && typeof parsedUser.darkTheme === "boolean") {
+                return parsedUser.darkTheme ? "dark" : "light";
+            }
+        }
+
         const stored = localStorage.getItem("theme");
         return stored === "dark" ? "dark" : "light";
     } catch (error) {
