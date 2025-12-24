@@ -15,40 +15,55 @@ const DiscoverLists = () => {
 
     const loadMoreRef = useRef(null);
     const loadingRef = useRef(false);
+    const hasMoreRef = useRef(true);
+    const nextPageRef = useRef(1);
+    const hasInitialized = useRef(false);
+    const listsRef = useRef([]);
     const navigate = useNavigate();
 
     const loadLists = useCallback(async (pageToLoad) => {
-        if (loadingRef.current || (!hasMore && pageToLoad !== 1)) return;
+        const targetPage = pageToLoad ?? nextPageRef.current;
+        const isReset = targetPage === 1;
+
+        if (loadingRef.current || (!hasMoreRef.current && !isReset)) return;
+
+        if (isReset) {
+            hasMoreRef.current = true;
+            nextPageRef.current = 1;
+        }
 
         loadingRef.current = true;
         setLoading(true);
         setError(null);
 
         try {
-            const response = await getListsAPI(pageToLoad, PAGE_SIZE);
+            const response = await getListsAPI(targetPage, PAGE_SIZE);
             const incomingLists = response?.lists ?? [];
 
-            let newItemsCount = 0;
+            const baseList = isReset ? [] : [...listsRef.current];
+            const seenIds = new Set(baseList.map((list) => list._id || list.id));
+            const uniqueIncoming = incomingLists.filter((list) => {
+                const key = list._id || list.id;
 
-            setLists((prev) => {
-                const baseList = pageToLoad === 1 ? [] : [...prev];
-                const seenIds = new Set(baseList.map((list) => list._id || list.id));
+                if (key && seenIds.has(key)) return false;
 
-                incomingLists.forEach((list) => {
-                    const key = list._id || list.id;
-                    if (key && seenIds.has(key)) return;
-
-                    seenIds.add(key);
-                    baseList.push(list);
-                    newItemsCount += 1;
-                });
-
-                return baseList;
+                seenIds.add(key);
+                return true;
             });
 
-            setHasMore(newItemsCount === PAGE_SIZE);
+            const mergedLists = [...baseList, ...uniqueIncoming];
+            const newItemsCount = uniqueIncoming.length;
+
+            listsRef.current = mergedLists;
+            setLists(mergedLists);
+
+            const moreAvailable = incomingLists.length === PAGE_SIZE && newItemsCount > 0;
+            hasMoreRef.current = moreAvailable;
+            setHasMore(moreAvailable);
+
             if (newItemsCount > 0) {
-                setPage(pageToLoad + 1);
+                nextPageRef.current = targetPage + 1;
+                setPage(targetPage + 1);
             }
         } catch (err) {
             console.error("Error fetching discover lists", err);
@@ -57,9 +72,15 @@ const DiscoverLists = () => {
             loadingRef.current = false;
             setLoading(false);
         }
-    }, [hasMore]);
+    }, []);
 
     useEffect(() => {
+        if (hasInitialized.current) return;
+        hasInitialized.current = true;
+        setPage(1);
+        setHasMore(true);
+        nextPageRef.current = 1;
+        hasMoreRef.current = true;
         loadLists(1);
     }, [loadLists]);
 
@@ -67,8 +88,8 @@ const DiscoverLists = () => {
         const observer = new IntersectionObserver(
             (entries) => {
                 const [entry] = entries;
-                if (entry.isIntersecting && !loading && hasMore) {
-                    loadLists(page);
+                if (entry.isIntersecting && !loadingRef.current && hasMoreRef.current) {
+                    loadLists(nextPageRef.current);
                 }
             },
             { root: null, rootMargin: "0px 0px 300px 0px" }
@@ -82,7 +103,7 @@ const DiscoverLists = () => {
         return () => {
             if (sentinel) observer.unobserve(sentinel);
         };
-    }, [loadLists, loading, hasMore, page]);
+    }, [loadLists]);
 
     const handleOpenList = (listId, ownerId) => {
         if (!listId) return;
