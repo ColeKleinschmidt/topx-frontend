@@ -63,10 +63,13 @@ const Profile = () => {
     const [blocking, setBlocking] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const menuRef = useRef(null);
+    const selfMenuRef = useRef(null);
     const friendsMenuRef = useRef(null);
     const fileInputRef = useRef(null);
     const [uploading, setUploading] = useState(false);
     const [deletingAccount, setDeletingAccount] = useState(false);
+    const [selfMenuOpen, setSelfMenuOpen] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     const refreshNotifications = useCallback(async () => {
         try {
@@ -257,9 +260,7 @@ const Profile = () => {
     };
 
     const handleDeleteAccount = async () => {
-        const confirmation = window.confirm("This will delete your profile and all associated data forever. This action cannot be undone. Do you want to continue?");
-        if (!confirmation) return;
-
+        setShowDeleteModal(false);
         setDeletingAccount(true);
         try {
             await deleteProfileAPI();
@@ -345,6 +346,9 @@ const Profile = () => {
             if (menuOpen && menuRef.current && !menuRef.current.contains(event.target)) {
                 setMenuOpen(false);
             }
+            if (selfMenuOpen && selfMenuRef.current && !selfMenuRef.current.contains(event.target)) {
+                setSelfMenuOpen(false);
+            }
             if (friendsOpen && friendsMenuRef.current && !friendsMenuRef.current.contains(event.target)) {
                 setFriendsOpen(false);
             }
@@ -352,7 +356,7 @@ const Profile = () => {
 
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, [menuOpen, friendsOpen]);
+    }, [menuOpen, friendsOpen, selfMenuOpen]);
 
     const renderFriendButton = () => {
         if (friendStatus === "self") return null;
@@ -514,16 +518,32 @@ const Profile = () => {
                                 Logout
                             </button>
                         )}
-                        {viewingOwnProfile && (
-                            <button
-                                className="profile-delete-button"
-                                onClick={handleDeleteAccount}
-                                disabled={deletingAccount}
-                            >
-                                {deletingAccount ? "Deleting account..." : "Delete account"}
-                            </button>
-                        )}
                     </div>
+                    {viewingOwnProfile && (
+                        <div className="profile-self-menu" ref={selfMenuRef}>
+                            <button
+                                className="menu-button subtle"
+                                aria-label="Account actions"
+                                onClick={() => setSelfMenuOpen((prev) => !prev)}
+                            >
+                                <FiMoreVertical size={18} />
+                            </button>
+                            {selfMenuOpen && (
+                                <div className="menu-dropdown self-menu-dropdown">
+                                    <button
+                                        className="menu-item danger"
+                                        onClick={() => {
+                                            setSelfMenuOpen(false);
+                                            setShowDeleteModal(true);
+                                        }}
+                                        disabled={deletingAccount}
+                                    >
+                                        {deletingAccount ? "Deleting..." : "Delete account"}
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    )}
                     <div className="friends-indicator-wrapper" ref={friendsMenuRef}>
                         <button className="friends-indicator" onClick={() => setFriendsOpen((prev) => !prev)}>
                             {friends.length} {friends.length === 1 ? "friend" : "friends"}
@@ -615,6 +635,35 @@ const Profile = () => {
                 )}
             </div>
         </div>
+
+        {showDeleteModal && (
+            <div className="modal-backdrop" role="presentation" onClick={() => !deletingAccount && setShowDeleteModal(false)}>
+                <div className="modal-card" role="dialog" aria-modal="true" aria-label="Delete account confirmation" onClick={(e) => e.stopPropagation()}>
+                    <div className="modal-header">
+                        <h3>Delete your account</h3>
+                        <p className="muted">This will permanently remove your profile, lists, and all associated data. This action cannot be undone.</p>
+                    </div>
+                    <div className="modal-actions">
+                        <button
+                            className="secondary-button"
+                            type="button"
+                            onClick={() => setShowDeleteModal(false)}
+                            disabled={deletingAccount}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            className="danger-button"
+                            type="button"
+                            onClick={handleDeleteAccount}
+                            disabled={deletingAccount}
+                        >
+                            {deletingAccount ? "Deleting..." : "Yes, delete my account"}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )}
     );
 };
 
