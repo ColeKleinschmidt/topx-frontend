@@ -402,9 +402,17 @@ const ListDetail = () => {
     const normalizeCommentUser = (comment) => {
         const user = comment?.user || comment?.author || {};
         return {
+            _id: user._id || user.id || null,
             username: user.username || user.name || "User",
             profilePic: user.profilePic || user.profilePicture || defaultAvatar,
         };
+    };
+
+    const normalizeCommentTimestamp = (comment) => {
+        const raw = comment?.createdAt || comment?.timestamp || comment?.date;
+        const date = raw ? new Date(raw) : new Date();
+        if (Number.isNaN(date.getTime())) return "Just now";
+        return date.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
     };
 
     const fetchComments = useCallback(async () => {
@@ -453,7 +461,18 @@ const ListDetail = () => {
             if (!createdComment || typeof createdComment !== "object") {
                 throw new Error("Unable to add comment");
             }
-            setComments((prev) => [...prev, createdComment]);
+            const normalizedUser = normalizeCommentUser(createdComment);
+            const normalizedComment = {
+                ...createdComment,
+                comment: createdComment?.comment || createdComment?.text || createdComment?.content || trimmed,
+                user: createdComment?.user || createdComment?.author || {
+                    _id: normalizedUser?._id || loggedInUserId,
+                    username: normalizedUser?.username || "You",
+                    profilePic: normalizedUser?.profilePic || defaultAvatar,
+                },
+                createdAt: createdComment?.createdAt || createdComment?.timestamp || createdComment?.date || new Date().toISOString(),
+            };
+            setComments((prev) => [...prev, normalizedComment]);
             setList((prev) => ({ ...(prev || {}), comments: (prev?.comments || 0) + 1 }));
             setNewComment("");
         } catch (err) {
@@ -620,60 +639,65 @@ const ListDetail = () => {
                                         <p className="comment-status">Loading comments...</p>
                                     ) : (
                                         <>
-                                            <div className="comment-input-row">
-                                                <img
-                                                    src={defaultAvatar}
-                                                    alt="Your avatar"
-                                                    className="comment-avatar"
-                                                />
-                                                <div className="comment-input-area">
-                                                    <textarea
-                                                        value={newComment}
-                                                        onChange={(event) => setNewComment(event.target.value)}
-                                                        placeholder="Write a comment..."
-                                                        rows={3}
+                                            <div className="comment-input-card">
+                                                <div className="comment-input-row">
+                                                    <img
+                                                        src={defaultAvatar}
+                                                        alt="Your avatar"
+                                                        className="comment-avatar"
                                                     />
-                                                    <div className="comment-actions">
-                                                        <span className={`word-count ${isCommentTooLong ? "limit-exceeded" : ""}`}>
-                                                            {commentWordCount}/500 words
-                                                        </span>
-                                                        <button
-                                                            type="button"
-                                                            onClick={handleAddComment}
-                                                            disabled={submittingComment || isCommentTooLong}
-                                                        >
-                                                            {submittingComment ? "Posting..." : "Post"}
-                                                        </button>
+                                                    <div className="comment-input-area">
+                                                        <textarea
+                                                            value={newComment}
+                                                            onChange={(event) => setNewComment(event.target.value)}
+                                                            placeholder="Write a comment..."
+                                                            rows={3}
+                                                        />
+                                                        <div className="comment-actions">
+                                                            <span className={`word-count ${isCommentTooLong ? "limit-exceeded" : ""}`}>
+                                                                {commentWordCount}/500 words
+                                                            </span>
+                                                            <button
+                                                                type="button"
+                                                                onClick={handleAddComment}
+                                                                disabled={submittingComment || isCommentTooLong}
+                                                            >
+                                                                {submittingComment ? "Posting..." : "Post"}
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="comment-list">
-                                                {comments.length === 0 && (
-                                                    <p className="comment-status">No comments yet. Be the first to join in!</p>
-                                                )}
-                                                {comments.map((comment) => {
-                                                    const commentId = comment?._id || comment?.id;
-                                                    const author = normalizeCommentUser(comment);
-                                                    const commentOwnerId = normalizeCommentUserId(comment);
-                                                    const canDeleteComment =
-                                                        loggedInUserId &&
-                                                        commentOwnerId &&
-                                                        String(loggedInUserId) === String(commentOwnerId);
-                                                    const commentBody = comment?.comment || comment?.text || comment?.content || "";
-                                                    return (
-                                                        <div key={commentId || commentBody} className="comment-item">
-                                                            <div className="comment-author">
-                                                                <img
-                                                                    src={author.profilePic || defaultAvatar}
-                                                                    alt={`${author.username}'s avatar`}
-                                                                />
-                                                                <div className="comment-meta">
-                                                                    <p className="comment-username">{author.username}</p>
-                                                                    <p className="comment-text">{commentBody}</p>
+                                            <div className="comment-list-container">
+                                                <div className="comment-list">
+                                                    {comments.length === 0 && (
+                                                        <p className="comment-status">No comments yet. Be the first to join in!</p>
+                                                    )}
+                                                    {comments.map((comment) => {
+                                                        const commentId = comment?._id || comment?.id;
+                                                        const author = normalizeCommentUser(comment);
+                                                        const commentOwnerId = normalizeCommentUserId(comment);
+                                                        const canDeleteComment =
+                                                            loggedInUserId &&
+                                                            commentOwnerId &&
+                                                            String(loggedInUserId) === String(commentOwnerId);
+                                                        const commentBody = comment?.comment || comment?.text || comment?.content || "";
+                                                        const commentTimestamp = normalizeCommentTimestamp(comment);
+                                                        return (
+                                                            <div key={commentId || commentBody} className="comment-item">
+                                                                <div className="comment-author">
+                                                                    <img
+                                                                        src={author.profilePic || defaultAvatar}
+                                                                        alt={`${author.username}'s avatar`}
+                                                                    />
+                                                                    <div className="comment-meta">
+                                                                        <p className="comment-username">{author.username}</p>
+                                                                        <p className="comment-timestamp">{commentTimestamp}</p>
+                                                                        <p className="comment-text">{commentBody}</p>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
-                                                            {canDeleteComment && (
-                                                                <button
+                                                                {canDeleteComment && (
+                                                                    <button
                                                                     type="button"
                                                                     className="delete-comment"
                                                                     onClick={() => handleDeleteComment(commentId)}
@@ -685,6 +709,7 @@ const ListDetail = () => {
                                                         </div>
                                                     );
                                                 })}
+                                                </div>
                                             </div>
                                         </>
                                     )}
