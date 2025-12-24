@@ -651,6 +651,7 @@ const ListDetail = () => {
                                                             value={newComment}
                                                             onChange={(event) => setNewComment(event.target.value)}
                                                             placeholder="Write a comment..."
+                                                            color={"black"}
                                                             rows={3}
                                                         />
                                                         <div className="comment-actions">
@@ -668,48 +669,46 @@ const ListDetail = () => {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="comment-list-container">
-                                                <div className="comment-list">
-                                                    {comments.length === 0 && (
-                                                        <p className="comment-status">No comments yet. Be the first to join in!</p>
-                                                    )}
-                                                    {comments.map((comment) => {
-                                                        const commentId = comment?._id || comment?.id;
-                                                        const author = normalizeCommentUser(comment);
-                                                        const commentOwnerId = normalizeCommentUserId(comment);
-                                                        const canDeleteComment =
-                                                            loggedInUserId &&
-                                                            commentOwnerId &&
-                                                            String(loggedInUserId) === String(commentOwnerId);
-                                                        const commentBody = comment?.comment || comment?.text || comment?.content || "";
-                                                        const commentTimestamp = normalizeCommentTimestamp(comment);
-                                                        return (
-                                                            <div key={commentId || commentBody} className="comment-item">
-                                                                <div className="comment-author">
-                                                                    <img
-                                                                        src={author.profilePic || defaultAvatar}
-                                                                        alt={`${author.username}'s avatar`}
-                                                                    />
-                                                                    <div className="comment-meta">
-                                                                        <p className="comment-username">{author.username}</p>
-                                                                        <p className="comment-timestamp">{commentTimestamp}</p>
-                                                                        <p className="comment-text">{commentBody}</p>
-                                                                    </div>
+                                            <div className="comment-list">
+                                                {comments.length === 0 && (
+                                                    <p className="comment-status">No comments yet. Be the first to join in!</p>
+                                                )}
+                                                {comments.map((comment) => {
+                                                    const commentId = comment?._id || comment?.id;
+                                                    const author = normalizeCommentUser(comment);
+                                                    const commentOwnerId = normalizeCommentUserId(comment);
+                                                    const canDeleteComment =
+                                                        loggedInUserId &&
+                                                        commentOwnerId &&
+                                                        String(loggedInUserId) === String(commentOwnerId);
+                                                    const commentBody = comment?.comment || comment?.text || comment?.content || "";
+                                                    const commentTimestamp = normalizeCommentTimestamp(comment);
+                                                    return (
+                                                        <div key={commentId || commentBody} className="comment-item">
+                                                            <div className="comment-author">
+                                                                <img
+                                                                    src={author.profilePic || defaultAvatar}
+                                                                    alt={`${author.username}'s avatar`}
+                                                                />
+                                                                <div className="comment-meta">
+                                                                    <p className="comment-username">{author.username}</p>
+                                                                    <p className="comment-timestamp">{commentTimestamp}</p>
+                                                                    <p className="comment-text">{commentBody}</p>
                                                                 </div>
-                                                                {canDeleteComment && (
-                                                                    <button
-                                                                    type="button"
-                                                                    className="delete-comment"
-                                                                    onClick={() => handleDeleteComment(commentId)}
-                                                                    disabled={Boolean(commentId && deletingCommentIds[commentId])}
-                                                                >
-                                                                    {commentId && deletingCommentIds[commentId] ? "Deleting..." : "Delete"}
-                                                                </button>
-                                                            )}
-                                                        </div>
-                                                    );
-                                                })}
-                                                </div>
+                                                            </div>
+                                                            {canDeleteComment && (
+                                                                <button
+                                                                type="button"
+                                                                className="delete-comment"
+                                                                onClick={() => handleDeleteComment(commentId)}
+                                                                disabled={Boolean(commentId && deletingCommentIds[commentId])}
+                                                            >
+                                                                {commentId && deletingCommentIds[commentId] ? "Deleting..." : "Delete"}
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })}
                                             </div>
                                         </>
                                     )}
