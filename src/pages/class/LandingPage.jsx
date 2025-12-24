@@ -35,7 +35,7 @@ export default function LandingPage() {
 
     const signUp = () => {
         if (username.trim() === "" || email.trim() === "" || password === "") {
-            alert("Please fill in all fields");
+            setErrorMessage("Please fill in all fields");
             return;
         }
 
@@ -44,10 +44,12 @@ export default function LandingPage() {
                 // If successful, navigate to the feed page
                 localStorage.setItem("user", JSON.stringify(response.user));
                 dispatch(setUser(response.user));
+                setErrorMessage("");
                 navigate("/friendsLists");
             }else {
-                // If unsuccessful, alert the user
-                alert(response.message);
+                // If unsuccessful, surface the error message
+                const message = response?.message || "Unable to create account. Please try again.";
+                setErrorMessage(message);
             }
         })
     }
@@ -86,13 +88,15 @@ export default function LandingPage() {
                     <h2 id="form-title">Sign Up</h2>
                     <form>
                         <label htmlFor="signup-username" className="form-label">Username</label>
-                        <input onChange={(e) => {setUsername(e.target.value)}} type="text" id="signup-username" placeholder="Enter your username" className="form-input" />
+                        <input onChange={(e) => {setUsername(e.target.value); setErrorMessage("");}} type="text" id="signup-username" placeholder="Enter your username" className="form-input" />
 
                         <label htmlFor="signup-email" className="form-label">Email</label>
-                        <input onChange={(e) => {setEmail(e.target.value)}} type="email" id="signup-email" placeholder="Enter your email" className="form-input" />
-                    
+                        <input onChange={(e) => {setEmail(e.target.value); setErrorMessage("");}} type="email" id="signup-email" placeholder="Enter your email" className="form-input" />
+
                         <label htmlFor="signup-password" className="form-label">Password</label>
-                        <input onChange={(e) => {setPassword(e.target.value)}} type="password" id="signup-password" placeholder="Create a password" className="form-input" />
+                        <input onChange={(e) => {setPassword(e.target.value); setErrorMessage("");}} type="password" id="signup-password" placeholder="Create a password" className="form-input" />
+
+                        {errorMessage && <div className="error-banner">{errorMessage}</div>}
                     
                         <button onClick={() => signUp()} type="button" className="form-button" id="signup-button">Continue</button>
                     </form>
