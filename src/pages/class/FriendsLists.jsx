@@ -1,8 +1,10 @@
 import "../css/FriendsLists.css";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { getFriendsListsAPI } from "../../backend/apis.js";
 import List from "../../components/class/List.jsx";
 import { useNavigate } from "react-router-dom";
+
+const PAGE_SIZE = 10;
 
 const FriendsLists = ({ onFindFriends = () => {} }) => {
     const [loadingLists, setLoadingLists] = useState(true);
@@ -11,22 +13,17 @@ const FriendsLists = ({ onFindFriends = () => {} }) => {
     const hasFetchedLists = useRef(false);
     const loadingRef = useRef(false);
     const [hasMore, setHasMore] = useState(true);
+    const loadMoreRef = useRef(null);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        if (hasFetchedLists.current) return;
-        hasFetchedLists.current = true;
-        getLists(1);
-    }, [])
-
-    const getLists = async (pageToLoad) => {
-        if (loadingRef.current || !hasMore) return;
+    const getLists = useCallback(async (pageToLoad) => {
+        if (loadingRef.current || (!hasMore && pageToLoad !== 1)) return;
 
         loadingRef.current = true;
         setLoadingLists(true);
 
         try {
-            const response = await getFriendsListsAPI(pageToLoad, 10);
+            const response = await getFriendsListsAPI(pageToLoad, PAGE_SIZE);
             const incomingLists = response?.lists ?? [];
             let newItemsCount = 0;
 
@@ -46,10 +43,10 @@ const FriendsLists = ({ onFindFriends = () => {} }) => {
                 return baseList;
             });
 
+            setHasMore(newItemsCount === PAGE_SIZE);
+
             if (newItemsCount > 0) {
                 setPage(pageToLoad + 1);
-            } else {
-                setHasMore(false);
             }
         } catch (error) {
             console.error("Failed to fetch friends lists", error);
@@ -58,14 +55,39 @@ const FriendsLists = ({ onFindFriends = () => {} }) => {
             loadingRef.current = false;
             setLoadingLists(false);
         }
-    }
+    }, [hasMore]);
+
+    useEffect(() => {
+        if (hasFetchedLists.current) return;
+        hasFetchedLists.current = true;
+        getLists(1);
+    }, [getLists]);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                const [entry] = entries;
+                if (entry.isIntersecting && !loadingLists && hasMore) {
+                    getLists(page);
+                }
+            },
+            { root: null, rootMargin: "0px 0px 300px 0px" }
+        );
+
+        const sentinel = loadMoreRef.current;
+        if (sentinel) {
+            observer.observe(sentinel);
+        }
+
+        return () => {
+            if (sentinel) observer.unobserve(sentinel);
+        };
+    }, [getLists, loadingLists, hasMore, page]);
 
     const handleOpenList = (listId, ownerId) => {
         if (!listId) return;
         navigate(`/list/${listId}`, { state: { ownerId } });
     };
-    const isEmpty = !loadingLists && lists.length === 0;
-
     return (
         <div className="friends-lists-container">
             <div className="friends-lists-top-bar">
@@ -91,6 +113,7 @@ const FriendsLists = ({ onFindFriends = () => {} }) => {
                         </p>
                     </div>
                 )}
+                <div ref={loadMoreRef} className="load-more-sentinel" aria-hidden="true" />
             </div>
             {loadingLists && <h2 className="loading-lists">Loading...</h2>}
         </div>

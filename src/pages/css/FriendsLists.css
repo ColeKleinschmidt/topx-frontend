@@ -134,3 +134,8 @@ body[data-theme="dark"] .empty-state {
 body[data-theme="dark"] .lists {
     background-color: #1e1e2e;
 }
+
+.friends-lists-container .load-more-sentinel {
+    width: 100%;
+    height: 24px;
+}
