@@ -456,7 +456,7 @@ export const getUserByIdAPI = async (id) => {
     return response;
 }
 
-export const postComment = async (id, comment) => {
+export const postCommentAPI = async (id, comment) => {
     const data = {
         listId: id,
         comment: comment
@@ -476,7 +476,7 @@ export const postComment = async (id, comment) => {
     return response;
 }
 
-export const deleteComment = async (id, commentId) => {
+export const deleteCommentAPI = async (id, commentId) => {
     const data = {
         listId: id,
         commentId: commentId
@@ -496,7 +496,26 @@ export const deleteComment = async (id, commentId) => {
     return response;
 }
 
-export const likeList = async (id) => {
+export const showCommentsAPI = async (id) => {
+    const data = {
+        listId: id
+    };
+    const backend_query = await fetch(`${ENDPOINT}showComments`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Accept': 'application/json',
+            'Accept-encoding': 'gzip, deflate',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data),
+    });
+    const response = await backend_query.json();
+    console.log(response);
+    return response;
+}
+
+export const likeListAPI = async (id) => {
     const data = {
         listId: id,
     };
@@ -515,7 +534,7 @@ export const likeList = async (id) => {
     return response;
 }
 
-export const unlikeList = async (id) => {
+export const unlikeListAPI = async (id) => {
     const data = {
         listId: id,
     };
