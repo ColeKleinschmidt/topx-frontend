@@ -102,13 +102,25 @@
     cursor: pointer;
 }
 
+.friend-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border: 3px solid #ffe4e4;
+    flex-shrink: 0;
+}
+
 .friend-avatar img {
     width: 56px;
     height: 56px;
     border-radius: 50%;
     object-fit: cover;
-    border: 3px solid #ffe4e4;
-    background: #fff;
+    display: block;
 }
 
 .friend-details h3 {
