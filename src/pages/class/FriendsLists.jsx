@@ -13,22 +13,32 @@ const FriendsLists = ({ onFindFriends = () => {} }) => {
     const hasFetchedLists = useRef(false);
     const loadingRef = useRef(false);
     const [hasMore, setHasMore] = useState(true);
+    const hasMoreRef = useRef(true);
+    const nextPageRef = useRef(1);
     const loadMoreRef = useRef(null);
     const navigate = useNavigate();
 
     const getLists = useCallback(async (pageToLoad) => {
-        if (loadingRef.current || (!hasMore && pageToLoad !== 1)) return;
+        const targetPage = pageToLoad ?? nextPageRef.current;
+        const isReset = targetPage === 1;
+
+        if (loadingRef.current || (!hasMoreRef.current && !isReset)) return;
+
+        if (isReset) {
+            hasMoreRef.current = true;
+            nextPageRef.current = 1;
+        }
 
         loadingRef.current = true;
         setLoadingLists(true);
 
         try {
-            const response = await getFriendsListsAPI(pageToLoad, PAGE_SIZE);
+            const response = await getFriendsListsAPI(targetPage, PAGE_SIZE);
             const incomingLists = response?.lists ?? [];
             let newItemsCount = 0;
 
             setLists((prev) => {
-                const baseList = pageToLoad === 1 ? [] : [...prev];
+                const baseList = isReset ? [] : [...prev];
                 const seenIds = new Set(baseList.map((list) => list._id || list.id));
 
                 incomingLists.forEach((list) => {
@@ -43,10 +53,13 @@ const FriendsLists = ({ onFindFriends = () => {} }) => {
                 return baseList;
             });
 
-            setHasMore(newItemsCount === PAGE_SIZE);
+            const moreAvailable = incomingLists.length === PAGE_SIZE;
+            hasMoreRef.current = moreAvailable;
+            setHasMore(moreAvailable);
 
             if (newItemsCount > 0) {
-                setPage(pageToLoad + 1);
+                nextPageRef.current = targetPage + 1;
+                setPage(targetPage + 1);
             }
         } catch (error) {
             console.error("Failed to fetch friends lists", error);
@@ -55,11 +68,15 @@ const FriendsLists = ({ onFindFriends = () => {} }) => {
             loadingRef.current = false;
             setLoadingLists(false);
         }
-    }, [hasMore]);
+    }, []);
 
     useEffect(() => {
         if (hasFetchedLists.current) return;
         hasFetchedLists.current = true;
+        setPage(1);
+        setHasMore(true);
+        hasMoreRef.current = true;
+        nextPageRef.current = 1;
         getLists(1);
     }, [getLists]);
 
@@ -67,8 +84,8 @@ const FriendsLists = ({ onFindFriends = () => {} }) => {
         const observer = new IntersectionObserver(
             (entries) => {
                 const [entry] = entries;
-                if (entry.isIntersecting && !loadingLists && hasMore) {
-                    getLists(page);
+                if (entry.isIntersecting && !loadingRef.current && hasMoreRef.current) {
+                    getLists(nextPageRef.current);
                 }
             },
             { root: null, rootMargin: "0px 0px 300px 0px" }
@@ -82,7 +99,7 @@ const FriendsLists = ({ onFindFriends = () => {} }) => {
         return () => {
             if (sentinel) observer.unobserve(sentinel);
         };
-    }, [getLists, loadingLists, hasMore, page]);
+    }, [getLists]);
 
     const handleOpenList = (listId, ownerId) => {
         if (!listId) return;
