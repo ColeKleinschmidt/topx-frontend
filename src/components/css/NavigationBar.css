@@ -297,3 +297,82 @@
     color: #6b7280;
     font-size: 13px;
 }
+
+body[data-theme="dark"] .navigation-bar {
+    background-color: #2f334d;
+    color: #e5e7eb;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+body[data-theme="dark"] .navigation-element.underline {
+    border-bottom: 2px solid #e5e7eb;
+}
+
+body[data-theme="dark"] .search-lists {
+    background-color: #1f2233;
+    color: #e5e7eb;
+    border: 1px solid #3a3f5c;
+}
+
+body[data-theme="dark"] .search-lists::placeholder {
+    color: #f9a8d4;
+}
+
+body[data-theme="dark"] .profile-buttons {
+    background-color: #3a3f5c;
+    color: #e5e7eb;
+}
+
+body[data-theme="dark"] .notification-dropdown {
+    background: #1f2233;
+    border-color: #2f334d;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+}
+
+body[data-theme="dark"] .notification-item,
+body[data-theme="dark"] .notification-item.share-item {
+    background: #262a40;
+    border-color: #2f334d;
+    color: #e5e7eb;
+    box-shadow: none;
+}
+
+body[data-theme="dark"] .notification-title {
+    color: #f8fafc;
+}
+
+body[data-theme="dark"] .notification-subtitle,
+body[data-theme="dark"] .notification-empty,
+body[data-theme="dark"] .notification-loading {
+    color: #cbd5e1;
+}
+
+body[data-theme="dark"] .decline-button {
+    background: #1a1d2c;
+    border-color: #323651;
+    color: #e5e7eb;
+}
+
+body[data-theme="dark"] .decline-button:hover {
+    background: #22263a;
+}
+
+body[data-theme="dark"] .share-dropdown,
+body[data-theme="dark"] .notification-item.share-item {
+    background: #1f2233;
+    border-color: #2f334d;
+}
+
+body[data-theme="dark"] .share-dropdown-status { color: #cbd5e1; }
+body[data-theme="dark"] .share-dropdown-status.error { color: #fca5a5; }
+body[data-theme="dark"] .share-dropdown-status.success { color: #86efac; }
+body[data-theme="dark"] .share-dropdown-status.partial { color: #fbbf24; }
+
+body[data-theme="dark"] .remove-notification-button {
+    color: #e5e7eb;
+}
+
+body[data-theme="dark"] .remove-notification-button:hover,
+body[data-theme="dark"] .remove-notification-button:focus-visible {
+    background-color: #2b3047;
+}

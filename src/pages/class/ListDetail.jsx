@@ -578,7 +578,7 @@ const ListDetail = () => {
                                 )}
                                 <div className="share-dropdown-wrapper" ref={shareRef}>
                                     <div type="button" className="share-list-button" onClick={toggleShareDropdown} aria-expanded={shareOpen} aria-haspopup="true">
-                                        <IoIosSend size={26} color="black"/>
+                                        <IoIosSend size={26} />
                                     </div>
                                     {shareOpen && (
                                         <div className="share-dropdown">

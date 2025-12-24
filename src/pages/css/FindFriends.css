@@ -181,3 +181,36 @@
 .status.error {
     color: #ef4444;
 }
+
+body[data-theme="dark"] .find-friends-container {
+    background-color: #1e1e2e;
+}
+
+body[data-theme="dark"] .find-friends-heading .title,
+body[data-theme="dark"] .find-friends-heading .subtitle,
+body[data-theme="dark"] .find-friends-heading .eyebrow,
+body[data-theme="dark"] .status {
+    color: #e5e7eb;
+}
+
+body[data-theme="dark"] .find-friends-list {
+    background: #1f2233;
+    border-color: #2f334d;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+}
+
+body[data-theme="dark"] .friend-card {
+    background: #262a40;
+    border-color: #2f334d;
+    box-shadow: none;
+    color: #e5e7eb;
+}
+
+body[data-theme="dark"] .friend-details h3,
+body[data-theme="dark"] .friend-details .muted { color: #e5e7eb; }
+
+body[data-theme="dark"] .secondary-button {
+    background: #1a1d2c;
+    color: #e5e7eb;
+    border-color: #2f334d;
+}

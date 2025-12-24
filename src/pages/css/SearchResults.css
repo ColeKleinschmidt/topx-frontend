@@ -37,3 +37,16 @@
     gap: 24px;
     justify-content: center;
 }
+
+body[data-theme="dark"] .search-results-container {
+    background-color: #1e1e2e;
+}
+
+body[data-theme="dark"] .search-results-header,
+body[data-theme="dark"] .no-results {
+    color: #e5e7eb;
+}
+
+body[data-theme="dark"] .lists {
+    background-color: #1e1e2e;
+}

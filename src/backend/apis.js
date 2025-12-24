@@ -100,6 +100,21 @@ export const logoutAPI = async () => {
     }
 }
 
+export const toggleThemeAPI = async () => {
+    const backend_query = await fetch(`${ENDPOINT}toggleTheme`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+            'Accept': 'application/json',
+            'Accept-encoding': 'gzip, deflate',
+            'Content-Type': 'application/json'
+        }
+    });
+
+    const response = await backend_query.json();
+    return response;
+}
+
 const getAllUsersAPI = async () => {
     const backend_query = await fetch(`${ENDPOINT}getAllUsers`, {
         method: 'GET',
