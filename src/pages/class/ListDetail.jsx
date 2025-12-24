@@ -400,14 +400,29 @@ const ListDetail = () => {
         return user._id || user.id || comment.userId || null;
     };
 
+    const extractProfilePicture = (user) => {
+        if (!user) return null;
+        return (
+            user.profilePic ||
+            user.profilePicture ||
+            user.avatar ||
+            user.image ||
+            user.picture ||
+            null
+        );
+    };
+
     const normalizeCommentUser = (comment) => {
         const user = comment?.user || comment?.author || {};
+        const profilePic = extractProfilePicture(user) || defaultAvatar;
         return {
             _id: user._id || user.id || null,
             username: user.username || user.name || "User",
-            profilePic: user.profilePic || user.profilePicture || defaultAvatar,
+            profilePic,
         };
     };
+
+    const currentUserProfilePic = extractProfilePicture(currentUser) || defaultAvatar;
 
     const normalizeCommentTimestamp = (comment) => {
         const raw = comment?.createdAt || comment?.timestamp || comment?.date;
@@ -468,8 +483,7 @@ const ListDetail = () => {
                       _id: currentUser._id || currentUser.id || normalizedUser?._id || loggedInUserId,
                       username: currentUser.username || currentUser.name || normalizedUser?.username || "You",
                       profilePic:
-                          currentUser.profilePic ||
-                          currentUser.profilePicture ||
+                          extractProfilePicture(currentUser) ||
                           normalizedUser?.profilePic ||
                           defaultAvatar,
                   }
@@ -661,7 +675,7 @@ const ListDetail = () => {
                                             <div className="comment-input-card">
                                                 <div className="comment-input-row">
                                                     <img
-                                                        src={defaultAvatar}
+                                                        src={currentUserProfilePic}
                                                         alt="Your avatar"
                                                         className="comment-avatar"
                                                     />
