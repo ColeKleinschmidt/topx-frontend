@@ -1,5 +1,5 @@
 //when true, pinging server will ping the local server. When false, it will ping real API.
-const local_server = true;
+const local_server = false;
 //paste your local ip address here so expo can connect to local functions emulator
 export const local_ip_address = 'http://192.168.86.188';
 
