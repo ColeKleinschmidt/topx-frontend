@@ -1,266 +1,363 @@
-#content 
-{
+@font-face {
+    font-family: "Soap W00 Regular";
+    src: url("https://db.onlinewebfonts.com/t/2a98f8f732aa4c8fc41f095ca67c8c67.eot");
+    src: url("https://db.onlinewebfonts.com/t/2a98f8f732aa4c8fc41f095ca67c8c67.eot?#iefix")format("embedded-opentype"),
+    url("https://db.onlinewebfonts.com/t/2a98f8f732aa4c8fc41f095ca67c8c67.woff2")format("woff2"),
+    url("https://db.onlinewebfonts.com/t/2a98f8f732aa4c8fc41f095ca67c8c67.woff")format("woff"),
+    url("https://db.onlinewebfonts.com/t/2a98f8f732aa4c8fc41f095ca67c8c67.ttf")format("truetype"),
+    url("https://db.onlinewebfonts.com/t/2a98f8f732aa4c8fc41f095ca67c8c67.svg#Soap W00 Regular")format("svg");
+}
+
+/* Landing Page */
+.landing-page {
     min-height: 100vh;
+    background: #ffffff;
+    font-family: 'Roboto', Arial, sans-serif;
+}
+
+/* Header */
+.landing-header {
+    background: #fc5647;
+    padding: 20px 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+}
+
+.header-logo {
+    height: 50px;
+    width: auto;
+}
+
+.login-signup-btn {
+    background: #b83f34;
+    color: white;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: "Soap W00 Regular", Arial, sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.login-signup-btn:hover {
+    background: white;
+    color: #b83f34;
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Hero Section */
+.hero-section {
+    padding: 60px 20px;
+    background: white;
+}
+
+.hero-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+}
+
+.hero-text {
+    text-align: left;
+}
+
+.hero-title {
+    font-size: 48px;
+    font-weight: 700;
+    color: #333;
+    line-height: 1.2;
+    margin-bottom: 20px;
+}
+
+.hero-subtitle {
+    font-size: 20px;
+    font-weight: 400;
+    color: #666;
+    line-height: 1.6;
+}
+
+.hero-image img {
     width: 100%;
-    position: relative;
-    z-index: 2;
+    height: auto;
+    border-radius: 15px;
+}
+
+/* Features Section */
+.features-section {
+    background: #f7f7f7;
+    padding: 80px 20px;
+}
+
+.features-title {
     text-align: center;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-color: transparent !important;
+    font-size: 42px;
+    font-weight: 700;
+    font-family: "Soap W00 Regular", Arial, sans-serif;
+    color: #fc5647;
+    margin-bottom: 50px;
+}
+
+.features-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+}
+
+.feature-box {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-box:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+.feature-icon {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 20px;
+    background: #f5f3f3;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 24px 16px;
-    box-sizing: border-box;
+    font-size: 30px;
+    color: #fc5647;
 }
 
-/* Welcome Card */
-.welcome-card 
-{
-    background-color: #CAEFD1;
-    width: min(460px, 100%);
-    max-width: 540px;
-    border-radius: 20px;
-    padding: 16px 28px 8px;
-    text-align: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    position: relative;
-    font-family: Arial, sans-serif;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    gap: 0px;
-}
-
-/* Logo Styling */
-.welcome-logo 
-{
-    width: 40px;
-    height: auto;
-    margin-bottom: 10px;
-    border-radius: 50%;
-    background-color: #4CB95F;
-    display: inline-block;
-}
-
-/* Welcome to TopX Main Heading */
-.welcome-card h1 
-{
-    font-size: 32px;
+.feature-title {
+    font-size: 20px;
+    font-weight: 600;
     color: #333;
-    margin: 10px;
+    margin-bottom: 15px;
 }
 
-/* Let's hear your favorites Subtext */
-.welcome-subtext 
-{
-    font-size: 16px;
-    color: #555;
-    margin-bottom: 20px;
-    margin-top: -2px;
+.feature-description {
+    font-size: 15px;
+    color: #666;
+    line-height: 1.6;
 }
 
-/* Form Styling */
-.welcome-form 
-{
+/* Footer */
+.landing-footer {
+    background: #333333;
+    color: white;
+    text-align: center;
+    padding: 30px 20px;
+    font-size: 14px;
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 20px;
+    max-width: 460px;
+    width: 100%;
+    position: relative;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease;
+    overflow: hidden;
+    padding: 0;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    background: #fc5647;
+    padding: 20px;
+    text-align: center;
+}
+
+.modal-logo {
+    height: 40px;
+    width: auto;
+}
+
+.modal-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 32px;
+    color: white;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+    z-index: 10;
+}
+
+.modal-close:hover {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.modal-form {
     display: flex;
     flex-direction: column;
     gap: 15px;
-    align-items: center;
+    padding: 30px 40px 40px;
 }
 
-/* Input Fields */
-.form-input 
-{
+.modal-title {
+    font-size: 28px;
+    font-family: "Soap W00 Regular", Arial, sans-serif;
+    color: #333;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.form-label {
+    font-size: 14px;
+    color: #555;
+    font-weight: 500;
+    margin-bottom: 5px;
+    text-align: left;
+}
+
+.form-input {
     padding: 12px;
     border: 2px solid #ccc;
-    border-radius: 15px;
+    border-radius: 10px;
     font-size: 16px;
     outline: none;
     width: 100%;
     box-sizing: border-box;
+    transition: border-color 0.2s ease;
 }
 
-/* Continue Button */
-.form-button 
-{
-    padding: 12px;
-    background-color: #4CB95F;
+.form-input:focus {
+    border-color: #4CB95F;
+}
+
+.form-button {
+    padding: 14px;
+    background: #fc5647;
     color: white;
     border: none;
     border-radius: 30px;
     font-size: 16px;
+    font-weight: 600;
     width: 100%;
-    margin-top: 8px;
+    margin-top: 10px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
-/* Darken Continue Button on Hover */
-.form-button:hover 
-{
-    background-color: #42a954;
+.form-button:hover {
+    background-color: #e04837;
 }
 
-/* Form Input Field Labels */
-.form-label 
-{
-    font-size: 14px;
-    color: #777;
-    display: block;
-    padding-bottom: 5px;
-    width: 100%;
-    text-align: left;
-    box-sizing: border-box;
-}
-
-/* Divider Section */
-.form-divider 
-{
+.modal-footer {
     text-align: center;
-    margin: 00px 0px;
+    margin-top: 20px;
     font-size: 14px;
-    color: #777;
-}
-
-/* Log In Prompt Section */
-.login-prompt 
-{
-    text-align: center; /* Center-aligns the text */
-    font-size: 14px;
-    color: #555; /* Slightly darker grey for better visibility */
-    margin-top: 0px;
-}
-
-/* Log In Link */
-#toggle-link
-{
-    color: #4CB95F; /* Green color for the link */
-    text-decoration: none; /* Remove underline from the link */
-    font-weight: bold;
-    cursor: pointer;
-}
-
- /* Underline link on hover */
-#toggle-link:hover 
-{
-    text-decoration: underline;
-}
-
-/* Google OAuth Button */
-.google-button 
-{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #ffffff;
     color: #555;
-    border: 1px solid #ccc;
-    border-radius: 30px;
-    font-size: 16px;
-    font-family: Arial, sans-serif;
-    padding: 12px 20px;
+}
+
+.toggle-link {
+    color: #fc5647;
+    font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.2s ease, box-shadow 0.2s ease;
-    width: 100%;
-    max-width: 250px;
-    background-image: url('../images/Google Logo.png');
-    background-repeat: no-repeat;
-    background-size: 20px 20px;
-    background-position: 15px center;
-    text-align: center;
-    padding-left: 50px;
-    margin-bottom: 40px;
-}
-
-/* Hover Effect */
-.google-button:hover 
-{
-    background-color: #f7f7f7;
-}
-
-/* Welcome Card Footer */
-.welcome-card-footer 
-{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    color: #06402B;
-    bottom: 0;
-    padding: 10px 14px;
-    left: 0;
-    margin: 0;
-}
-
-.welcome-card-footer #toggle-link 
-{
-    margin-left: 5px;
-    color: #4CB95F;
     text-decoration: none;
-    font-weight: bold;
 }
 
-.welcome-card-footer #toggle-link:hover 
-{
+.toggle-link:hover {
     text-decoration: underline;
 }
 
-#form-title
-{
-    color: #3c3c3c;
-    text-decoration: underline; 
-}
-
-.form-container 
-{
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    align-items: center;
-    width: 100%;
-}
-
-.form-container form 
-{
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.error-banner
-{
-    width: 100%;
-    padding: 10px 12px;
-    border-radius: 12px;
+.error-banner {
     background: #ffecec;
     border: 1px solid #f5b4b4;
     color: #7a1a1a;
+    padding: 12px;
+    border-radius: 10px;
     font-size: 14px;
-    text-align: left;
-    box-sizing: border-box;
+    text-align: center;
 }
 
-.hidden 
-{
-    display: none;
-}
-
-@media (max-width: 640px) 
-{
-    #content 
-    {
-        padding: 16px 12px;
-        background-attachment: scroll;
+/* Responsive */
+@media (max-width: 768px) {
+    .hero-content {
+        grid-template-columns: 1fr;
+        gap: 40px;
     }
 
-    .welcome-card 
-    {
-        padding: 24px 20px 12px;
-        gap: 16px;
+    .hero-text {
+        text-align: center;
+    }
+
+    .hero-title {
+        font-size: 36px;
+    }
+
+    .hero-subtitle {
+        font-size: 18px;
+    }
+
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .features-title {
+        font-size: 32px;
+    }
+
+    .modal-content {
+        padding: 30px 20px;
     }
 }
