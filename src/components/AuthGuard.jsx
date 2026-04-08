@@ -8,12 +8,23 @@ export function RequireAuth({ children }) {
 
   useEffect(() => {
     let mounted = true;
+    
+    // Check localStorage first as a fallback
+    const localUser = localStorage.getItem("user");
+    
     authStatusAPI()
       .then((resp) => {
         if (!mounted) return;
         setAuthenticated(!!resp.authenticated);
       })
-      .catch(() => setAuthenticated(false))
+      .catch(() => {
+        // If authStatus fails but we have a user in localStorage, try to authenticate
+        if (localUser) {
+          setAuthenticated(true);
+        } else {
+          setAuthenticated(false);
+        }
+      })
       .finally(() => mounted && setLoading(false));
     return () => (mounted = false);
   }, []);
