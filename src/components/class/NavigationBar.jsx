@@ -315,11 +315,11 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
                     <img src={topXlogo} alt="TopX" className="nav-logo" />
                 </div>
                 <div className="navigation-container">
-                    <div onClick={() => setPage("myLists")} className={`navigation-element ${page === "friends" && "underline" }`}>
+                    <div onClick={() => { setPage("myLists"); navigate("/myLists"); }} className={`navigation-element ${page === "friends" && "underline" }`}>
                         <IoIosCheckmarkCircle color="white" size={25} />
                         <h2>My lists</h2>
                     </div>
-                    <div onClick={() => setPage("friendsLists")} className={`navigation-element ${page === "feed" && "underline" }`}>
+                    <div onClick={() => { setPage("friendsLists"); navigate("/friendsLists"); }} className={`navigation-element ${page === "feed" && "underline" }`}>
                         <BsLink color="white" size={25} />
                         <h2>Friend lists</h2>
                     </div>
