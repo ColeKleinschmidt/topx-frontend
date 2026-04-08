@@ -71,8 +71,10 @@ export default function LandingPage() {
                 localStorage.setItem("user", JSON.stringify(response.user));
                 setErrorMessage("");
                 closeModal();
-                // Force a full page reload to ensure auth state is fresh
-                window.location.href = "/myLists";
+                // Use navigate instead of window.location to avoid reload issues
+                setTimeout(() => {
+                    navigate("/myLists");
+                }, 100);
             } else {
                 const message = response?.message || "Unable to log in. Please try again.";
                 setErrorMessage(message);
