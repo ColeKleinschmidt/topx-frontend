@@ -51,7 +51,8 @@ export default function LandingPage() {
         createAccountAPI(username.trim(), email.trim(), password).then((response) => {
             if (response.user !== undefined && response.user !== null) {
                 localStorage.setItem("user", JSON.stringify(response.user));
-                navigate("/myLists");
+                closeModal();
+                window.location.href = "/myLists";
             } else {
                 setErrorMessage(response.message || "Unable to create account");
             }
@@ -65,14 +66,20 @@ export default function LandingPage() {
         }
 
         loginAPI(email.trim(), password).then((response) => {
+            console.log("Login response:", response);
             if (response.user !== undefined && response.user !== null) {
                 localStorage.setItem("user", JSON.stringify(response.user));
                 setErrorMessage("");
-                navigate("/myLists");
+                closeModal();
+                // Force a full page reload to ensure auth state is fresh
+                window.location.href = "/myLists";
             } else {
                 const message = response?.message || "Unable to log in. Please try again.";
                 setErrorMessage(message);
             }
+        }).catch((error) => {
+            console.error("Login error:", error);
+            setErrorMessage("Connection error. Please try again.");
         })
     }
 

@@ -6,7 +6,7 @@ import FriendsLists from "./FriendsLists.jsx";
 import Profile from "./Profile.jsx";
 import List from "../../components/class/List.jsx";
 import FindFriends from "./FindFriends.jsx";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setNotifications } from "../../store/notificationsSlice.js";
 import { setBlockedUsers } from "../../store/blockedUsersSlice.js";
@@ -21,6 +21,7 @@ const Home = ({ route }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const location = useLocation();
+    const { userId } = useParams();
 
     useEffect(() => {
         if (page !== "myLists" && showNewList) {
@@ -29,14 +30,19 @@ const Home = ({ route }) => {
     }, [page, showNewList]);
 
     useEffect(() => {
-        if (!page) return;
-        const targetBase = `/${page}`;
-        const isOnTargetBase = location.pathname === targetBase || location.pathname.startsWith(`${targetBase}/`);
-        if (!isOnTargetBase) {
-            if (page === "search") return;
-            navigate(targetBase, { replace: true });
+        // Sync page state with current location
+        if (location.pathname.startsWith('/profile')) {
+            if (page !== 'profile') setPage('profile');
+        } else if (location.pathname.startsWith('/findFriends')) {
+            if (page !== 'findFriends') setPage('findFriends');
+        } else if (location.pathname.startsWith('/friendsLists')) {
+            if (page !== 'friendsLists') setPage('friendsLists');
+        } else if (location.pathname.startsWith('/myLists')) {
+            if (page !== 'myLists') setPage('myLists');
+        } else if (location.pathname.startsWith('/search')) {
+            if (page !== 'search') setPage('search');
         }
-    }, [page, navigate, location.pathname]);
+    }, [location.pathname, page]);
 
     const refreshNotifications = useCallback(async () => {
         try {
@@ -76,7 +82,7 @@ const Home = ({ route }) => {
                 ) : page === "search" ? (
                     <SearchResults />
                 ) : page === "profile" && (
-                    <Profile />
+                    <Profile userId={userId} />
                 )}
 
             </div>

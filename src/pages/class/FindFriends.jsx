@@ -251,7 +251,11 @@ const FindFriends = ({ onBackToFriends = () => {}, onNotificationsUpdated = asyn
                                 <img src={user.profilePic || user.profilePicture || defaultAvatar} alt={`${user.username}'s profile`} />
                             </div>
                             <div className="friend-details">
-                                <h3>{user.username}</h3>
+                                <h3 onClick={(e) => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    handleOpenProfile(user._id || user.id);
+                                }}>{user.username}</h3>
                                 <p className="muted">@{user.username?.toLowerCase()}</p>
                             </div>
                         </div>

@@ -67,9 +67,10 @@
     flex: 1;
     min-height: 0;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 280px));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 340px));
     justify-content: center;
-    gap: 16px;
+    align-content: start;
+    gap: 40px;
     height: 100%;
     overflow-y: auto;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
@@ -101,18 +102,41 @@
     cursor: pointer;
 }
 
-.friend-avatar img {
+.friend-avatar {
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid #ffe4e4;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
     background: #fff;
+}
+
+.friend-avatar img {
+    width: 100%;
+    height: 100%;
+    min-width: 100%;
+    min-height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center;
+    border: 3px solid #ffe4e4;
 }
 
 .friend-details h3 {
     margin: 0;
     color: #1f2937;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.friend-details h3:hover {
+    color: #fc5647;
+    text-decoration: underline;
 }
 
 .friend-details .muted {

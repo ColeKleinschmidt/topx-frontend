@@ -12,6 +12,7 @@ import { acceptFriendRequestAPI, declineFriendRequestAPI, getAllNotificationsAPI
 import { useLocation, useNavigate } from "react-router-dom";
 import { getUserId } from "../../backend/apis.js";
 import { removeNotificationAPI } from "../../backend/apis.js";
+import topXlogo from "../../assets/images/topxlogo.webp";
 
 const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} }) => {
 
@@ -136,6 +137,41 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
+
+    useEffect(() => {
+        const preventScroll = (e) => {
+            // Allow scrolling if the event is from within a dropdown
+            if (e.target.closest('.dropdown-content') || e.target.closest('.notification-dropdown') || e.target.closest('.shares-dropdown')) {
+                return;
+            }
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        };
+
+        let scrollHandler;
+        
+        if (showFriendRequests || showShares) {
+            const scrollY = window.scrollY;
+            scrollHandler = () => {
+                window.scrollTo(0, scrollY);
+            };
+            window.addEventListener('wheel', preventScroll, { passive: false });
+            window.addEventListener('touchmove', preventScroll, { passive: false });
+            window.addEventListener('scroll', scrollHandler);
+        } else {
+            window.removeEventListener('wheel', preventScroll);
+            window.removeEventListener('touchmove', preventScroll);
+        }
+        
+        return () => {
+            window.removeEventListener('wheel', preventScroll);
+            window.removeEventListener('touchmove', preventScroll);
+            if (scrollHandler) {
+                window.removeEventListener('scroll', scrollHandler);
+            }
+        };
+    }, [showFriendRequests, showShares]);
 
 
     const getNotificationRequestId = (notification) =>
@@ -274,19 +310,20 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
 
     return (
         <div className="navigation-bar">
-            <div className={'logo-container'}>
-                <h2>Topx</h2>
-            </div>
-            <div className="navigation-container">
-                <div onClick={() => setPage("myLists")} className={`navigation-element ${page === "friends" && "underline" }`}>
-                    <IoIosCheckmarkCircle color="white" size={25} />
-                    <h2>My lists</h2>
+            <div className="nav-content">
+                <div className={'logo-container'} onClick={() => { setPage("myLists"); navigate("/myLists"); }} style={{ cursor: 'pointer' }}>
+                    <img src={topXlogo} alt="TopX" className="nav-logo" />
                 </div>
-                <div onClick={() => setPage("friendsLists")} className={`navigation-element ${page === "feed" && "underline" }`}>
-                    <BsLink color="white" size={40} />
-                    <h2>Friend lists</h2>
-                </div>
-                <div className="search-wrapper">
+                <div className="navigation-container">
+                    <div onClick={() => setPage("myLists")} className={`navigation-element ${page === "friends" && "underline" }`}>
+                        <IoIosCheckmarkCircle color="white" size={25} />
+                        <h2>My lists</h2>
+                    </div>
+                    <div onClick={() => setPage("friendsLists")} className={`navigation-element ${page === "feed" && "underline" }`}>
+                        <BsLink color="white" size={25} />
+                        <h2>Friend lists</h2>
+                    </div>
+                    <div className="search-wrapper">
                     <input
                         className="search-lists"
                         placeholder="Search lists"
@@ -307,7 +344,7 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
             </div>
             <div className={'profile-buttons'}> 
                 <div className="dropdown-wrapper" ref={dropdownRef}>
-                    <div onClick={() => { setShowFriendRequests((prev) => !prev); setShowShares(false); refreshNotifications(); }} className="notifications-button">
+                    <div onClick={() => { setShowFriendRequests((prev) => !prev); setShowShares(false); refreshNotifications(); }} className="notifications-button" data-label="Notifications">
                         <FaBell color="white" size={20}/>
                         {friendRequestNotifications.filter(isForLoggedInUser).length > 0 && (
                             <span className="notification-badge">{friendRequestNotifications.filter(isForLoggedInUser).length}</span>
@@ -315,6 +352,10 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
                     </div>
                     {showFriendRequests && (
                         <div className="notification-dropdown">
+                            <div className="dropdown-header">
+                                <h3 className="dropdown-title">Notifications</h3>
+                            </div>
+                            <div className="dropdown-content">
                             {friendRequestNotifications.filter(isForLoggedInUser).length === 0 ? (
                                 <p className="notification-empty">No friend requests</p>
                             ) : (
@@ -338,7 +379,17 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
                                                     {avatar ? <img src={avatar} alt={username} /> : <div className="avatar-placeholder" />}
                                                 </div>
                                                 <div className="notification-meta">
-                                                    <p className="notification-title">{username}</p>
+                                                    <p 
+                                                        className={`notification-title ${senderId ? 'clickable' : ''}`}
+                                                        onClick={(e) => {
+                                                            if (senderId) {
+                                                                e.stopPropagation();
+                                                                navigate(`/profile/${senderId}`);
+                                                            }
+                                                        }}
+                                                    >
+                                                        {username}
+                                                    </p>
                                                     <p className="notification-subtitle">sent you a friend request</p>
                                                 </div>
                                             </div>
@@ -354,18 +405,23 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
                                     );
                                 })
                             )}
+                            </div>
                         </div>
                     )}
                 </div>
                 <div className="dropdown-wrapper" ref={sharesRef}>
-                    <div onClick={() => { setShowShares((prev) => !prev); setShowFriendRequests(false); refreshNotifications(); }} className="shared-button">
-                        <IoIosSend color="white" size={25}/>
+                    <div onClick={() => { setShowShares((prev) => !prev); setShowFriendRequests(false); refreshNotifications(); }} className="shared-button" data-label="Shares">
+                        <IoIosSend color="white" size={24}/>
                         {shareNotifications.filter(isForLoggedInUser).length > 0 && (
                             <span className="notification-badge">{shareNotifications.filter(isForLoggedInUser).length}</span>
                         )}
                     </div>
                     {showShares && (
-                        <div className="notification-dropdown">
+                        <div className="shares-dropdown">
+                            <div className="dropdown-header">
+                                <h3 className="dropdown-title">Shares</h3>
+                            </div>
+                            <div className="dropdown-content">
                             {shareNotifications.filter(isForLoggedInUser).length === 0 ? (
                                 <p className="notification-empty">No shares yet</p>
                             ) : (
@@ -419,6 +475,7 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
                                     );
                                 })
                             )}
+                            </div>
                         </div>
                     )}
                 </div>
@@ -430,11 +487,12 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
                         navigate("/profile");
                     }}
                     className="profile-button"
+                    data-label="Profile"
                 >
-                    <MdAccountCircle color="white" size={25}/>
+                    <MdAccountCircle color="white" size={24}/>
                 </div>
             </div>
-
+            </div>
         </div>
     )
 }
