@@ -88,6 +88,9 @@ const Home = ({ route }) => {
             </div>
             {page === "myLists" && (
                 <>
+                    {showNewList && (
+                        <div className="newListOverlay" onClick={() => setShowNewList(false)} />
+                    )}
                     <div className={`newListContainer ${showNewList && "animate"}`}>
                         <List editable={true} showSubmitButton />
                     </div>

@@ -169,7 +169,7 @@ export default function LandingPage() {
 
             {/* Login/Signup Modal */}
             {showModal && (
-                <div className="modal-overlay" onClick={closeModal}>
+                <div className="modal-overlay" onMouseDown={(e) => { if (e.target === e.currentTarget) closeModal(); }}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header">
                             <img src={topXlogo} alt="TopX Logo" className="modal-logo" />

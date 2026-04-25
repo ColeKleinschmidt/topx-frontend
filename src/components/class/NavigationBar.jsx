@@ -311,7 +311,7 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
     return (
         <div className="navigation-bar">
             <div className="nav-content">
-                <div className={'logo-container'} onClick={() => { setPage("myLists"); navigate("/myLists"); }} style={{ cursor: 'pointer' }}>
+                <div className={'logo-container'} onClick={() => { document.activeElement?.blur(); setPage("myLists"); navigate("/myLists"); }} style={{ cursor: 'pointer' }}>
                     <img src={topXlogo} alt="TopX" className="nav-logo" />
                 </div>
                 <div className="navigation-container">
