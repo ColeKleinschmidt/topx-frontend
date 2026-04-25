@@ -585,6 +585,20 @@ export const getBlockedUsersAPI = async () =>
     }
 };
 
+export const refreshItemImageAPI = async (itemId, query) => {
+    const backend_query = await apiFetch(`${ENDPOINT}refreshItemImage`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ itemId, query })
+    });
+    const response = await backend_query.json();
+    return response;
+};
+
 //------------------TEMPLATE API CALL------------------//
 /*
 const api = async () => {

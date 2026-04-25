@@ -6,6 +6,27 @@
     flex-direction: column;
 }
 
+.lists-spinner-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 0;
+    width: 100%;
+}
+
+.lists-spinner {
+    width: 48px;
+    height: 48px;
+    border: 5px solid #f0f0f0;
+    border-top-color: #fc5647;
+    border-radius: 50%;
+    animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
 .my-lists-top-bar {
     height: 10%;
     width: calc(100% - 25px);

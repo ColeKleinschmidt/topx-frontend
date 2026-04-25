@@ -1,6 +1,6 @@
 import "../css/List.css";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { findItemsAPI } from "../../backend/apis.js";
+import { findItemsAPI, refreshItemImageAPI } from "../../backend/apis.js";
 
 const List = ({ list, setList, editable = false, onClick, showSubmitButton = false, onSubmit }) => {
 
@@ -22,6 +22,7 @@ const List = ({ list, setList, editable = false, onClick, showSubmitButton = fal
             return [{ title: "", image: "" }];
         }
         return items.map((item) => ({
+            _id: item?._id || null,
             title: item?.title || item?.name || "",
             image: item?.image || item?.img || item?.url || "",
         }));
@@ -257,7 +258,22 @@ const List = ({ list, setList, editable = false, onClick, showSubmitButton = fal
                         <h1>{number}</h1>
                     </div>
                     <h2 className="item-title">{item.title}</h2>
-                    <img className="item-image" src={item.image} alt={item.title} />
+                    <img
+                        className="item-image"
+                        src={item.image}
+                        alt={item.title}
+                        onError={(e) => {
+                            e.target.style.visibility = 'hidden';
+                            if (item._id && item.title) {
+                                refreshItemImageAPI(item._id, item.title).then((res) => {
+                                    if (res?.image) {
+                                        e.target.src = res.image;
+                                        e.target.style.visibility = 'visible';
+                                    }
+                                }).catch(() => {});
+                            }
+                        }}
+                    />
                 </div>
             );
         }

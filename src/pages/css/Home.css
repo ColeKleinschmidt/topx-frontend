@@ -27,6 +27,8 @@
     color: #FF6B6B;
     font-size: 50px;
     transition: transform 200ms, box-shadow 200ms;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .newList.active {

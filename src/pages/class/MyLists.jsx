@@ -77,7 +77,11 @@ const MyLists = ({ onCreateList = () => {}, onEmptyChange = () => {} }) => {
                     </div>
                 )}
             </div>
-            {loadingLists && <h2 className="loading-lists">Loading...</h2>}
+            {loadingLists && (
+                <div className="lists-spinner-wrapper">
+                    <div className="lists-spinner" />
+                </div>
+            )}
         </div>
     )
 }
