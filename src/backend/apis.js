@@ -1,9 +1,23 @@
 //when true, pinging server will ping the local server. When false, it will ping real API.
 const local_server = false;
 //paste your local ip address here so expo can connect to local functions emulator
-export const local_ip_address = 'http://192.168.86.186';
+export const local_ip_address = 'http://127.0.0.1:8080';
 
-const ENDPOINT = local_server ? local_ip_address + ":8080/" : "https://topx-backend.onrender.com/"; 
+const ENDPOINT = local_server ? local_ip_address + "/" : "https://topx-backend.onrender.com/"; 
+
+// Wrapper that auto-handles 401 by clearing session and redirecting to login
+const apiFetch = async (url, options = {}) => {
+    const response = await fetch(url, options);
+    // Don't auto-redirect for auth-related endpoints
+    const noRedirectEndpoints = ['login', 'createAccount', 'authStatus', 'logout'];
+    const isAuthEndpoint = noRedirectEndpoints.some(ep => url.includes(ep));
+    if (response.status === 401 && !isAuthEndpoint) {
+        localStorage.removeItem("user");
+        window.location.href = "/";
+        return { message: "Unauthorized" };
+    }
+    return response;
+};
 
 export const getUserId = () => {
     const user = localStorage.getItem("user");
@@ -22,7 +36,7 @@ export const createAccountAPI = async (username, email, password) => {
         email: email,
         password: password
     }
-    const backend_query = await apiFetch(`${ENDPOINT}createAccount`, {
+    const backend_query = await fetch(`${ENDPOINT}createAccount`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -41,7 +55,7 @@ export const loginAPI = async (email, password) => {
         email: email,
         password: password,
     };
-    const backend_query = await apiFetch(`${ENDPOINT}login`, {
+    const backend_query = await fetch(`${ENDPOINT}login`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -58,7 +72,7 @@ export const loginAPI = async (email, password) => {
 
 export const authStatusAPI = async () => 
     {
-        const backend_query = await apiFetch(`${ENDPOINT}authStatus`, {
+        const backend_query = await fetch(`${ENDPOINT}authStatus`, {
             method: 'GET',
             credentials: 'include',
             headers: {
@@ -82,7 +96,7 @@ export const deleteCookie = (name) => {
 };
 
 export const logoutAPI = async () => {
-    const backend_query = await apiFetch(`${ENDPOINT}logout`, {
+    const backend_query = await fetch(`${ENDPOINT}logout`, {
         method: 'GET',
         credentials: 'include',
         headers: {
@@ -101,7 +115,7 @@ export const logoutAPI = async () => {
 }
 
 const getAllUsersAPI = async () => {
-    const backend_query = await apiFetch(`${ENDPOINT}getAllUsers`, {
+    const backend_query = await fetch(`${ENDPOINT}getAllUsers`, {
         method: 'GET',
         credentials: 'include',
         headers: {
@@ -115,7 +129,7 @@ const getAllUsersAPI = async () => {
 }
 
 export const getUsersAPI = async (page = 1, limit = 12) => {
-    const backend_query = await apiFetch(`${ENDPOINT}getUsers?page=${page}&limit=${limit}`, {
+    const backend_query = await fetch(`${ENDPOINT}getUsers?page=${page}&limit=${limit}`, {
         method: 'GET',
         credentials: 'include',
         headers: {
@@ -133,7 +147,7 @@ export const uploadProfilePictureAPI = async (file) => {
     formData.append("image", file);
 
     try {
-        const backend_query = await apiFetch(`${ENDPOINT}uploadProfilePicture`, {
+        const backend_query = await fetch(`${ENDPOINT}uploadProfilePicture`, {
             method: 'POST',
             credentials: 'include', // Ensure session cookies are sent
             body: formData,
@@ -156,7 +170,7 @@ export const sendFriendRequestAPI = async (recipientID) => {
     const data = {
         receiver: recipientID
     };
-    const backend_query = await apiFetch(`${ENDPOINT}sendFriendRequest`, {
+    const backend_query = await fetch(`${ENDPOINT}sendFriendRequest`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -172,7 +186,7 @@ export const sendFriendRequestAPI = async (recipientID) => {
 }
 
 export const getAllNotificationsAPI = async () => {
-    const backend_query = await apiFetch(`${ENDPOINT}getAllNotifications`, {
+    const backend_query = await fetch(`${ENDPOINT}getAllNotifications`, {
         method: 'GET',
         credentials: 'include',
         headers: {
@@ -190,7 +204,7 @@ export const acceptFriendRequestAPI = async (requestId) => {
     const data = {
         requestId: requestId
     }
-    const backend_query = await apiFetch(`${ENDPOINT}acceptFriendRequest`, {
+    const backend_query = await fetch(`${ENDPOINT}acceptFriendRequest`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -209,7 +223,7 @@ export const declineFriendRequestAPI = async (requestId) => {
     const data = {
         requestId: requestId
     }
-    const backend_query = await apiFetch(`${ENDPOINT}declineFriendRequest`, {
+    const backend_query = await fetch(`${ENDPOINT}declineFriendRequest`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -228,7 +242,7 @@ export const removeFriendAPI = async (userId) => {
     const data = {
         user: userId
     }
-    const backend_query = await apiFetch(`${ENDPOINT}removeFriend`, {
+    const backend_query = await fetch(`${ENDPOINT}removeFriend`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -247,7 +261,7 @@ export const findItemsAPI = async (title) => {
     const data = {
         title: title
     }
-    const backend_query = await apiFetch(`${ENDPOINT}findItems`, {
+    const backend_query = await fetch(`${ENDPOINT}findItems`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -266,7 +280,7 @@ export const searchListAPI = async (title) => {
     const data = {
         query: title
     }
-    const backend_query = await apiFetch(`${ENDPOINT}searchList`, {
+    const backend_query = await fetch(`${ENDPOINT}searchList`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -285,7 +299,7 @@ export const removeNotificationAPI = async (id) => {
     const data = {
         notificationId: id
     }
-    const backend_query = await apiFetch(`${ENDPOINT}removeNotification`, {
+    const backend_query = await fetch(`${ENDPOINT}removeNotification`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -305,7 +319,7 @@ export const getListsAPI = async (page, limit) => {
         page: page,
         limit: limit
     }
-    const backend_query = await apiFetch(`${ENDPOINT}getLists`, {
+    const backend_query = await fetch(`${ENDPOINT}getLists`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -325,7 +339,7 @@ export const getFriendsListsAPI = async (page, limit) => {
         page: page,
         limit: limit
     }
-    const backend_query = await apiFetch(`${ENDPOINT}getFriendsLists`, {
+    const backend_query = await fetch(`${ENDPOINT}getFriendsLists`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -344,7 +358,7 @@ export const getListAPI = async (listId) => {
     const data = {
         listId
     };
-    const backend_query = await apiFetch(`${ENDPOINT}getList`, {
+    const backend_query = await fetch(`${ENDPOINT}getList`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -360,7 +374,7 @@ export const getListAPI = async (listId) => {
 }
 
 export const getFriendsAPI = async (listId) => {
-    const backend_query = await apiFetch(`${ENDPOINT}getFriends`, {
+    const backend_query = await fetch(`${ENDPOINT}getFriends`, {
         method: 'GET',
         credentials: 'include',
         headers: {
@@ -379,7 +393,7 @@ const getUserByUsernameAPI = async (username) => {
     data = {
         username: username
     }
-    const backend_query = await apiFetch(`${ENDPOINT}getUserByUsername`, {
+    const backend_query = await fetch(`${ENDPOINT}getUserByUsername`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -400,7 +414,7 @@ export const shareListAPI = async (userId, listId) => {
         listId: listId
     }
     console.log("Sharing list with user ID:", userId);
-    const backend_query = await apiFetch(`${ENDPOINT}shareList`, {
+    const backend_query = await fetch(`${ENDPOINT}shareList`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -422,7 +436,7 @@ export const updateListAPI = async (listId, list) => {
         items: list?.items || list?.listItems || [],
     };
 
-    const backend_query = await apiFetch(`${ENDPOINT}updateList`, {
+    const backend_query = await fetch(`${ENDPOINT}updateList`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -441,7 +455,7 @@ export const getUserByIdAPI = async (id) => {
     const data = {
         id: id
     };
-    const backend_query = await apiFetch(`${ENDPOINT}getUserById`, {
+    const backend_query = await fetch(`${ENDPOINT}getUserById`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -457,7 +471,7 @@ export const getUserByIdAPI = async (id) => {
 }
 
 const createListAPI = async (list) => {
-    const backend_query = await apiFetch(`${ENDPOINT}createList`, {
+    const backend_query = await fetch(`${ENDPOINT}createList`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -488,7 +502,7 @@ export const getUserListsAPI = async (userId, page = 1, limit = 10) =>
 {
     const data = { userId, page, limit };
 
-    const backend_query = await apiFetch(`${ENDPOINT}getListsByUserId`, 
+    const backend_query = await fetch(`${ENDPOINT}getListsByUserId`, 
     {
         method: 'POST',
         credentials: 'include',
@@ -509,7 +523,7 @@ async function ignoreUser(userId, ignoredUserId)
 {
     try 
     {
-        const response = await apiFetch(`${ENDPOINT}ignoreUser"`, 
+        const response = await fetch(`${ENDPOINT}ignoreUser"`, 
         {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -529,7 +543,7 @@ export const toggleBlockUserAPI = async (userId, blockedUserId) =>
 {
     try 
     {
-        const response = await apiFetch(`${ENDPOINT}toggleBlockUser`, 
+        const response = await fetch(`${ENDPOINT}toggleBlockUser`, 
         {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -551,7 +565,7 @@ export const getBlockedUsersAPI = async () =>
 {
     try 
     {
-        const response = await apiFetch(`${ENDPOINT}getBlockedUsers`, 
+        const response = await fetch(`${ENDPOINT}getBlockedUsers`, 
         { 
             method: "GET", 
             headers: { 
@@ -575,7 +589,7 @@ export const getBlockedUsersAPI = async () =>
 /*
 const api = async () => {
     data = {}
-    const backend_query = await apiFetch(`${ENDPOINT}api`, {
+    const backend_query = await fetch(`${ENDPOINT}api`, {
         method: 'POST',
         credentials: 'include',
         headers: {
