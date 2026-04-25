@@ -35,8 +35,10 @@ const FriendsLists = ({ onFindFriends = () => {} }) => {
                 setPage((prev) => prev + 1);
                 setLoadingLists(false);
             }else {
-                // If unsuccessful, alert the user
-                alert(response.message);
+                // Silently ignore unauthorized or error responses
+                if (response?.message && response.message.toLowerCase() !== 'unauthorized') {
+                    console.warn('getFriendsLists error:', response.message);
+                }
                 setLoadingLists(false);
             }
         })

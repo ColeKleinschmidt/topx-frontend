@@ -43,8 +43,10 @@ const MyLists = ({ onCreateList = () => {}, onEmptyChange = () => {} }) => {
                 });
                 setPage((prev) => prev + 1);
             } else {
-                // If unsuccessful, alert the user
-                alert(response.message);
+                // Silently ignore unauthorized or error responses
+                if (response?.message && response.message.toLowerCase() !== 'unauthorized') {
+                    console.warn('getLists error:', response.message);
+                }
             }
             setLoadingLists(false);
         })
