@@ -71,10 +71,10 @@ export default function LandingPage() {
                 localStorage.setItem("user", JSON.stringify(response.user));
                 setErrorMessage("");
                 closeModal();
-                // Use navigate instead of window.location to avoid reload issues
+                // Wait a bit longer for session to be established
                 setTimeout(() => {
                     navigate("/myLists");
-                }, 100);
+                }, 300);
             } else {
                 const message = response?.message || "Unable to log in. Please try again.";
                 setErrorMessage(message);
