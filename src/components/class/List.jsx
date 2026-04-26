@@ -552,7 +552,7 @@ const List = ({ list, setList, editable = false, onClick, showSubmitButton = fal
                 <div className="dot" />
                 <div className="line" />
             </div>
-            {!editable && list.items.map((item, index) => (
+            {!editable && (list.items || []).map((item, index) => (
                 <RowItem key={index} item={item} number={index + 1} />
             ))}
             {editable && newList.listItems.map((item, index) => (
