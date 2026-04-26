@@ -2,7 +2,6 @@ import "../css/List.css";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { findItemsAPI, refreshItemImageAPI, sendFriendRequestAPI, toggleBlockUserAPI, getUserId } from "../../backend/apis.js";
 import { useNavigate } from "react-router-dom";
-import { BsThreeDots } from "react-icons/bs";
 import defaultAvatar from "../../assets/icons/User Icon.png";
 
 const List = ({ list, setList, editable = false, onClick, showSubmitButton = false, onSubmit, owner }) => {
@@ -319,7 +318,7 @@ const List = ({ list, setList, editable = false, onClick, showSubmitButton = fal
                     <h2 className="item-title">{item.title}</h2>
                     <img
                         className="item-image"
-                        src={item.image}
+                        src={item.image?.replace(/^http:\/\//i, 'https://')}
                         alt={item.title}
                         onError={(e) => {
                             const oldImageUrl = item.image;
@@ -396,7 +395,7 @@ const List = ({ list, setList, editable = false, onClick, showSubmitButton = fal
                 </div>
                 <div className="item-image preview">
                     {item.image ? (
-                        <img src={item.image} alt={item.title || `Item ${number}`} />
+                        <img src={item.image?.replace(/^http:\/\//i, 'https://')} alt={item.title || `Item ${number}`} />
                     ) : (
                         <div className="placeholder-image" />
                     )}
@@ -484,7 +483,7 @@ const List = ({ list, setList, editable = false, onClick, showSubmitButton = fal
                         </button>
                         <div className="three-dot-menu" ref={ownerMenuRef}>
                             <button className="three-dot-btn" onClick={(e) => { e.stopPropagation(); setOwnerMenuOpen((p) => !p); }}>
-                                <BsThreeDots size={20} />
+                                <span className="three-dot-icon">•••</span>
                             </button>
                             {ownerMenuOpen && (
                                 <div className="three-dot-dropdown">
