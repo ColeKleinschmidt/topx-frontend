@@ -41,6 +41,26 @@
     display: flex;
     gap: 12px;
     align-items: center;
+    flex-wrap: wrap;
+}
+
+.find-friends-search {
+    padding: 10px 14px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    background: #ffffff;
+    color: #1f1f1f;
+    outline: none;
+    min-width: 200px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.find-friends-search:focus {
+    border-color: #fc5647;
+    box-shadow: 0 2px 8px rgba(252, 86, 71, 0.15);
 }
 
 .secondary-button {

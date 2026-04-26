@@ -28,42 +28,190 @@
     align-items: center;
 }
 
-.friends-lists-top-bar {
-    height: 10%;
-    width: 100%;
-    max-width: 1100px;
+/* Two-column outer layout */
+.friends-lists-outer {
     display: flex;
-    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0;
+}
+
+.friends-lists-feed {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    padding: 25px;
-    box-sizing: border-box;
+    height: 100%;
+    overflow-y: auto;
+    /* Guard rails */
+    border-left: 1px solid #e5e7eb;
+    border-right: 1px solid #e5e7eb;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
-.friends-lists-header {
-    font-size: 40px;
-    color: #2D2D2D;
+.friends-lists-sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    padding: 24px 20px 24px 0;
+    position: sticky;
+    top: 0;
 }
 
-.find-new-friends-button {
-    background: linear-gradient(90deg, #FF6B6B 0%, #FF9472 100%);
-    color: #ffffff;
+/* Sidebar widget */
+.sidebar-widget {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 8px 24px rgba(17, 24, 39, 0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sidebar-widget-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #6b7280;
+    margin: 0;
+}
+
+.sidebar-user-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.sidebar-user-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sidebar-user-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+    cursor: pointer;
+    border-radius: 10px;
+    padding: 4px 6px;
+    transition: background 120ms ease;
+}
+
+.sidebar-user-info:hover {
+    background: #f3f4f6;
+}
+
+.sidebar-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: #ffe4e6;
+    border: 1px solid #fecdd3;
+}
+
+.sidebar-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.sidebar-user-meta {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.sidebar-username {
+    font-size: 13px;
+    font-weight: 700;
+    color: #111827;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sidebar-handle {
+    font-size: 11px;
+    color: #9ca3af;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sidebar-add-btn {
+    flex-shrink: 0;
     border: none;
-    padding: 12px 18px;
-    border-radius: 14px;
-    font-weight: 600;
-    font-size: 16px;
-    box-shadow: 0 8px 20px rgba(255, 107, 107, 0.25);
-    transition: transform 150ms ease, box-shadow 150ms ease, opacity 150ms ease;
+    background: linear-gradient(90deg, #FF6B6B 0%, #FF9472 100%);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: opacity 120ms ease, transform 120ms ease;
+    box-shadow: 0 4px 10px rgba(255,107,107,0.25);
 }
 
-.find-new-friends-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 24px rgba(255, 107, 107, 0.35);
+.sidebar-add-btn:hover {
+    opacity: 0.88;
+    transform: translateY(-1px);
 }
 
-.find-new-friends-button:active {
-    transform: translateY(0);
-    box-shadow: 0 8px 20px rgba(255, 107, 107, 0.25);
+.sidebar-add-btn--sent,
+.sidebar-add-btn:disabled {
+    background: #e5e7eb;
+    color: #6b7280;
+    box-shadow: none;
+    cursor: default;
+    transform: none;
+    opacity: 1;
+}
+
+.sidebar-find-btn {
+    width: 100%;
+    border: none;
+    background: linear-gradient(90deg, #FF6B6B 0%, #FF9472 100%);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(255,107,107,0.25);
+    transition: opacity 120ms ease, transform 120ms ease;
+}
+
+.sidebar-find-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.sidebar-empty {
+    font-size: 12px;
+    color: #9ca3af;
+    text-align: center;
+    margin: 4px 0;
+}
+
+@media (max-width: 768px) {
+    .friends-lists-sidebar {
+        display: none;
+    }
+    .friends-lists-feed {
+        width: 100%;
+    }
 }
 
 .lists {
@@ -77,6 +225,7 @@
     padding: 20px 25px 32px;
     box-sizing: border-box;
 }
+
 
 .empty-state {
     width: 100%;

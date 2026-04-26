@@ -15,6 +15,7 @@ const FindFriends = ({ onBackToFriends = () => {}, onNotificationsUpdated = asyn
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
     const [error, setError] = useState(null);
+    const [search, setSearch] = useState("");
     const [friendRequests, setFriendRequests] = useState({});
     const [incomingRequestStatus, setIncomingRequestStatus] = useState({});
     const notifications = useSelector((state) => state.notifications.items);
@@ -214,9 +215,13 @@ const FindFriends = ({ onBackToFriends = () => {}, onNotificationsUpdated = asyn
     const visibleUsers = useMemo(
         () => users.filter((user) => {
             const id = user?._id || user?.id;
-            return id && !blockedSet.has(String(id));
+            if (!id || blockedSet.has(String(id))) return false;
+            if (search.trim()) {
+                return (user.username || "").toLowerCase().includes(search.toLowerCase().trim());
+            }
+            return true;
         }),
-        [users, blockedSet]
+        [users, blockedSet, search]
     );
 
     return (
@@ -227,6 +232,13 @@ const FindFriends = ({ onBackToFriends = () => {}, onNotificationsUpdated = asyn
                     <p className="subtitle">Browse and friend other TopX users.</p>
                 </div>
                 <div className="actions">
+                    <input
+                        className="find-friends-search"
+                        type="text"
+                        placeholder="Search users..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                    />
                     <button className="secondary-button" onClick={onBackToFriends}>Back to Friends Lists</button>
                 </div>
             </div>

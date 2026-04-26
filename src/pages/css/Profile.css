@@ -273,6 +273,7 @@
     box-shadow: 0 14px 28px rgba(0, 0, 0, 0.08);
     padding: 8px;
     z-index: 4;
+    overflow: hidden;
 }
 
 .friends-search-input {
@@ -352,7 +353,23 @@
 }
 
 .blocked-user-item {
-    justify-content: space-between;
+    justify-content: flex-start;
+    overflow: hidden;
+}
+
+.blocked-user-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color 120ms ease;
+}
+
+.blocked-user-name:hover {
+    color: #fc5647;
+    text-decoration: underline;
 }
 
 .unblock-btn {

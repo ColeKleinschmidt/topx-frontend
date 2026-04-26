@@ -284,8 +284,8 @@ const Profile = () => {
                     dispatch(setBlockedUsers([...current, targetUserId]));
                 }
             }
-            // When blocking, also remove friend relationship
-            if (!wasBlocked && friendStatus === "friends") {
+            // When blocking, always attempt to remove friend relationship
+            if (!wasBlocked) {
                 try { await removeFriendAPI(targetUserId); } catch {}
                 setUser((prev) => ({ ...prev, friends: (prev?.friends || []).filter((id) => String(id) !== String(loggedInUserId)) }));
                 setFriends((prev) => prev.filter(f => String(f._id || f.id) !== String(targetUserId)));
@@ -510,10 +510,15 @@ const Profile = () => {
                                                 const detail = blockedUserDetails[id];
                                                 return (
                                                     <div key={id} className="friend-dropdown-item blocked-user-item">
-                                                        <div className="friend-avatar small">
+                                                        <div className="friend-avatar small" style={{flexShrink: 0}}>
                                                             <img src={detail?.profilePic || detail?.profilePicture || defaultAvatar} alt="avatar" />
                                                         </div>
-                                                        <span className="friend-name">{detail?.username || "User"}</span>
+                                                        <span
+                                                            className="friend-name blocked-user-name"
+                                                            onClick={() => { setBlockedOpen(false); navigate(`/profile/${id}`); }}
+                                                        >
+                                                            {detail?.username || "User"}
+                                                        </span>
                                                         <button
                                                             className="unblock-btn"
                                                             onClick={async (e) => {
@@ -525,6 +530,7 @@ const Profile = () => {
                                                                     } else {
                                                                         dispatch(setBlockedUsers((blockedUsers || []).filter(u => (typeof u === 'object' ? String(u._id || u.id) : String(u)) !== id)));
                                                                     }
+                                                                    await refreshNotifications();
                                                                 } catch {}
                                                             }}
                                                         >
