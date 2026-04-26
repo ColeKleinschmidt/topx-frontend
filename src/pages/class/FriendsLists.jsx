@@ -53,7 +53,7 @@ const FriendsLists = ({ onFindFriends = () => {} }) => {
     return (
         <div className="friends-lists-container">
             <div className="friends-lists-top-bar">
-                <h2 className="friends-lists-header">Friends Lists</h2>
+                <h2 className="friends-lists-header">Friend's Lists</h2>
                 <button className="find-new-friends-button" onClick={onFindFriends}>
                     Find new Friends
                 </button>
@@ -77,7 +77,11 @@ const FriendsLists = ({ onFindFriends = () => {} }) => {
                     </div>
                 )}
             </div>
-            {loadingLists && <h2 className="loading-lists">Loading...</h2>}
+            {loadingLists && (
+                <div className="lists-spinner-wrapper">
+                    <div className="lists-spinner" />
+                </div>
+            )}
         </div>
     )
 }

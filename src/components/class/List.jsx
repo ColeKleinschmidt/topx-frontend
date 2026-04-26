@@ -449,7 +449,14 @@ const List = ({ list, setList, editable = false, onClick, showSubmitButton = fal
     const canSubmitList = isTitleValid && newList.listItems.every((item) => item.title.trim() && item.image);
 
     return (
-        <>
+        <div
+            ref={containerRef}
+            className={containerClasses}
+            onClick={!editable ? onClick : undefined}
+            role={!editable && onClick ? "button" : undefined}
+            tabIndex={!editable && onClick ? 0 : undefined}
+            onKeyDown={handleKeyDown}
+        >
             {owner && !editable && (
                 <div
                     className="list-owner-bar"
@@ -489,14 +496,6 @@ const List = ({ list, setList, editable = false, onClick, showSubmitButton = fal
                     </div>
                 </div>
             )}
-            <div
-                ref={containerRef}
-                className={containerClasses}
-                onClick={!editable ? onClick : undefined}
-                role={!editable && onClick ? "button" : undefined}
-                tabIndex={!editable && onClick ? 0 : undefined}
-                onKeyDown={handleKeyDown}
-            >
             {editable ? (
                 <input
                     value={newList.title}
@@ -549,7 +548,6 @@ const List = ({ list, setList, editable = false, onClick, showSubmitButton = fal
                 </div>
             )}
         </div>
-        </>
     );
 };
 

@@ -321,7 +321,7 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
                     </div>
                     <div onClick={() => { setPage("friendsLists"); navigate("/friendsLists"); }} className={`navigation-element ${page === "feed" && "underline" }`}>
                         <BsLink color="white" size={25} />
-                        <h2>Friend lists</h2>
+                        <h2>Friend's lists</h2>
                     </div>
                     <div className="search-wrapper">
                     <input
