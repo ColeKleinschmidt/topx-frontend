@@ -585,7 +585,7 @@ export const getBlockedUsersAPI = async () =>
     }
 };
 
-export const refreshItemImageAPI = async (itemId, query) => {
+export const refreshItemImageAPI = async (itemId, query, oldImageUrl) => {
     const backend_query = await apiFetch(`${ENDPOINT}refreshItemImage`, {
         method: 'POST',
         credentials: 'include',
@@ -593,7 +593,7 @@ export const refreshItemImageAPI = async (itemId, query) => {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ itemId, query })
+        body: JSON.stringify({ itemId, query, oldImageUrl })
     });
     const response = await backend_query.json();
     return response;
