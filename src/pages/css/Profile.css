@@ -155,19 +155,20 @@
 
 .menu-item {
     width: 100%;
-    border: 1px solid #111827;
-    background: #111827;
+    border: none;
+    background: linear-gradient(90deg, #FF6B6B 0%, #FF9472 100%);
     color: #ffffff;
     padding: 10px 12px;
     text-align: left;
     border-radius: 8px;
     cursor: pointer;
-    font-weight: 700;
+    font-weight: 600;
+    transition: opacity 120ms ease, transform 120ms ease;
 }
 
 .menu-item:hover {
-    background: #0b1221;
-    border-color: #0b1221;
+    opacity: 0.88;
+    transform: translateY(-1px);
 }
 
 .primary-button, .secondary-button, .remove-friend {
@@ -229,6 +230,8 @@
     flex-wrap: wrap;
     gap: 16px;
     justify-content: center;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .friends-indicator-wrapper {

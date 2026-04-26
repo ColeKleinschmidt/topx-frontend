@@ -546,6 +546,7 @@ export const toggleBlockUserAPI = async (userId, blockedUserId) =>
         const response = await fetch(`${ENDPOINT}toggleBlockUser`, 
         {
             method: "POST",
+            credentials: "include",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ userId, blockedUserId })
         });

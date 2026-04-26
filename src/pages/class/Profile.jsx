@@ -446,8 +446,6 @@ const Profile = () => {
                                 {friends.length === 0 && loading && <p className="muted no-friends">Loading friends...</p>}
                             </div>
                         )}
-                            </div>
-                        )}
                     </div>
                 </div>
                 {!viewingOwnProfile && (
