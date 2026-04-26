@@ -106,7 +106,7 @@ const Home = ({ route }) => {
                         <div className="newListOverlay" onClick={() => setShowNewList(false)} />
                     )}
                     <div className={`newListContainer ${showNewList && "animate"}`}>
-                        <List editable={true} showSubmitButton />
+                        {showNewList && <List editable={true} showSubmitButton />}
                     </div>
                     {showQuickCreate && (
                         <div className={`newList ${showNewList ? "active" : ""}`} onClick={() => {setShowNewList(!showNewList)}}>+</div>

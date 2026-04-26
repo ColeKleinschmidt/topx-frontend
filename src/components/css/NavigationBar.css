@@ -9,6 +9,12 @@
     padding: 15px 0;
 }
 
+/* Prevent horizontal scroll site-wide */
+html, body {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
 /* Custom scrollbar for main page - always visible */
 html {
     overflow-y: scroll;
@@ -527,79 +533,76 @@ html::-webkit-scrollbar-thumb:hover {
 /* Mobile Responsive Styles */
 @media (max-width: 768px) {
     .navigation-bar {
-        padding: 10px 0;
+        padding: 8px 0;
     }
 
     .nav-content {
-        padding: 0 10px;
-        flex-wrap: wrap;
-        gap: 10px;
+        padding: 0 8px;
+        flex-wrap: nowrap;
+        gap: 6px;
+        justify-content: space-between;
+        align-items: center;
     }
 
     .nav-logo {
-        height: 35px;
+        height: 30px;
+        flex-shrink: 0;
     }
 
     .navigation-container {
-        order: 3;
-        width: 100%;
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 4px;
+        order: unset;
+        width: auto;
+        flex: 1;
         justify-content: center;
-        flex-wrap: wrap;
-        gap: 5px;
+        margin-left: 6px;
     }
 
     .navigation-element {
-        margin: 5px;
-        padding: 8px 20px;
-        font-size: 12px;
+        margin: 0;
+        padding: 6px 10px;
+        font-size: 11px;
     }
 
     .navigation-element h2 {
-        font-size: 14px;
-        margin-left: 3px;
+        font-size: 11px;
+        margin-left: 2px;
+        display: none;
     }
 
     .navigation-element svg {
-        width: 20px;
-        height: 20px;
+        width: 18px;
+        height: 18px;
     }
 
     .search-wrapper {
-        order: 2;
+        order: unset;
         flex: 1;
-        min-width: 150px;
+        min-width: 0;
+        max-width: 160px;
     }
 
     .search-lists {
         width: 100%;
-        padding: 10px 40px 10px 15px;
+        padding: 8px 34px 8px 12px;
         font-size: 12px;
     }
 
     .profile-buttons {
-        margin-right: 0;
-        gap: 10px;
-        padding: 4px 4px;
-        min-width: auto;
+        width: 34px;
+        height: 34px;
+        margin-left: 6px;
+        margin-right: 8px;
+        background-color: transparent;
+        flex-shrink: 0;
     }
 
-    .notifications-button,
-    .shared-button,
-    .profile-button {
-        padding: 6px;
-    }
-
-    .notification-dropdown,
-    .shares-dropdown {
+    .profile-menu-dropdown {
         width: calc(100vw - 24px);
         max-width: 360px;
-        right: -8px;
-    }
-
-    .notifications-button::after,
-    .shared-button::after,
-    .profile-button::after {
-        display: none;
+        right: -4px;
     }
 }
 

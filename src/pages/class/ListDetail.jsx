@@ -202,6 +202,15 @@ const ListDetail = () => {
                     throw new Error("LIST_NOT_FOUND");
                 }
 
+                // Detect 401 / bad-shape response (e.g. { message: 'Unauthorized' })
+                if (response?.message && !response?.list && !response?.data && !response?.title && !response?._id) {
+                    if (response.message.toLowerCase().includes('unauthorized')) {
+                        localStorage.removeItem("user");
+                        window.location.href = "/";
+                        return;
+                    }
+                    throw new Error("LIST_NOT_FOUND");
+                }
                 const listData = response?.list || response?.data || response;
                 if (!listData || Object.keys(listData).length === 0) {
                     throw new Error("LIST_NOT_FOUND");

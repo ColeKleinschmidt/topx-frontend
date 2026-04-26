@@ -173,8 +173,16 @@ const List = ({ list, setList, editable = false, onClick, showSubmitButton = fal
         }
     }, [newList, setList]);
 
+    const prevItemsLengthRef = useRef(null);
     useEffect(() => {
-        if (!editable || newList.listItems.length === 0) return;
+        // Only auto-focus when an item is explicitly ADDED (length grew), not on initial mount
+        if (!editable || newList.listItems.length === 0) {
+            prevItemsLengthRef.current = newList.listItems.length;
+            return;
+        }
+        const prev = prevItemsLengthRef.current;
+        prevItemsLengthRef.current = newList.listItems.length;
+        if (prev === null || newList.listItems.length <= prev) return; // skip mount & removals
         const lastIndex = newList.listItems.length - 1;
         const targetIndex = newList.listItems[lastIndex].title === "" ? lastIndex : 0;
         const targetInput = inputRefs.current[targetIndex];
