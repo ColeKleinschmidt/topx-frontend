@@ -264,8 +264,10 @@ const List = ({ list, setList, editable = false, onClick, showSubmitButton = fal
                         alt={item.title}
                         onError={(e) => {
                             e.target.style.visibility = 'hidden';
-                            if (item._id && item.title) {
-                                refreshItemImageAPI(item._id, item.title).then((res) => {
+                            const rawId = item._id;
+                            const itemId = rawId?.$oid || rawId?.toString?.() || rawId;
+                            if (itemId && item.title) {
+                                refreshItemImageAPI(String(itemId), item.title).then((res) => {
                                     if (res?.image) {
                                         e.target.src = res.image;
                                         e.target.style.visibility = 'visible';
