@@ -29,6 +29,17 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
     const [loadingUsers, setLoadingUsers] = useState({});
     const [loadingLists, setLoadingLists] = useState({});
     const [searchTerm, setSearchTerm] = useState("");
+    const [currentUserAvatar, setCurrentUserAvatar] = useState(null);
+
+    useEffect(() => {
+        if (!loggedInUserId) return;
+        getUserByIdAPI(loggedInUserId).then((res) => {
+            const user = res?.user || res;
+            const pic = user?.profilePicture || user?.profilePic || user?.avatar || null;
+            if (pic) setCurrentUserAvatar(pic);
+        }).catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [loggedInUserId]);
 
     const refreshNotifications = useCallback(async () => {
         if (onNotificationsUpdated) {
@@ -363,6 +374,13 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
                     }}
                 >
                     <MdAccountCircle color="white" size={30}/>
+                    {currentUserAvatar && (
+                        <img
+                            src={currentUserAvatar}
+                            alt="profile"
+                            className="profile-menu-avatar"
+                        />
+                    )}
                     {totalNotifications > 0 && (
                         <span className="notification-badge">{totalNotifications}</span>
                     )}
@@ -371,8 +389,10 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
                 {showProfileMenu && (
                     <div className="profile-menu-dropdown">
                         <button className="profile-menu-item" onClick={() => { setShowProfileMenu(false); setActiveSection(null); setPage("profile"); navigate("/profile"); }}>
-                            <MdAccountCircle size={18} />
-                            <span>Profile</span>
+                            <span className="profile-menu-item-left">
+                                <MdAccountCircle size={18} />
+                                <span>Profile</span>
+                            </span>
                         </button>
 
                         <button
@@ -493,13 +513,17 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
                         <div className="profile-menu-divider" />
 
                         <button className="profile-menu-item" onClick={() => {}}>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-                            <span>Switch account</span>
+                            <span className="profile-menu-item-left">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                                <span>Switch account</span>
+                            </span>
                         </button>
 
                         <button className="profile-menu-item danger" onClick={handleLogout}>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
-                            <span>Logout</span>
+                            <span className="profile-menu-item-left">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+                                <span>Log out</span>
+                            </span>
                         </button>
                     </div>
                 )}

@@ -161,11 +161,13 @@ html::-webkit-scrollbar-thumb:hover {
     justify-content: center;
     align-items: center;
     background-color: #FCA5A5;
-    border-radius: 25px;
+    border-radius: 50%;
+    width: 46px;
+    height: 46px;
     margin-left: 20px;
-    margin-right: 25px;
-    padding: 6px 10px;
+    margin-right: 20px;
     position: relative;
+    flex-shrink: 0;
 }
 
 /* ── Profile menu trigger ── */
@@ -175,13 +177,24 @@ html::-webkit-scrollbar-thumb:hover {
     justify-content: center;
     position: relative;
     cursor: pointer;
-    padding: 4px;
+    width: 100%;
+    height: 100%;
     border-radius: 50%;
-    transition: background-color 0.2s ease;
+    overflow: hidden;
+    transition: opacity 0.2s ease;
 }
 
 .profile-menu-trigger:hover {
-    background-color: rgba(0, 0, 0, 0.12);
+    opacity: 0.85;
+}
+
+.profile-menu-avatar {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
 }
 
 /* ── Profile menu dropdown ── */
@@ -217,6 +230,10 @@ html::-webkit-scrollbar-thumb:hover {
     cursor: pointer;
     text-align: left;
     transition: background-color 0.15s ease;
+}
+
+/* Items that contain a badge (Notifications / Shares rows) spread their content */
+.profile-menu-item:has(.profile-menu-badge) {
     justify-content: space-between;
 }
 
