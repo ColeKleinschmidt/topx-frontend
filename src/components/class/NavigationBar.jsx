@@ -1,14 +1,13 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+﻿import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import "../css/NavigationBar.css"; 
 import { IoIosCheckmarkCircle } from "react-icons/io";
 import { BsLink } from "react-icons/bs";
-import { FaBell } from "react-icons/fa";
 import { IoIosSend, IoIosSearch } from "react-icons/io";
 import { MdAccountCircle, MdOutlineExplore } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { removeNotification, setNotifications } from "../../store/notificationsSlice.js";
 import { setBlockedUsers } from "../../store/blockedUsersSlice.js";
-import { acceptFriendRequestAPI, declineFriendRequestAPI, getAllNotificationsAPI, getBlockedUsersAPI, getListAPI, getUserByIdAPI } from "../../backend/apis.js";
+import { acceptFriendRequestAPI, declineFriendRequestAPI, getAllNotificationsAPI, getBlockedUsersAPI, getListAPI, getUserByIdAPI, logoutAPI } from "../../backend/apis.js";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getUserId } from "../../backend/apis.js";
 import { removeNotificationAPI } from "../../backend/apis.js";
@@ -16,15 +15,14 @@ import topXlogo from "../../assets/images/topxlogo.webp";
 
 const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} }) => {
 
-    const [showFriendRequests, setShowFriendRequests] = useState(false);
-    const [showShares, setShowShares] = useState(false);
+    const [showProfileMenu, setShowProfileMenu] = useState(false);
+    const [activeSection, setActiveSection] = useState(null); // 'notifications' | 'shares' | null
     const notifications = useSelector((state) => state.notifications.items);
     const blockedUsers = useSelector((state) => state.blockedUsers.items);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const location = useLocation();
-    const dropdownRef = useRef(null);
-    const sharesRef = useRef(null);
+    const profileMenuRef = useRef(null);
     const loggedInUserId = getUserId();
     const [userDetails, setUserDetails] = useState({});
     const [listDetails, setListDetails] = useState({});
@@ -127,11 +125,9 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
 
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-                setShowFriendRequests(false);
-            }
-            if (sharesRef.current && !sharesRef.current.contains(event.target)) {
-                setShowShares(false);
+            if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
+                setShowProfileMenu(false);
+                setActiveSection(null);
             }
         };
         document.addEventListener("mousedown", handleClickOutside);
@@ -140,8 +136,7 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
 
     useEffect(() => {
         const preventScroll = (e) => {
-            // Allow scrolling if the event is from within a dropdown
-            if (e.target.closest('.dropdown-content') || e.target.closest('.notification-dropdown') || e.target.closest('.shares-dropdown')) {
+            if (e.target.closest('.profile-menu-dropdown') || e.target.closest('.profile-section-content')) {
                 return;
             }
             e.preventDefault();
@@ -151,11 +146,9 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
 
         let scrollHandler;
         
-        if (showFriendRequests || showShares) {
+        if (showProfileMenu) {
             const scrollY = window.scrollY;
-            scrollHandler = () => {
-                window.scrollTo(0, scrollY);
-            };
+            scrollHandler = () => { window.scrollTo(0, scrollY); };
             window.addEventListener('wheel', preventScroll, { passive: false });
             window.addEventListener('touchmove', preventScroll, { passive: false });
             window.addEventListener('scroll', scrollHandler);
@@ -167,11 +160,9 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
         return () => {
             window.removeEventListener('wheel', preventScroll);
             window.removeEventListener('touchmove', preventScroll);
-            if (scrollHandler) {
-                window.removeEventListener('scroll', scrollHandler);
-            }
+            if (scrollHandler) window.removeEventListener('scroll', scrollHandler);
         };
-    }, [showFriendRequests, showShares]);
+    }, [showProfileMenu]);
 
 
     const getNotificationRequestId = (notification) =>
@@ -211,7 +202,8 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
         const listId = getNotificationListId(notification);
         if (!listId) return;
         navigate(`/list/${listId}`);
-        setShowShares(false);
+        setShowProfileMenu(false);
+        setActiveSection(null);
     };
 
     const handleRemoveShareNotification = async (event, notification) => {
@@ -271,7 +263,7 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
     }, [listDetails, loadingLists]);
 
     useEffect(() => {
-        if (showFriendRequests) {
+        if (activeSection === 'notifications') {
             friendRequestNotifications
                 .filter(isForLoggedInUser)
                 .forEach((notification) => {
@@ -287,10 +279,10 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
                     }
                 });
         }
-    }, [showFriendRequests, friendRequestNotifications, ensureUserLoaded, isForLoggedInUser, normalizeId]);
+    }, [activeSection, friendRequestNotifications, ensureUserLoaded, isForLoggedInUser, normalizeId]);
 
     useEffect(() => {
-        if (showShares) {
+        if (activeSection === 'shares') {
             shareNotifications
                 .filter(isForLoggedInUser)
                 .forEach((notification) => {
@@ -306,7 +298,21 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
                     if (listId) ensureListLoaded(listId);
                 });
         }
-    }, [showShares, shareNotifications, ensureUserLoaded, ensureListLoaded, isForLoggedInUser, normalizeId]);
+    }, [activeSection, shareNotifications, ensureUserLoaded, ensureListLoaded, isForLoggedInUser, normalizeId]);
+
+    const handleLogout = async () => {
+        try {
+            await logoutAPI();
+            document.cookie = "user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            localStorage.removeItem("user");
+            navigate("/");
+        } catch (error) {
+            console.error("Failed to logout", error);
+        }
+    };
+
+    const totalNotifications = friendRequestNotifications.filter(isForLoggedInUser).length
+        + shareNotifications.filter(isForLoggedInUser).length;
 
     return (
         <div className="navigation-bar">
@@ -346,159 +352,160 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
                     </button>
                 </div>
             </div>
-            <div className={'profile-buttons'}> 
-                <div className="dropdown-wrapper" ref={dropdownRef}>
-                    <div onClick={() => { setShowFriendRequests((prev) => !prev); setShowShares(false); refreshNotifications(); }} className="notifications-button" data-label="Notifications">
-                        <FaBell color="white" size={20}/>
-                        {friendRequestNotifications.filter(isForLoggedInUser).length > 0 && (
-                            <span className="notification-badge">{friendRequestNotifications.filter(isForLoggedInUser).length}</span>
-                        )}
-                    </div>
-                    {showFriendRequests && (
-                        <div className="notification-dropdown">
-                            <div className="dropdown-header">
-                                <h3 className="dropdown-title">Notifications</h3>
-                            </div>
-                            <div className="dropdown-content">
-                            {friendRequestNotifications.filter(isForLoggedInUser).length === 0 ? (
-                                <p className="notification-empty">No friend requests</p>
-                            ) : (
-                                friendRequestNotifications.filter(isForLoggedInUser).map((notification) => {
-                                    const senderId = normalizeId(
-                                        notification?.sender?._id
-                                        || notification?.senderId
-                                        || notification?.fromUserId
-                                        || notification?.from
-                                        || notification?.sender
-                                    );
-                                    const user = senderId ? userDetails[senderId] : null;
-                                    const loadingUser = senderId ? loadingUsers[senderId] : false;
-                                    const username = user?.username || user?.name || (loadingUser ? "Loading user..." : "Unknown user");
-                                    const avatar = user?.profilePicture || user?.profilePic || user?.avatar;
-                                    const requestId = getNotificationRequestId(notification);
-                                    return (
-                                        <div key={requestId || senderId || username} className="notification-item">
-                                            <div className="notification-user">
-                                                <div className="notification-avatar">
-                                                    {avatar ? <img src={avatar} alt={username} /> : <div className="avatar-placeholder" />}
-                                                </div>
-                                                <div className="notification-meta">
-                                                    <p 
-                                                        className={`notification-title ${senderId ? 'clickable' : ''}`}
-                                                        onClick={(e) => {
-                                                            if (senderId) {
-                                                                e.stopPropagation();
-                                                                navigate(`/profile/${senderId}`);
-                                                            }
-                                                        }}
-                                                    >
-                                                        {username}
-                                                    </p>
-                                                    <p className="notification-subtitle">sent you a friend request</p>
-                                                </div>
-                                            </div>
-                                            {loadingUser ? (
-                                                <p className="notification-loading">Loading...</p>
-                                            ) : (
-                                                <div className="notification-actions">
-                                                    <button className="secondary-button stacked" onClick={() => handleFriendRequestAction(notification, "accept")}>Accept</button>
-                                                    <button className="decline-button stacked" onClick={() => handleFriendRequestAction(notification, "decline")}>Decline</button>
-                                                </div>
-                                            )}
-                                        </div>
-                                    );
-                                })
-                            )}
-                            </div>
-                        </div>
+            <div className="profile-buttons" ref={profileMenuRef}>
+                <div
+                    className="profile-menu-trigger"
+                    onClick={() => {
+                        setShowProfileMenu((prev) => {
+                            if (!prev) refreshNotifications();
+                            return !prev;
+                        });
+                    }}
+                >
+                    <MdAccountCircle color="white" size={30}/>
+                    {totalNotifications > 0 && (
+                        <span className="notification-badge">{totalNotifications}</span>
                     )}
                 </div>
-                <div className="dropdown-wrapper" ref={sharesRef}>
-                    <div onClick={() => { setShowShares((prev) => !prev); setShowFriendRequests(false); refreshNotifications(); }} className="shared-button" data-label="Shares">
-                        <IoIosSend color="white" size={24}/>
-                        {shareNotifications.filter(isForLoggedInUser).length > 0 && (
-                            <span className="notification-badge">{shareNotifications.filter(isForLoggedInUser).length}</span>
-                        )}
-                    </div>
-                    {showShares && (
-                        <div className="shares-dropdown">
-                            <div className="dropdown-header">
-                                <h3 className="dropdown-title">Shares</h3>
-                            </div>
-                            <div className="dropdown-content">
-                            {shareNotifications.filter(isForLoggedInUser).length === 0 ? (
-                                <p className="notification-empty">No shares yet</p>
-                            ) : (
-                                shareNotifications.filter(isForLoggedInUser).map((notification) => {
-                                    const senderId = normalizeId(
-                                        notification?.sender?._id
-                                        || notification?.senderId
-                                        || notification?.fromUserId
-                                        || notification?.from
-                                        || notification?.sender
-                                    );
-                                    const user = senderId ? userDetails[senderId] : null;
-                                    const avatar = user?.profilePicture || user?.profilePic || user?.avatar;
-                                    const username = user?.username || user?.name || (loadingUsers[senderId] ? "Loading user..." : "Unknown user");
-                                    const listId = getNotificationListId(notification);
-                                    const list = listId ? listDetails[listId] : null;
-                                    const listTitle = list?.title || list?.name || (loadingLists[listId] ? "Loading list..." : getListTitle(notification));
-                                    const notificationId = getNotificationRequestId(notification) || listTitle || listId;
-                                    return (
-                                        <div
-                                            role="button"
-                                            tabIndex={0}
-                                            key={notificationId}
-                                            className="notification-item share-item"
-                                            onClick={() => handleNavigateToList(notification)}
-                                            onKeyDown={(event) => handleShareKeyDown(event, notification)}
-                                        >
-                                            <div className="share-notification-header">
+
+                {showProfileMenu && (
+                    <div className="profile-menu-dropdown">
+                        <button className="profile-menu-item" onClick={() => { setShowProfileMenu(false); setActiveSection(null); setPage("profile"); navigate("/profile"); }}>
+                            <MdAccountCircle size={18} />
+                            <span>Profile</span>
+                        </button>
+
+                        <button
+                            className={`profile-menu-item${activeSection === 'notifications' ? ' active' : ''}`}
+                            onClick={() => setActiveSection((s) => s === 'notifications' ? null : 'notifications')}
+                        >
+                            <span className="profile-menu-item-left">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6V11c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                                <span>Notifications</span>
+                            </span>
+                            {friendRequestNotifications.filter(isForLoggedInUser).length > 0 && (
+                                <span className="profile-menu-badge">{friendRequestNotifications.filter(isForLoggedInUser).length}</span>
+                            )}
+                        </button>
+                        {activeSection === 'notifications' && (
+                            <div className="profile-section-content">
+                                {friendRequestNotifications.filter(isForLoggedInUser).length === 0 ? (
+                                    <p className="notification-empty">No friend requests</p>
+                                ) : (
+                                    friendRequestNotifications.filter(isForLoggedInUser).map((notification) => {
+                                        const senderId = normalizeId(
+                                            notification?.sender?._id || notification?.senderId
+                                            || notification?.fromUserId || notification?.from || notification?.sender
+                                        );
+                                        const user = senderId ? userDetails[senderId] : null;
+                                        const loadingUser = senderId ? loadingUsers[senderId] : false;
+                                        const username = user?.username || user?.name || (loadingUser ? "Loading..." : "Unknown user");
+                                        const avatar = user?.profilePicture || user?.profilePic || user?.avatar;
+                                        const requestId = getNotificationRequestId(notification);
+                                        return (
+                                            <div key={requestId || senderId || username} className="notification-item">
                                                 <div className="notification-user">
                                                     <div className="notification-avatar">
                                                         {avatar ? <img src={avatar} alt={username} /> : <div className="avatar-placeholder" />}
                                                     </div>
                                                     <div className="notification-meta">
-                                                        <p className="notification-title">{username}</p>
-                                                        <p className="notification-subtitle">shared “{listTitle}” with you</p>
+                                                        <p className={`notification-title ${senderId ? 'clickable' : ''}`}
+                                                            onClick={(e) => { if (senderId) { e.stopPropagation(); navigate(`/profile/${senderId}`); } }}>
+                                                            {username}
+                                                        </p>
+                                                        <p className="notification-subtitle">sent you a friend request</p>
                                                     </div>
                                                 </div>
-                                                <button
-                                                    type="button"
-                                                    className="remove-notification-button"
-                                                    aria-label="Remove share notification"
-                                                    onClick={(event) => handleRemoveShareNotification(event, notification)}
-                                                >
-                                                    ×
-                                                </button>
+                                                {loadingUser ? (
+                                                    <p className="notification-loading">Loading...</p>
+                                                ) : (
+                                                    <div className="notification-actions">
+                                                        <button className="secondary-button stacked" onClick={() => handleFriendRequestAction(notification, "accept")}>Accept</button>
+                                                        <button className="decline-button stacked" onClick={() => handleFriendRequestAction(notification, "decline")}>Decline</button>
+                                                    </div>
+                                                )}
                                             </div>
-                                            {(loadingUsers[senderId] || loadingLists[listId]) && (
-                                                <p className="notification-loading">Loading...</p>
-                                            )}
-                                        </div>
-                                    );
-                                })
-                            )}
+                                        );
+                                    })
+                                )}
                             </div>
-                        </div>
-                    )}
-                </div>
-                <div
-                    onClick={() => {
-                        setShowFriendRequests(false);
-                        setShowShares(false);
-                        setPage("profile");
-                        navigate("/profile");
-                    }}
-                    className="profile-button"
-                    data-label="Profile"
-                >
-                    <MdAccountCircle color="white" size={24}/>
-                </div>
+                        )}
+
+                        <button
+                            className={`profile-menu-item${activeSection === 'shares' ? ' active' : ''}`}
+                            onClick={() => setActiveSection((s) => s === 'shares' ? null : 'shares')}
+                        >
+                            <span className="profile-menu-item-left">
+                                <IoIosSend size={18} />
+                                <span>Shares</span>
+                            </span>
+                            {shareNotifications.filter(isForLoggedInUser).length > 0 && (
+                                <span className="profile-menu-badge">{shareNotifications.filter(isForLoggedInUser).length}</span>
+                            )}
+                        </button>
+                        {activeSection === 'shares' && (
+                            <div className="profile-section-content">
+                                {shareNotifications.filter(isForLoggedInUser).length === 0 ? (
+                                    <p className="notification-empty">No shares yet</p>
+                                ) : (
+                                    shareNotifications.filter(isForLoggedInUser).map((notification) => {
+                                        const senderId = normalizeId(
+                                            notification?.sender?._id || notification?.senderId
+                                            || notification?.fromUserId || notification?.from || notification?.sender
+                                        );
+                                        const user = senderId ? userDetails[senderId] : null;
+                                        const avatar = user?.profilePicture || user?.profilePic || user?.avatar;
+                                        const username = user?.username || user?.name || (loadingUsers[senderId] ? "Loading..." : "Unknown user");
+                                        const listId = getNotificationListId(notification);
+                                        const list = listId ? listDetails[listId] : null;
+                                        const listTitle = list?.title || list?.name || (loadingLists[listId] ? "Loading list..." : getListTitle(notification));
+                                        const notificationId = getNotificationRequestId(notification) || listTitle || listId;
+                                        return (
+                                            <div role="button" tabIndex={0} key={notificationId}
+                                                className="notification-item share-item"
+                                                onClick={() => handleNavigateToList(notification)}
+                                                onKeyDown={(event) => handleShareKeyDown(event, notification)}
+                                            >
+                                                <div className="share-notification-header">
+                                                    <div className="notification-user">
+                                                        <div className="notification-avatar">
+                                                            {avatar ? <img src={avatar} alt={username} /> : <div className="avatar-placeholder" />}
+                                                        </div>
+                                                        <div className="notification-meta">
+                                                            <p className="notification-title">{username}</p>
+                                                            <p className="notification-subtitle">shared &ldquo;{listTitle}&rdquo; with you</p>
+                                                        </div>
+                                                    </div>
+                                                    <button type="button" className="remove-notification-button"
+                                                        aria-label="Remove share notification"
+                                                        onClick={(event) => handleRemoveShareNotification(event, notification)}>Ã—</button>
+                                                </div>
+                                                {(loadingUsers[senderId] || loadingLists[listId]) && (
+                                                    <p className="notification-loading">Loading...</p>
+                                                )}
+                                            </div>
+                                        );
+                                    })
+                                )}
+                            </div>
+                        )}
+
+                        <div className="profile-menu-divider" />
+
+                        <button className="profile-menu-item" onClick={() => {}}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                            <span>Switch account</span>
+                        </button>
+
+                        <button className="profile-menu-item danger" onClick={handleLogout}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+                            <span>Logout</span>
+                        </button>
+                    </div>
+                )}
             </div>
             </div>
         </div>
     )
 }
 
-export default NavigationBar;
