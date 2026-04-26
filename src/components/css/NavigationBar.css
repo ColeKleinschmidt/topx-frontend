@@ -111,6 +111,7 @@ html::-webkit-scrollbar-thumb:hover {
     position: relative;
     display: flex;
     align-items: center;
+    margin-left: 10px;
 }
 
 .search-lists {

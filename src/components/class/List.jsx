@@ -1,6 +1,6 @@
 import "../css/List.css";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { findItemsAPI, refreshItemImageAPI, sendFriendRequestAPI, toggleBlockUserAPI, getUserId } from "../../backend/apis.js";
+import { findItemsAPI, refreshItemImageAPI, sendFriendRequestAPI, toggleBlockUserAPI, getUserId, getFriendsAPI } from "../../backend/apis.js";
 import { useNavigate } from "react-router-dom";
 import defaultAvatar from "../../assets/icons/User Icon.png";
 
@@ -17,6 +17,20 @@ const List = ({ list, setList, editable = false, onClick, showSubmitButton = fal
 
     const ownerId = owner?._id || owner?.id || null;
     const loggedInUserId = getUserId();
+
+    useEffect(() => {
+        if (!ownerId || !loggedInUserId || friendStatus !== "none") return;
+        getFriendsAPI().then((res) => {
+            const friends = res?.friends ?? [];
+            const isFriend = friends.some((f) => {
+                const fId = f?._id || f?.id || f?.userId || f?.friendId ||
+                    f?.friend?._id || f?.friend?.id || f?.user?._id || f?.user?.id;
+                return fId && String(fId) === String(ownerId);
+            });
+            if (isFriend) setFriendStatus("friends");
+        }).catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ownerId, loggedInUserId]);
 
     const timeAgo = (date) => {
         if (!date) return "";
@@ -479,7 +493,7 @@ const List = ({ list, setList, editable = false, onClick, showSubmitButton = fal
                             onClick={handleAddFriend}
                             disabled={friendStatus !== "none"}
                         >
-                            {friendStatus === "pending" ? "Requested" : "Add Friend"}
+                            {friendStatus === "pending" ? "Requested" : friendStatus === "friends" ? "Friends" : "Add Friend"}
                         </button>
                         <div className="three-dot-menu" ref={ownerMenuRef}>
                             <button className="three-dot-btn" onClick={(e) => { e.stopPropagation(); setOwnerMenuOpen((p) => !p); }}>
