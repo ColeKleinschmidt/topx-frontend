@@ -319,7 +319,7 @@ export const getListsAPI = async (page, limit) => {
         page: page,
         limit: limit
     }
-    const backend_query = await apiFetch(`${ENDPOINT}getLists`, {
+    const backend_query = await fetch(`${ENDPOINT}getLists`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -329,7 +329,6 @@ export const getListsAPI = async (page, limit) => {
         },
         body: JSON.stringify(data),
     });
-    if (!backend_query?.json) return backend_query; // apiFetch returned { message: 'Unauthorized' }
     const response = await backend_query.json();
     console.log(response);
     return response;
@@ -340,7 +339,7 @@ export const getFriendsListsAPI = async (page, limit) => {
         page: page,
         limit: limit
     }
-    const backend_query = await apiFetch(`${ENDPOINT}getFriendsLists`, {
+    const backend_query = await fetch(`${ENDPOINT}getFriendsLists`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -350,7 +349,6 @@ export const getFriendsListsAPI = async (page, limit) => {
         },
         body: JSON.stringify(data),
     });
-    if (!backend_query?.json) return backend_query; // apiFetch returned { message: 'Unauthorized' }
     const response = await backend_query.json();
     console.log(response);
     return response;
