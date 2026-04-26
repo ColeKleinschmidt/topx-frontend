@@ -4,7 +4,7 @@ import { IoIosCheckmarkCircle } from "react-icons/io";
 import { BsLink } from "react-icons/bs";
 import { FaBell } from "react-icons/fa";
 import { IoIosSend, IoIosSearch } from "react-icons/io";
-import { MdAccountCircle } from "react-icons/md";
+import { MdAccountCircle, MdOutlineExplore } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { removeNotification, setNotifications } from "../../store/notificationsSlice.js";
 import { setBlockedUsers } from "../../store/blockedUsersSlice.js";
@@ -315,11 +315,15 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
                     <img src={topXlogo} alt="TopX" className="nav-logo" />
                 </div>
                 <div className="navigation-container">
-                    <div onClick={() => { setPage("myLists"); navigate("/myLists"); }} className={`navigation-element ${page === "friends" && "underline" }`}>
+                    <div onClick={() => { setPage("forYou"); navigate("/forYou"); }} className={`navigation-element ${page === "forYou" ? "underline" : ""}`}>
+                        <MdOutlineExplore color="white" size={25} />
+                        <h2>For you</h2>
+                    </div>
+                    <div onClick={() => { setPage("myLists"); navigate("/myLists"); }} className={`navigation-element ${page === "myLists" ? "underline" : ""}`}>
                         <IoIosCheckmarkCircle color="white" size={25} />
                         <h2>My lists</h2>
                     </div>
-                    <div onClick={() => { setPage("friendsLists"); navigate("/friendsLists"); }} className={`navigation-element ${page === "feed" && "underline" }`}>
+                    <div onClick={() => { setPage("friendsLists"); navigate("/friendsLists"); }} className={`navigation-element ${page === "friendsLists" ? "underline" : ""}`}>
                         <BsLink color="white" size={25} />
                         <h2>Friend's lists</h2>
                     </div>

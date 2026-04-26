@@ -3,6 +3,7 @@ import { useEffect, useState, useCallback } from 'react';
 import NavigationBar from "../../components/class/NavigationBar.jsx";
 import MyLists from "./MyLists.jsx";
 import FriendsLists from "./FriendsLists.jsx";
+import ForYou from "./ForYou.jsx";
 import Profile from "./Profile.jsx";
 import List from "../../components/class/List.jsx";
 import FindFriends from "./FindFriends.jsx";
@@ -37,6 +38,8 @@ const Home = ({ route }) => {
             if (page !== 'findFriends') setPage('findFriends');
         } else if (location.pathname.startsWith('/friendsLists')) {
             if (page !== 'friendsLists') setPage('friendsLists');
+        } else if (location.pathname.startsWith('/forYou')) {
+            if (page !== 'forYou') setPage('forYou');
         } else if (location.pathname.startsWith('/myLists')) {
             if (page !== 'myLists') setPage('myLists');
         } else if (location.pathname.startsWith('/search')) {
@@ -80,14 +83,16 @@ const Home = ({ route }) => {
         <div className="home-container">
             <NavigationBar setPage={setPage} page={page} onNotificationsUpdated={refreshNotifications}/>
             <div className="home-content">
-                {page === "myLists" ? (
+                {page === "forYou" ? (
+                    <ForYou />
+                ) : page === "myLists" ? (
                     <MyLists
                         onCreateList={() => setShowNewList(true)}
                     />
                 ) : page === "friendsLists" ? (
-                    <FriendsLists onFindFriends={() => setPage("findFriends")} />
+                    <FriendsLists onFindFriends={() => { setPage("findFriends"); navigate("/findFriends"); }} />
                 ) : page === "findFriends" ? (
-                    <FindFriends onBackToFriends={() => setPage("friendsLists")} onNotificationsUpdated={refreshNotifications} />
+                    <FindFriends onBackToFriends={() => { setPage("friendsLists"); navigate("/friendsLists"); }} onNotificationsUpdated={refreshNotifications} />
                 ) : page === "search" ? (
                     <SearchResults />
                 ) : page === "profile" && (
