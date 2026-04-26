@@ -1,13 +1,72 @@
 import "../css/List.css";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { findItemsAPI, refreshItemImageAPI } from "../../backend/apis.js";
+import { findItemsAPI, refreshItemImageAPI, sendFriendRequestAPI, toggleBlockUserAPI, getUserId } from "../../backend/apis.js";
+import { useNavigate } from "react-router-dom";
+import { BsThreeDots } from "react-icons/bs";
+import defaultAvatar from "../../assets/icons/User Icon.png";
 
-const List = ({ list, setList, editable = false, onClick, showSubmitButton = false, onSubmit }) => {
+const List = ({ list, setList, editable = false, onClick, showSubmitButton = false, onSubmit, owner }) => {
 
+    const navigate = useNavigate();
     const [newList, setNewList] = useState({ title: "", listItems: [{ title: "", image: "" }] });
     const [searchResults, setSearchResults] = useState({});
     const containerRef = useRef(null);
     const [isScrollable, setIsScrollable] = useState(false);
+    const [friendStatus, setFriendStatus] = useState("none");
+    const [ownerMenuOpen, setOwnerMenuOpen] = useState(false);
+    const ownerMenuRef = useRef(null);
+
+    const ownerId = owner?._id || owner?.id || null;
+    const loggedInUserId = getUserId();
+
+    const timeAgo = (date) => {
+        if (!date) return "";
+        const seconds = Math.floor((Date.now() - new Date(date)) / 1000);
+        if (seconds < 60) return "just now";
+        const minutes = Math.floor(seconds / 60);
+        if (minutes < 60) return `${minutes}m ago`;
+        const hours = Math.floor(minutes / 60);
+        if (hours < 24) return `${hours}h ago`;
+        const days = Math.floor(hours / 24);
+        if (days < 30) return `${days}d ago`;
+        const months = Math.floor(days / 30);
+        if (months < 12) return `${months}mo ago`;
+        return `${Math.floor(months / 12)}y ago`;
+    };
+
+    const handleAddFriend = async (e) => {
+        e.stopPropagation();
+        if (!ownerId || friendStatus !== "none") return;
+        setFriendStatus("pending");
+        try {
+            await sendFriendRequestAPI(ownerId);
+        } catch { setFriendStatus("none"); }
+    };
+
+    const handleBlock = async (e) => {
+        e.stopPropagation();
+        setOwnerMenuOpen(false);
+        try {
+            await toggleBlockUserAPI(loggedInUserId, ownerId);
+        } catch (err) { console.error(err); }
+    };
+
+    const handleReport = (e) => {
+        e.stopPropagation();
+        setOwnerMenuOpen(false);
+        alert("Report submitted. Thank you for helping keep TopX safe.");
+    };
+
+    useEffect(() => {
+        if (!ownerMenuOpen) return;
+        const close = (e) => {
+            if (ownerMenuRef.current && !ownerMenuRef.current.contains(e.target)) {
+                setOwnerMenuOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", close);
+        return () => document.removeEventListener("mousedown", close);
+    }, [ownerMenuOpen]);
     const [isSearching, setIsSearching] = useState({});
     const searchTimeouts = useRef({});
     const inputRefs = useRef([]);
@@ -390,14 +449,54 @@ const List = ({ list, setList, editable = false, onClick, showSubmitButton = fal
     const canSubmitList = isTitleValid && newList.listItems.every((item) => item.title.trim() && item.image);
 
     return (
-        <div
-            ref={containerRef}
-            className={containerClasses}
-            onClick={!editable ? onClick : undefined}
-            role={!editable && onClick ? "button" : undefined}
-            tabIndex={!editable && onClick ? 0 : undefined}
-            onKeyDown={handleKeyDown}
-        >
+        <>
+            {owner && !editable && (
+                <div
+                    className="list-owner-bar"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    <div
+                        className="list-owner-info"
+                        onClick={() => ownerId && navigate(`/profile/${ownerId}`)}
+                    >
+                        <div className="owner-avatar">
+                            <img src={owner?.profilePic || owner?.profilePicture || defaultAvatar} alt={owner?.username || "User"} />
+                        </div>
+                        <div className="owner-meta">
+                            <p className="owner-name">{owner?.username || "View profile"}</p>
+                            <p className="owner-timestamp">{timeAgo(list?.createdTimestamp)}</p>
+                        </div>
+                    </div>
+                    <div className="list-owner-actions">
+                        <button
+                            className={`add-friend-bar-btn${friendStatus !== "none" ? " sent" : ""}`}
+                            onClick={handleAddFriend}
+                            disabled={friendStatus !== "none"}
+                        >
+                            {friendStatus === "pending" ? "Requested" : "Add Friend"}
+                        </button>
+                        <div className="three-dot-menu" ref={ownerMenuRef}>
+                            <button className="three-dot-btn" onClick={(e) => { e.stopPropagation(); setOwnerMenuOpen((p) => !p); }}>
+                                <BsThreeDots size={20} />
+                            </button>
+                            {ownerMenuOpen && (
+                                <div className="three-dot-dropdown">
+                                    <button onClick={handleReport}>Report post</button>
+                                    <button onClick={handleBlock} className="danger">Block user</button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+            <div
+                ref={containerRef}
+                className={containerClasses}
+                onClick={!editable ? onClick : undefined}
+                role={!editable && onClick ? "button" : undefined}
+                tabIndex={!editable && onClick ? 0 : undefined}
+                onKeyDown={handleKeyDown}
+            >
             {editable ? (
                 <input
                     value={newList.title}
@@ -450,6 +549,7 @@ const List = ({ list, setList, editable = false, onClick, showSubmitButton = fal
                 </div>
             )}
         </div>
+        </>
     );
 };
 

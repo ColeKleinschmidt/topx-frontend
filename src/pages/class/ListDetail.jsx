@@ -6,11 +6,10 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setNotifications } from "../../store/notificationsSlice.js";
 import { setBlockedUsers } from "../../store/blockedUsersSlice.js";
-import { getAllNotificationsAPI, getBlockedUsersAPI, getFriendsAPI, getListAPI, getUserByIdAPI, shareListAPI, updateListAPI, getUserId, sendFriendRequestAPI, toggleBlockUserAPI } from "../../backend/apis.js";
+import { getAllNotificationsAPI, getBlockedUsersAPI, getFriendsAPI, getListAPI, getUserByIdAPI, shareListAPI, updateListAPI, getUserId } from "../../backend/apis.js";
 import defaultAvatar from "../../assets/icons/User Icon.png";
 import { IoIosSend } from "react-icons/io";
 import { FiEdit2 } from "react-icons/fi";
-import { BsThreeDots } from "react-icons/bs";
 
 const ListDetail = () => {
     const { listId } = useParams();
@@ -39,52 +38,10 @@ const ListDetail = () => {
     const loggedInUserId = getUserId();
     const normalizedOwnerId = list?.ownerId || navigationOwnerId || owner?._id || owner?.id;
     const isOwner = loggedInUserId && normalizedOwnerId && String(normalizedOwnerId) === String(loggedInUserId);
-    const [friendStatus, setFriendStatus] = useState("none"); // none | pending | friends
-    const [menuOpen, setMenuOpen] = useState(false);
-    const menuRef = useRef(null);
 
     const handleNavigate = (targetPage) => {
         setPage(targetPage);
         navigate(`/${targetPage}`);
-    };
-
-    const timeAgo = (date) => {
-        if (!date) return "";
-        const seconds = Math.floor((Date.now() - new Date(date)) / 1000);
-        if (seconds < 60) return "just now";
-        const minutes = Math.floor(seconds / 60);
-        if (minutes < 60) return `${minutes}m ago`;
-        const hours = Math.floor(minutes / 60);
-        if (hours < 24) return `${hours}h ago`;
-        const days = Math.floor(hours / 24);
-        if (days < 30) return `${days}d ago`;
-        const months = Math.floor(days / 30);
-        if (months < 12) return `${months}mo ago`;
-        return `${Math.floor(months / 12)}y ago`;
-    };
-
-    const handleAddFriend = async () => {
-        if (!normalizedOwnerId || friendStatus !== "none") return;
-        setFriendStatus("pending");
-        try {
-            await sendFriendRequestAPI(normalizedOwnerId);
-        } catch (e) {
-            setFriendStatus("none");
-        }
-    };
-
-    const handleBlock = async () => {
-        if (!normalizedOwnerId) return;
-        setMenuOpen(false);
-        try {
-            await toggleBlockUserAPI(loggedInUserId, normalizedOwnerId);
-            navigate(-1);
-        } catch (e) { console.error(e); }
-    };
-
-    const handleReport = () => {
-        setMenuOpen(false);
-        alert("Report submitted. Thank you for helping keep TopX safe.");
     };
 
     const refreshNotifications = useCallback(async () => {
@@ -224,9 +181,6 @@ const ListDetail = () => {
         const handleClickOutside = (event) => {
             if (shareRef.current && !shareRef.current.contains(event.target)) {
                 setShareOpen(false);
-            }
-            if (menuRef.current && !menuRef.current.contains(event.target)) {
-                setMenuOpen(false);
             }
         };
 
@@ -529,42 +483,6 @@ const ListDetail = () => {
                             </div>
                         </div>
                         <div className="list-share-card">
-                            {!isOwner && (list.ownerId || owner) && (
-                                <div className="list-owner-bar">
-                                    <div
-                                        className="list-owner-info"
-                                        onClick={() => navigate(`/profile/${normalizedOwnerId}`)}
-                                    >
-                                        <div className="owner-avatar">
-                                            <img src={owner?.profilePic || owner?.profilePicture || defaultAvatar} alt={owner?.username || "User"} />
-                                        </div>
-                                        <div className="owner-meta">
-                                            <p className="owner-name">{owner?.username || "View profile"}</p>
-                                            <p className="owner-timestamp">{timeAgo(list?.createdTimestamp)}</p>
-                                        </div>
-                                    </div>
-                                    <div className="list-owner-actions">
-                                        <button
-                                            className={`add-friend-bar-btn ${friendStatus !== "none" ? "sent" : ""}`}
-                                            onClick={handleAddFriend}
-                                            disabled={friendStatus !== "none"}
-                                        >
-                                            {friendStatus === "pending" ? "Requested" : friendStatus === "friends" ? "Friends" : "Add Friend"}
-                                        </button>
-                                        <div className="three-dot-menu" ref={menuRef}>
-                                            <button className="three-dot-btn" onClick={() => setMenuOpen((p) => !p)}>
-                                                <BsThreeDots size={20} />
-                                            </button>
-                                            {menuOpen && (
-                                                <div className="three-dot-dropdown">
-                                                    <button onClick={handleReport}>Report post</button>
-                                                    <button onClick={handleBlock} className="danger">Block user</button>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
                             <List
                                 list={list}
                                 editable={isEditing}

@@ -468,7 +468,7 @@ const Profile = () => {
                 </div>
                 <div className="lists-grid">
                     {lists.map((list) => (
-                        <List key={list._id || list.title} list={list} onClick={() => handleOpenList(list._id || list.id)} />
+                        <List key={list._id || list.title} list={list} owner={isOwnProfile ? undefined : user} onClick={() => handleOpenList(list._id || list.id)} />
                     ))}
                 </div>
                 {!listsLoading && lists.length === 0 && <p className="muted">No lists yet.</p>}

@@ -63,6 +63,7 @@ const FriendsLists = ({ onFindFriends = () => {} }) => {
                     <List
                         key={list._id || list.id || index}
                         list={list}
+                        owner={{ _id: list.userId || list.ownerId, username: list.ownerUsername, profilePic: list.ownerProfilePic }}
                         onClick={() => handleOpenList(list._id || list.id, list.userId || list.ownerId)}
                     />
                 ))}
