@@ -34,7 +34,6 @@ const FriendsLists = ({ onFindFriends = () => {} }) => {
                     });
                 });
                 setPage((prev) => prev + 1);
-                setLoadingLists(false);
 
                 // Fetch owner info for each unique owner ID
                 const ownerIds = [...new Set(newLists.map(l => l.userId || l.ownerId || l.user?._id || l.user?.id || l.owner?._id || l.owner?.id || l.creatorId).filter(Boolean))];
@@ -48,6 +47,7 @@ const FriendsLists = ({ onFindFriends = () => {} }) => {
                     } catch {}
                 }));
                 setOwners((prev) => ({ ...prev, ...fetched }));
+                setLoadingLists(false);
             } else {
                 if (response?.message && response.message.toLowerCase() !== 'unauthorized') {
                     console.warn('getFriendsLists error:', response.message);

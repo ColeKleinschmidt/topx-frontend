@@ -4,6 +4,19 @@ import { findItemsAPI, refreshItemImageAPI, sendFriendRequestAPI, toggleBlockUse
 import { useNavigate } from "react-router-dom";
 import defaultAvatar from "../../assets/icons/User Icon.png";
 
+// Module-level cache so all list cards share a single friends API call
+let _friendsCache = null;
+let _friendsCacheTime = 0;
+const FRIENDS_CACHE_TTL = 60000;
+const getCachedFriends = async () => {
+    const now = Date.now();
+    if (_friendsCache && now - _friendsCacheTime < FRIENDS_CACHE_TTL) return _friendsCache;
+    const res = await getFriendsAPI();
+    _friendsCache = res;
+    _friendsCacheTime = now;
+    return res;
+};
+
 const List = ({ list, setList, editable = false, onClick, showSubmitButton = false, onSubmit, owner }) => {
 
     const navigate = useNavigate();
@@ -12,6 +25,7 @@ const List = ({ list, setList, editable = false, onClick, showSubmitButton = fal
     const containerRef = useRef(null);
     const [isScrollable, setIsScrollable] = useState(false);
     const [friendStatus, setFriendStatus] = useState("none");
+    const [friendStatusLoading, setFriendStatusLoading] = useState(true);
     const [ownerMenuOpen, setOwnerMenuOpen] = useState(false);
     const ownerMenuRef = useRef(null);
 
@@ -19,8 +33,11 @@ const List = ({ list, setList, editable = false, onClick, showSubmitButton = fal
     const loggedInUserId = getUserId();
 
     useEffect(() => {
-        if (!ownerId || !loggedInUserId || friendStatus !== "none") return;
-        getFriendsAPI().then((res) => {
+        if (!ownerId || !loggedInUserId) {
+            setFriendStatusLoading(false);
+            return;
+        }
+        getCachedFriends().then((res) => {
             const friends = res?.friends ?? [];
             const isFriend = friends.some((f) => {
                 const fId = f?._id || f?.id || f?.userId || f?.friendId ||
@@ -28,7 +45,7 @@ const List = ({ list, setList, editable = false, onClick, showSubmitButton = fal
                 return fId && String(fId) === String(ownerId);
             });
             if (isFriend) setFriendStatus("friends");
-        }).catch(() => {});
+        }).catch(() => {}).finally(() => setFriendStatusLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ownerId, loggedInUserId]);
 
@@ -488,13 +505,15 @@ const List = ({ list, setList, editable = false, onClick, showSubmitButton = fal
                         </div>
                     </div>
                     <div className="list-owner-actions">
-                        <button
-                            className={`add-friend-bar-btn${friendStatus !== "none" ? " sent" : ""}`}
-                            onClick={handleAddFriend}
-                            disabled={friendStatus !== "none"}
-                        >
-                            {friendStatus === "pending" ? "Requested" : friendStatus === "friends" ? "Friends" : "Add Friend"}
-                        </button>
+                        {!friendStatusLoading && (
+                            <button
+                                className={`add-friend-bar-btn${friendStatus !== "none" ? " sent" : ""}`}
+                                onClick={handleAddFriend}
+                                disabled={friendStatus !== "none"}
+                            >
+                                {friendStatus === "pending" ? "Requested" : friendStatus === "friends" ? "Friends ✓" : "Add Friend"}
+                            </button>
+                        )}
                         <div className="three-dot-menu" ref={ownerMenuRef}>
                             <button className="three-dot-btn" onClick={(e) => { e.stopPropagation(); setOwnerMenuOpen((p) => !p); }}>
                                 <span className="three-dot-icon">•••</span>

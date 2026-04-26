@@ -60,6 +60,7 @@ html::-webkit-scrollbar-thumb:hover {
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-left: 10px;
 }
 
 .navigation-element {
@@ -163,6 +164,7 @@ html::-webkit-scrollbar-thumb:hover {
     background-color: #FCA5A5;
     border-radius: 25px;
     min-width: 100px;
+    margin-left: 10px;
     margin-right: 25px;
     padding: 5px 5px;
     position: relative;
