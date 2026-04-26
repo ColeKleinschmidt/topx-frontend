@@ -168,6 +168,12 @@
     box-shadow: none;
 }
 
+.pending-button {
+    background: #e5e7eb !important;
+    color: #6b7280 !important;
+    box-shadow: none !important;
+}
+
 .friend-actions {
     display: flex;
     gap: 8px;

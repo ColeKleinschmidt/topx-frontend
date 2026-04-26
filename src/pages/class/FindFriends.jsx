@@ -223,9 +223,8 @@ const FindFriends = ({ onBackToFriends = () => {}, onNotificationsUpdated = asyn
         <div className="find-friends-container">
             <div className="find-friends-top-bar">
                 <div className="find-friends-heading">
-                    <p className="eyebrow">Community</p>
                     <h2 className="title">Discover new friends</h2>
-                    <p className="subtitle">Browse and connect with creators and curators across TopX.</p>
+                    <p className="subtitle">Browse and friend other TopX users.</p>
                 </div>
                 <div className="actions">
                     <button className="secondary-button" onClick={onBackToFriends}>Back to Friends Lists</button>
@@ -278,7 +277,7 @@ const FindFriends = ({ onBackToFriends = () => {}, onNotificationsUpdated = asyn
                                     </button>
                                 </>
                             ) : outgoingRequests[user._id] ? (
-                                <button className="add-friend-button" disabled>
+                                <button className="add-friend-button pending-button" disabled>
                                     Pending
                                 </button>
                             ) : (
