@@ -37,7 +37,7 @@ const FriendsLists = ({ onFindFriends = () => {} }) => {
                 setLoadingLists(false);
 
                 // Fetch owner info for each unique owner ID
-                const ownerIds = [...new Set(newLists.map(l => l.userId || l.ownerId).filter(Boolean))];
+                const ownerIds = [...new Set(newLists.map(l => l.userId || l.ownerId || l.user?._id || l.user?.id || l.owner?._id || l.owner?.id || l.creatorId).filter(Boolean))];
                 const fetched = {};
                 await Promise.all(ownerIds.map(async (id) => {
                     try {
@@ -73,7 +73,7 @@ const FriendsLists = ({ onFindFriends = () => {} }) => {
             </div>
             <div className="lists">
                 {lists.map((list, index) => {
-                    const ownerId = list.userId || list.ownerId;
+                    const ownerId = list.userId || list.ownerId || list.user?._id || list.user?.id || list.owner?._id || list.owner?.id || list.creatorId;
                     const ownerData = owners[ownerId];
                     return (
                         <List
