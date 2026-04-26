@@ -509,3 +509,5 @@ const NavigationBar = ({ setPage, page, onNotificationsUpdated = async () => {} 
     )
 }
 
+export default NavigationBar;
+
