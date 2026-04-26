@@ -511,7 +511,7 @@ const List = ({ list, setList, editable = false, onClick, showSubmitButton = fal
                                 onClick={handleAddFriend}
                                 disabled={friendStatus !== "none"}
                             >
-                                {friendStatus === "pending" ? "Requested" : friendStatus === "friends" ? "Friends ✓" : "Add Friend"}
+                                {friendStatus === "pending" ? "Requested" : friendStatus === "friends" ? "Friends" : "Add Friend"}
                             </button>
                         )}
                         <div className="three-dot-menu" ref={ownerMenuRef}>
@@ -520,8 +520,8 @@ const List = ({ list, setList, editable = false, onClick, showSubmitButton = fal
                             </button>
                             {ownerMenuOpen && (
                                 <div className="three-dot-dropdown">
-                                    <button onClick={handleReport}>Report post</button>
-                                    <button onClick={handleBlock} className="danger">Block user</button>
+                                    <button onClick={handleReport} className="danger">Report post</button>
+                                    <button onClick={handleBlock} className="danger">Block {owner?.username || "user"}</button>
                                 </div>
                             )}
                         </div>
