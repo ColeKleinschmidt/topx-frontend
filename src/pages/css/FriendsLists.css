@@ -25,15 +25,18 @@
     width: 100%;
     height: 100%;
     flex-direction: column;
+    align-items: center;
 }
 
 .friends-lists-top-bar {
     height: 10%;
-    width: calc(100% - 50px);
+    width: 100%;
+    max-width: 1100px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 25px;
+    box-sizing: border-box;
 }
 
 .friends-lists-header {
@@ -65,12 +68,15 @@
 
 .lists {
     width: 100%;
+    max-width: 1100px;
     height: 100%;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     gap: 24px;
     justify-content: center;
+    padding: 0 25px;
+    box-sizing: border-box;
 }
 
 .empty-state {

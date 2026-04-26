@@ -208,7 +208,7 @@ html::-webkit-scrollbar-thumb:hover {
     top: calc(100% + 12px);
     right: -6px;
     width: 240px;
-    background: #f0f0f0;
+    background: #e8e8e8;
     border: 1px solid #d1d5db;
     border-radius: 14px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.22);

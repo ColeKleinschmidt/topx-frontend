@@ -272,11 +272,28 @@
     z-index: 4;
 }
 
+.friends-search-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 7px 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 6px;
+    outline: none;
+    background: #f9fafb;
+}
+
+.friends-search-input:focus {
+    border-color: #fc5647;
+    background: #fff;
+}
+
 .friends-dropdown-list {
     display: flex;
     flex-direction: column;
     gap: 6px;
-    max-height: 240px;
+    max-height: 220px;
     overflow-y: auto;
 }
 
@@ -284,9 +301,9 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    border: 1px solid #f3f4f6;
+    border: 1px solid #e5e7eb;
     border-radius: 10px;
-    background: #fdf2f8;
+    background: #f3f4f6;
     padding: 8px 10px;
     cursor: pointer;
     width: 100%;
@@ -294,7 +311,7 @@
 }
 
 .friend-dropdown-item:hover {
-    background: #ffe4e6;
+    background: #e5e7eb;
 }
 
 .friend-avatar {
