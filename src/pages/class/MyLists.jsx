@@ -60,9 +60,6 @@ const MyLists = ({ onCreateList = () => {}, onEmptyChange = () => {} }) => {
 
     return (
         <div className="my-lists-container">
-            <div className="my-lists-top-bar">
-                <h2 className="my-lists-header">My Lists</h2>
-            </div>
             <div className="lists">
                 {lists.map((list, index) => (
                     <List key={list._id || list.id || index} list={list} onClick={() => handleOpenList(list._id || list.id)} />

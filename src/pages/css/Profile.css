@@ -345,3 +345,39 @@
 .no-friends {
     margin: 8px 4px 4px;
 }
+
+.blocked-indicator {
+    color: #b91c1c;
+    border-color: #fecdd3;
+}
+
+.blocked-user-item {
+    justify-content: space-between;
+}
+
+.unblock-btn {
+    border: none;
+    background: #fee2e2;
+    color: #b91c1c;
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 120ms ease;
+    flex-shrink: 0;
+}
+
+.unblock-btn:hover {
+    background: #fecdd3;
+}
+
+.blocked-lists-message {
+    font-size: 14px;
+    padding: 8px 0;
+}
+
+.blocked-lists-message span {
+    color: #fc5647;
+    cursor: default;
+}

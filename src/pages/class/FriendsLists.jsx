@@ -1,8 +1,9 @@
 import "../css/FriendsLists.css";
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { getFriendsListsAPI, getUserByIdAPI } from "../../backend/apis.js";
 import List from "../../components/class/List.jsx";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const FriendsLists = ({ onFindFriends = () => {} }) => {
     const [loadingLists, setLoadingLists] = useState(true);
@@ -11,6 +12,8 @@ const FriendsLists = ({ onFindFriends = () => {} }) => {
     const [page, setPage] = useState(1);
     const hasFetchedLists = useRef(false);
     const navigate = useNavigate();
+    const blockedUsers = useSelector((state) => state.blockedUsers.items);
+    const blockedSet = useMemo(() => new Set((blockedUsers || []).map(u => typeof u === 'object' ? String(u._id || u.id) : String(u)).filter(Boolean)), [blockedUsers]);
 
     useEffect(() => {
         if (hasFetchedLists.current) return;
@@ -63,16 +66,20 @@ const FriendsLists = ({ onFindFriends = () => {} }) => {
     };
     const isEmpty = !loadingLists && lists.length === 0;
 
+    const visibleLists = lists.filter(l => {
+        const ownerId = l.userId || l.ownerId || l.user?._id || l.user?.id || l.owner?._id || l.owner?.id || l.creatorId;
+        return !ownerId || !blockedSet.has(String(ownerId));
+    });
+
     return (
         <div className="friends-lists-container">
             <div className="friends-lists-top-bar">
-                <h2 className="friends-lists-header">Friend's Lists</h2>
                 <button className="find-new-friends-button" onClick={onFindFriends}>
                     Find new Friends
                 </button>
             </div>
             <div className="lists">
-                {lists.map((list, index) => {
+                {visibleLists.map((list, index) => {
                     const ownerId = list.userId || list.ownerId || list.user?._id || list.user?.id || list.owner?._id || list.owner?.id || list.creatorId;
                     const ownerData = owners[ownerId];
                     return (
@@ -84,7 +91,7 @@ const FriendsLists = ({ onFindFriends = () => {} }) => {
                         />
                     );
                 })}
-                {!loadingLists && lists.length === 0 && (
+                {!loadingLists && visibleLists.length === 0 && (
                     <div className="empty-state">
                         <div className="empty-icon">🌟</div>
                         <h3 className="empty-title">No friends yet, discover new users</h3>

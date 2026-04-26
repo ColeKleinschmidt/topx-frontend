@@ -1,8 +1,9 @@
 import "../css/FriendsLists.css";
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { getListsAPI, getUserByIdAPI } from "../../backend/apis.js";
 import List from "../../components/class/List.jsx";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const ForYou = () => {
     const [loadingLists, setLoadingLists] = useState(true);
@@ -11,6 +12,8 @@ const ForYou = () => {
     const [page, setPage] = useState(1);
     const hasFetchedLists = useRef(false);
     const navigate = useNavigate();
+    const blockedUsers = useSelector((state) => state.blockedUsers.items);
+    const blockedSet = useMemo(() => new Set((blockedUsers || []).map(u => typeof u === 'object' ? String(u._id || u.id) : String(u)).filter(Boolean)), [blockedUsers]);
 
     useEffect(() => {
         if (hasFetchedLists.current) return;
@@ -61,13 +64,15 @@ const ForYou = () => {
         navigate(`/list/${listId}`, { state: { ownerId } });
     };
 
+    const visibleLists = lists.filter(l => {
+        const ownerId = l.userId || l.ownerId || l.user?._id || l.user?.id || l.owner?._id || l.owner?.id || l.creatorId;
+        return !ownerId || !blockedSet.has(String(ownerId));
+    });
+
     return (
         <div className="friends-lists-container">
-            <div className="friends-lists-top-bar">
-                <h2 className="friends-lists-header">For You</h2>
-            </div>
             <div className="lists">
-                {lists.map((list, index) => {
+                {visibleLists.map((list, index) => {
                     const ownerId = list.userId || list.ownerId || list.user?._id || list.user?.id || list.owner?._id || list.owner?.id || list.creatorId;
                     const ownerData = owners[ownerId];
                     return (
@@ -79,7 +84,7 @@ const ForYou = () => {
                         />
                     );
                 })}
-                {!loadingLists && lists.length === 0 && (
+                {!loadingLists && visibleLists.length === 0 && (
                     <div className="empty-state">
                         <div className="empty-icon">✨</div>
                         <h3 className="empty-title">No lists yet</h3>

@@ -50,6 +50,9 @@ const Profile = () => {
     const [friends, setFriends] = useState([]);
     const [friendsOpen, setFriendsOpen] = useState(false);
     const [friendSearch, setFriendSearch] = useState("");
+    const [blockedOpen, setBlockedOpen] = useState(false);
+    const [blockedSearch, setBlockedSearch] = useState("");
+    const [blockedUserDetails, setBlockedUserDetails] = useState({});
     const [lists, setLists] = useState([]);
     const [loading, setLoading] = useState(true);
     const [listsLoading, setListsLoading] = useState(true);
@@ -58,6 +61,7 @@ const Profile = () => {
     const [menuOpen, setMenuOpen] = useState(false);
     const menuRef = useRef(null);
     const friendsMenuRef = useRef(null);
+    const blockedMenuRef = useRef(null);
     const fileInputRef = useRef(null);
     const [uploading, setUploading] = useState(false);
 
@@ -122,6 +126,25 @@ const Profile = () => {
             refreshNotifications();
         }
     }, [targetUserId, refreshNotifications]);
+
+    // Fetch details for blocked users (only on own profile)
+    useEffect(() => {
+        if (!viewingOwnProfile || !blockedUsers?.length) return;
+        const toFetch = blockedUsers
+            .map(u => typeof u === 'object' ? String(u._id || u.id) : String(u))
+            .filter(id => id && !blockedUserDetails[id]);
+        if (!toFetch.length) return;
+        Promise.all(toFetch.map(async (id) => {
+            try {
+                const res = await getUserByIdAPI(id);
+                return [id, res?.user || res];
+            } catch { return [id, null]; }
+        })).then(entries => {
+            const next = {};
+            entries.forEach(([id, data]) => { if (data) next[id] = data; });
+            setBlockedUserDetails(prev => ({ ...prev, ...next }));
+        });
+    }, [blockedUsers, viewingOwnProfile]);
 
     const normalizeId = useCallback((value) => {
         if (!value) return null;
@@ -249,16 +272,23 @@ const Profile = () => {
         if (!targetUserId || !loggedInUserId) return;
         setBlocking(true);
         try {
+            const wasBlocked = isBlocked;
             const response = await toggleBlockUserAPI(loggedInUserId, targetUserId);
             if (response?.blockedUsers) {
                 dispatch(setBlockedUsers(response.blockedUsers));
             } else {
                 const current = Array.isArray(blockedUsers) ? blockedUsers : [];
-                if (isBlocked) {
+                if (wasBlocked) {
                     dispatch(setBlockedUsers(current.filter((id) => String(id) !== String(targetUserId))));
                 } else {
                     dispatch(setBlockedUsers([...current, targetUserId]));
                 }
+            }
+            // When blocking, also remove friend relationship
+            if (!wasBlocked && friendStatus === "friends") {
+                try { await removeFriendAPI(targetUserId); } catch {}
+                setUser((prev) => ({ ...prev, friends: (prev?.friends || []).filter((id) => String(id) !== String(loggedInUserId)) }));
+                setFriends((prev) => prev.filter(f => String(f._id || f.id) !== String(targetUserId)));
             }
         } catch (error) {
             console.error("Failed to toggle block status", error);
@@ -282,11 +312,14 @@ const Profile = () => {
             if (friendsOpen && friendsMenuRef.current && !friendsMenuRef.current.contains(event.target)) {
                 setFriendsOpen(false);
             }
+            if (blockedOpen && blockedMenuRef.current && !blockedMenuRef.current.contains(event.target)) {
+                setBlockedOpen(false);
+            }
         };
 
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, [menuOpen, friendsOpen]);
+    }, [menuOpen, friendsOpen, blockedOpen]);
 
     const renderFriendButton = () => {
         if (friendStatus === "self") return null;
@@ -447,6 +480,64 @@ const Profile = () => {
                             </div>
                         )}
                     </div>
+                    {viewingOwnProfile && blockedUsers && blockedUsers.length > 0 && (
+                        <div className="friends-indicator-wrapper" ref={blockedMenuRef}>
+                            <button className="friends-indicator blocked-indicator" onClick={() => { setBlockedOpen(prev => !prev); setBlockedSearch(""); }}>
+                                {blockedUsers.length} blocked {blockedUsers.length === 1 ? "user" : "users"}
+                                {blockedOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
+                            </button>
+                            {blockedOpen && (
+                                <div className="friends-dropdown">
+                                    {blockedUsers.length > 3 && (
+                                        <input
+                                            className="friends-search-input"
+                                            type="text"
+                                            placeholder="Search blocked users..."
+                                            value={blockedSearch}
+                                            onChange={(e) => setBlockedSearch(e.target.value)}
+                                            onClick={(e) => e.stopPropagation()}
+                                        />
+                                    )}
+                                    <div className="friends-dropdown-list">
+                                        {(blockedUsers || [])
+                                            .map(u => typeof u === 'object' ? String(u._id || u.id) : String(u))
+                                            .filter(id => {
+                                                const detail = blockedUserDetails[id];
+                                                const name = detail?.username || id;
+                                                return name.toLowerCase().includes(blockedSearch.toLowerCase());
+                                            })
+                                            .map((id) => {
+                                                const detail = blockedUserDetails[id];
+                                                return (
+                                                    <div key={id} className="friend-dropdown-item blocked-user-item">
+                                                        <div className="friend-avatar small">
+                                                            <img src={detail?.profilePic || detail?.profilePicture || defaultAvatar} alt="avatar" />
+                                                        </div>
+                                                        <span className="friend-name">{detail?.username || "User"}</span>
+                                                        <button
+                                                            className="unblock-btn"
+                                                            onClick={async (e) => {
+                                                                e.stopPropagation();
+                                                                try {
+                                                                    const res = await toggleBlockUserAPI(loggedInUserId, id);
+                                                                    if (res?.blockedUsers) {
+                                                                        dispatch(setBlockedUsers(res.blockedUsers));
+                                                                    } else {
+                                                                        dispatch(setBlockedUsers((blockedUsers || []).filter(u => (typeof u === 'object' ? String(u._id || u.id) : String(u)) !== id)));
+                                                                    }
+                                                                } catch {}
+                                                            }}
+                                                        >
+                                                            Unblock
+                                                        </button>
+                                                    </div>
+                                                );
+                                            })}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
                 {!viewingOwnProfile && (
                     <div className="profile-menu" ref={menuRef}>
@@ -477,12 +568,18 @@ const Profile = () => {
                     <h3>{viewingOwnProfile ? "My Lists" : `${user?.username || "User"}'s Lists`}</h3>
                     {listsLoading && <p className="muted">Loading...</p>}
                 </div>
-                <div className="lists-grid">
-                    {lists.map((list) => (
-                        <List key={list._id || list.title} list={list} owner={viewingOwnProfile ? undefined : user} onClick={() => handleOpenList(list._id || list.id)} />
-                    ))}
-                </div>
-                {!listsLoading && lists.length === 0 && <p className="muted">No lists yet.</p>}
+                {isBlocked ? (
+                    <p className="muted blocked-lists-message">You have blocked this user. <span>Unblock them to see their lists.</span></p>
+                ) : (
+                    <>
+                        <div className="lists-grid">
+                            {lists.map((list) => (
+                                <List key={list._id || list.title} list={list} owner={viewingOwnProfile ? undefined : user} onClick={() => handleOpenList(list._id || list.id)} />
+                            ))}
+                        </div>
+                        {!listsLoading && lists.length === 0 && <p className="muted">No lists yet.</p>}
+                    </>
+                )}
             </div>
         </div>
     );
